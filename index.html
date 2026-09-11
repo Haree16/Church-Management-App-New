@@ -1,32 +1,187 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>New Creation Assembly Church</title>
-    <meta name="description" content="Mobile church member directory, prayer wall, and volunteer ministry rosters for New Creation Assembly Church." />
-    
-    <!-- PWA Web Manifest & Theme Colors -->
-    <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#0f172a" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="New Creation" />
-    
-    <!-- App Icons -->
-    <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
-    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
-  </head>
-  <body class="bg-slate-900 text-slate-900 antialiased selection:bg-amber-500 selection:text-slate-950">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+    <title>Church Management App</title>
+
+    <meta name="description"
+          content="Church Management App helps churches manage members, families, attendance, events, visitors, follow-ups, announcements and more.">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f8fafc;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 12px;
+            font-size: 36px;
+        }
+
+        header p {
+            margin: 0;
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #111827;
+        }
+
+        ul {
+            padding-left: 22px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .links a {
+            display: inline-block;
+            padding: 12px 18px;
+            background: #1f2937;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .links a:hover {
+            opacity: 0.9;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Church Management App</h1>
+    <p>Simple and organized church management for growing churches.</p>
+</header>
+
+<main>
+
+    <section class="card">
+        <h2>About the App</h2>
+
+        <p>
+            Church Management App is a church management platform designed
+            to help churches organize their members and manage everyday
+            church activities in one place.
+        </p>
+
+        <p>
+            The platform helps church administrators, pastors, ministry
+            leaders, staff and members stay connected and organized.
+        </p>
+    </section>
+
+    <section class="card">
+        <h2>Features</h2>
+
+        <ul>
+            <li>Member management</li>
+            <li>Family management</li>
+            <li>Church departments and ministries</li>
+            <li>Attendance management</li>
+            <li>Event management</li>
+            <li>Visitor management</li>
+            <li>Follow-up management</li>
+            <li>Church announcements</li>
+            <li>Notifications</li>
+            <li>Reports and dashboards</li>
+            <li>User and role management</li>
+        </ul>
+    </section>
+
+    <section class="card">
+        <h2>For Churches</h2>
+
+        <p>
+            The platform is designed for churches that want to reduce
+            manual work and manage church information and activities
+            through a centralized system.
+        </p>
+
+        <p>
+            Church administrators can manage information according to
+            their assigned permissions and church responsibilities.
+        </p>
+    </section>
+
+    <section class="card">
+        <h2>Privacy & Account Management</h2>
+
+        <div class="links">
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="delete-account.html">Account & Data Deletion</a>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Contact</h2>
+
+        <p>
+            For support, privacy questions, or account-related requests,
+            please contact:
+        </p>
+
+        <p>
+            <strong>Email:</strong>
+            <a href="mailto:harigsamy@gmail.com">
+                harigsamy@gmail.com
+            </a>
+        </p>
+    </section>
+
+</main>
+
+<footer>
+    <p>© 2026 Church Management App. All rights reserved.</p>
+</footer>
+
+</body>
 </html>
-
