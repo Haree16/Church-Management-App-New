@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy - Church Management App</title>
+<style>
+  body { font-family: Arial, sans-serif; line-height: 1.6; color: #222; max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+  h1, h2 { color: #1f2937; }
+  h1 { margin-bottom: 8px; }
+  .updated { color: #666; margin-bottom: 30px; }
+  li { margin-bottom: 6px; }
+  .notice { background: #fff8e1; border-left: 4px solid #d4a72c; padding: 12px 16px; margin: 20px 0; }
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; }
+</style>
+</head>
+<body>
+
+<h1>Privacy Policy</h1>
+<p class="updated"><strong>Church Management App</strong><br>
+Last Updated: September 11, 2026</p>
+
+<div class="notice">
+<strong>Before publishing:</strong> Replace the contact placeholders in Section 15 with your real developer/company name, privacy email, website, and account-deletion URL. Remove any section describing functionality your app does not actually use.
+</div>
+
+<h2>1. Introduction</h2>
+<p>Welcome to Church Management App ("App", "Service", "we", "us", or "our"). The App is designed to help churches manage members, families, attendance, events, visitors, follow-ups, announcements, notifications, reports, and related church activities.</p>
+<p>This Privacy Policy explains how information is collected, used, stored, protected, and disclosed when you use the App and related services.</p>
+
+<h2>2. Information We Collect</h2>
+<p>Depending on how your church uses the Service, we may process the following categories of information:</p>
+
+<h3>2.1 Account Information</h3>
+<ul>
+<li>Name</li>
+<li>Email address</li>
+<li>Phone number</li>
+<li>User ID</li>
+<li>Profile information</li>
+<li>Authentication and account information</li>
+</ul>
+
+<h3>2.2 Church and Member Information</h3>
+<p>Authorized church administrators may enter or manage information such as:</p>
+<ul>
+<li>Full name</li>
+<li>Phone number and email address</li>
+<li>Date of birth, where provided</li>
+<li>Gender, where provided</li>
+<li>Address, where provided</li>
+<li>Family relationships</li>
+<li>Church membership information</li>
+<li>Department or ministry information</li>
+<li>Member status</li>
+<li>Attendance information</li>
+<li>Visitor information</li>
+<li>Follow-up information</li>
+</ul>
+
+<h3>2.3 Church Activities</h3>
+<p>The Service may process information related to events, attendance, visitors, follow-ups, announcements, notifications, departments, ministries, and other church-management activities.</p>
+
+<h3>2.4 Prayer or Faith-Related Information</h3>
+<p>If these features are enabled by a church, users may submit prayer requests or other information related to participation in church activities. Users and church administrators should only provide information that is appropriate and necessary for the intended purpose.</p>
+
+<h3>2.5 Device and Technical Information</h3>
+<p>We may process limited technical information needed to operate, secure, and troubleshoot the Service, such as device type, operating system, app version, IP address, authentication/session information, crash or diagnostic information, and push-notification device information where applicable.</p>
+
+<h2>3. How We Use Information</h2>
+<p>We may use information to:</p>
+<ul>
+<li>Create and manage accounts.</li>
+<li>Authenticate users and maintain secure sessions.</li>
+<li>Provide church-management functionality.</li>
+<li>Manage members and families.</li>
+<li>Manage attendance, events, visitors, and follow-ups.</li>
+<li>Send announcements and notifications.</li>
+<li>Provide dashboards and reports.</li>
+<li>Provide customer support.</li>
+<li>Maintain, secure, troubleshoot, and improve the Service.</li>
+<li>Detect and prevent unauthorized access, fraud, or abuse.</li>
+<li>Comply with applicable legal obligations.</li>
+</ul>
+
+<h2>4. Church-Managed Information</h2>
+<p>The Service allows churches to create and manage records about members, visitors, staff, volunteers, and other individuals associated with church activities.</p>
+<p>Information entered by a church administrator may be provided and controlled by the relevant church. Churches are responsible for ensuring that information they collect and manage through the Service is handled appropriately and in accordance with applicable laws and their own privacy practices.</p>
+
+<h2>5. Multi-Church Data Separation and Access Control</h2>
+<p>The Service is designed as a multi-church SaaS platform. Information belonging to one church is intended to be logically separated from information belonging to other churches.</p>
+<p>Access is controlled according to the user's identity, church association, and assigned role. Platform-level administrators may have broader administrative access, while church administrators and other users are intended to access only the information permitted by their role.</p>
+
+<h2>6. Notifications</h2>
+<p>If notifications are enabled, the Service may use push-notification services to deliver church announcements, event reminders, attendance-related messages, follow-up reminders, and other church-related communications.</p>
+<p>You can manage notification permissions through your device settings where supported.</p>
+
+<h2>7. Passwords and Authentication</h2>
+<p>We use authentication and security mechanisms designed to protect user accounts. Passwords are not intended to be stored in readable plaintext form.</p>
+<p>If you use the password-reset feature, a password-reset link may be sent to the email address associated with your account. Reset links may expire and may be limited to one-time use.</p>
+
+<h2>8. How We Share Information</h2>
+<p>We do not sell personal information.</p>
+<p>Information may be disclosed in the following circumstances:</p>
+<ul>
+<li><strong>Authorized church users:</strong> Information may be accessible to authorized administrators or users within the associated church according to their permissions.</li>
+<li><strong>Service providers:</strong> We may use third-party providers for hosting, databases, authentication, email delivery, push notifications, analytics, crash reporting, or other services required to operate the App.</li>
+<li><strong>Legal and safety reasons:</strong> We may disclose information when reasonably necessary to comply with applicable law, respond to valid legal requests, protect users or the Service, or prevent fraud or abuse.</li>
+</ul>
+
+<h2>9. Third-Party Service Providers</h2>
+<p>The Service may use third-party infrastructure or service providers to operate features such as authentication, cloud hosting, databases, email, notifications, analytics, and crash reporting.</p>
+<p>Only providers actually used by the App should be listed in the final version of this policy. Their processing of information may also be governed by their respective privacy policies and contractual obligations.</p>
+
+<h2>10. Data Security</h2>
+<p>We use reasonable technical and organizational measures designed to protect information against unauthorized access, alteration, disclosure, or destruction. These measures may include encryption in transit, authentication controls, role-based access controls, secure password storage, session controls, database security controls, and monitoring.</p>
+<p>No internet-based system can guarantee absolute security.</p>
+
+<h2>11. Data Retention</h2>
+<p>We retain information for as long as reasonably necessary to provide the Service, maintain church records, maintain security, resolve disputes, meet contractual requirements, or comply with applicable legal obligations.</p>
+
+<h2>12. Account and Data Deletion</h2>
+<p>Users may request deletion of their account and applicable personal information through the account-deletion mechanism provided in the App or through our public account-deletion request page.</p>
+<p>When a valid deletion request is processed, applicable personal information will be deleted or anonymized, subject to information that we are legally required or permitted to retain.</p>
+<p>Where a church controls member records, certain records may be administered by the relevant church administrator. Additional information may therefore need to be handled by the church.</p>
+
+<h2>13. Children's Privacy</h2>
+<p>The Service is primarily intended for church management and is not specifically directed toward children. Churches are responsible for ensuring that information about minors is collected and processed appropriately and in accordance with applicable requirements.</p>
+<p>If the App is later designed specifically for children or becomes child-directed, this Privacy Policy will be updated as necessary.</p>
+
+<h2>14. Your Privacy Rights</h2>
+<p>Depending on applicable law, you may have rights regarding your personal information, including requesting access, correction, deletion, restriction, or a copy of certain information.</p>
+<p>To make a privacy-related request, contact us using the information below. Where information is controlled by a church, you may also contact the relevant church administrator.</p>
+
+<h2>15. Contact Us</h2>
+<p>If you have questions, concerns, or requests regarding this Privacy Policy or your personal information, please contact us:</p>
+<ul>
+<li><strong>App:</strong> Church Management App</li>
+<li><strong>Developer/Company:</strong> Hari Samy </li>
+<li><strong>Privacy Email:</strong> harigsamy@gmail.com </li>
+<li><strong>Website:</strong> www.newcreationassembly.com </li>
+<li><strong>Account Deletion Page:</strong> harigsamy@gmail.com </li>
+</ul>
+
+<h2>16. Changes to This Privacy Policy</h2>
+<p>We may update this Privacy Policy from time to time. When changes are made, we will update the "Last Updated" date shown at the top of this page. Where appropriate, significant changes may be communicated through the Service or other suitable means.</p>
+
+<footer>
+<p>© 2026 Church Management App. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
