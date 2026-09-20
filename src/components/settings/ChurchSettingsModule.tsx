@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Building2, Clock, HeartHandshake, Users, UserCheck, Bell, 
+  Building2, Clock, Heart, HeartHandshake, Users, UserCheck, UserPlus, Bell, 
   Globe, Palette, ShieldCheck, SlidersHorizontal, Save, RotateCcw, 
   Plus, Trash2, Edit2, Check, X, ChevronUp, ChevronDown, ChevronRight, 
   AlertCircle, CheckCircle2, Shield, Lock, Eye, EyeOff, Sparkles, 
@@ -15,8 +15,9 @@ import {
   ChurchMemberTypeConfig, ChurchAttendanceTypeConfig, ChurchAttendanceStatusConfig,
   ChurchModuleToggles
 } from '../../types';
-import { canEditChurchSettings, canAccessChurchSettings, getRoleConfig } from '../../utils/rbac';
+import { canEditChurchSettings, canAccessChurchSettings, getRoleConfig, canManageSystemPreferences } from '../../utils/rbac';
 import { auditService } from '../../services/auditService';
+import { AdminNotificationSettingsModule } from '../notifications/AdminNotificationSettingsModule';
 
 export type SettingsSectionId = 
   | 'profile'
@@ -140,6 +141,19 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
   const userRole = currentUser.role;
   const roleConfig = getRoleConfig(userRole);
   const canEdit = canEditChurchSettings(userRole);
+  const isSuperAdmin = canManageSystemPreferences(userRole);
+
+  // System Preferences section is strictly reserved for SuperAdmin only
+  const visibleSections = SECTION_METADATA.filter(
+    (sec) => sec.id !== 'preferences' || isSuperAdmin
+  );
+
+  // Redirect non-SuperAdmins if they land on preferences
+  useEffect(() => {
+    if (activeSection === 'preferences' && !isSuperAdmin) {
+      setActiveSection('profile');
+    }
+  }, [activeSection, isSuperAdmin]);
 
   // Sync state if active church or settings prop changes
   useEffect(() => {
@@ -364,9 +378,9 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
   const ActiveIcon = activeMeta.icon;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 text-slate-100 w-full max-w-full overflow-hidden">
       {/* Top Banner with Active Church & Multi-Tenant Scope */}
-      <div className="bg-slate-900 text-white rounded-3xl p-4 sm:p-5 border border-slate-800 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-slate-900 text-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-800 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 p-1 flex items-center justify-center overflow-hidden shrink-0">
             <img
@@ -392,7 +406,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
         </div>
 
         {/* Global Save / Cancel / Actions */}
-        <div className="flex items-center gap-2 self-end sm:self-center">
+        <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
           {!canEdit && (
             <div className="flex items-center gap-1 text-xs text-amber-300 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/30">
               <Lock className="w-3.5 h-3.5" />
@@ -444,8 +458,8 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
 
       {/* Mobile Top Horizontal Section Navigator */}
       <div className="block lg:hidden overflow-x-auto pb-1 scrollbar-none">
-        <div className="flex items-center gap-1.5 min-w-max bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
-          {SECTION_METADATA.map((sec) => {
+        <div className="flex items-center gap-1.5 min-w-max bg-slate-900 p-2 rounded-2xl border border-slate-800 shadow-xl">
+          {visibleSections.map((sec) => {
             const Icon = sec.icon;
             const isSelected = activeSection === sec.id;
             return (
@@ -453,10 +467,10 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                 key={sec.id}
                 id={`btn-mobile-sec-${sec.id}`}
                 onClick={() => setActiveSection(sec.id)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap shrink-0 ${
                   isSelected
-                    ? 'bg-slate-900 text-amber-400 shadow-sm'
-                    : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/60'
+                    ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
+                    : 'bg-slate-950 text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -474,10 +488,10 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
           <div className="bg-white rounded-3xl p-3 border border-slate-200 shadow-sm space-y-1 sticky top-16">
             <div className="px-3 py-2 border-b border-slate-100 mb-1">
               <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Settings Sections</h3>
-              <p className="text-[11px] text-slate-500">Configure 10 isolated church modules</p>
+              <p className="text-[11px] text-slate-500">Configure isolated church settings</p>
             </div>
 
-            {SECTION_METADATA.map((sec) => {
+            {visibleSections.map((sec) => {
               const Icon = sec.icon;
               const isSelected = activeSection === sec.id;
 
@@ -529,7 +543,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
 
         {/* Right Settings Content Panel */}
         <div className="lg:col-span-8 space-y-4">
-          <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-6">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 border border-slate-200 shadow-sm space-y-6">
             {/* Section Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
@@ -679,7 +693,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="e.g. New Creation Assembly Church"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -696,7 +710,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="e.g. NCA Church"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -713,7 +727,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="e.g. Pentecostal / Charismatic"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -730,7 +744,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="e.g. Building Families, Impacting Nations"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -747,7 +761,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="Brief history, beliefs, and welcoming description..."
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -769,7 +783,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="No. 12, Mount Road, Anna Salai"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -786,7 +800,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="Chennai"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -803,7 +817,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="Tamil Nadu"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -820,7 +834,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="600002"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -837,7 +851,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="India"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -859,7 +873,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="+91 98401 23456"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -879,7 +893,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="office@newcreation.org.in"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -896,7 +910,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="https://newcreation.org.in"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -918,7 +932,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="e.g. Senior Pastor / Church Admin"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -935,7 +949,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="+91 98401 23456"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
@@ -957,7 +971,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="pastor.samuel@newcreation.org.in"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
                 </div>
@@ -1526,6 +1540,15 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                     ))}
                   </div>
                 </div>
+
+                {/* Smart Notifications Rules & Administration */}
+                <div className="pt-4 border-t border-slate-200">
+                  <AdminNotificationSettingsModule
+                    currentChurch={currentChurch}
+                    currentUser={currentUser}
+                    members={members}
+                  />
+                </div>
               </div>
             )}
 
@@ -1554,7 +1577,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           localization: { ...prev.localization, language: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       {LANGUAGES.map((lang) => (
                         <option key={lang.code} value={lang.code}>
@@ -1582,7 +1605,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           },
                         }));
                       }}
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       {CURRENCIES.map((cur) => (
                         <option key={cur.code} value={cur.code}>
@@ -1604,7 +1627,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           localization: { ...prev.localization, timezone: e.target.value },
                         }))
                       }
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       {TIMEZONES.map((tz) => (
                         <option key={tz.value} value={tz.value}>
@@ -1626,7 +1649,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           localization: { ...prev.localization, dateFormat: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="DD/MM/YYYY">DD/MM/YYYY (e.g. 26/08/2026 - Indian/UK Standard)</option>
                       <option value="MM/DD/YYYY">MM/DD/YYYY (e.g. 08/26/2026 - US Standard)</option>
@@ -1646,7 +1669,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           localization: { ...prev.localization, timeFormat: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="12h">12-Hour AM/PM (e.g. 09:30 AM)</option>
                       <option value="24h">24-Hour Military (e.g. 09:30, 18:00)</option>
@@ -1797,7 +1820,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           security: { ...prev.security, directoryVisibility: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="members_only">Registered Members Only (Recommended)</option>
                       <option value="leaders_only">Leaders & Pastoral Staff Only</option>
@@ -1816,7 +1839,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           security: { ...prev.security, prayerModeration: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="auto_publish">Auto-Publish with Confidentiality Tags</option>
                       <option value="pastor_approval">Require Pastoral Staff Approval Before Wall Listing</option>
@@ -1834,7 +1857,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           security: { ...prev.security, rosterVisibility: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="all_members">Visible to All Church Members</option>
                       <option value="volunteers_only">Visible Only to Active Volunteers</option>
@@ -1852,7 +1875,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           security: { ...prev.security, sessionTimeout: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="1d">1 Day (Recommended for mobile)</option>
                       <option value="1h">1 Hour</option>
@@ -1865,9 +1888,9 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
             )}
 
             {/* ========================================================= */}
-            {/* SECTION 10: SYSTEM PREFERENCES & MODULE AVAILABILITY */}
+            {/* SECTION 10: SYSTEM PREFERENCES & MODULE AVAILABILITY (SuperAdmin Only) */}
             {/* ========================================================= */}
-            {activeSection === 'preferences' && (
+            {activeSection === 'preferences' && isSuperAdmin && (
               <div className="space-y-6">
                 <div>
                   <h4 className="text-sm font-bold text-slate-900">System Preferences & Church Module Control</h4>
@@ -1897,9 +1920,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                     {[
                       { key: 'dashboard' as const, label: 'Dashboard & Analytics', desc: 'Church KPIs, attendance trends & growth', icon: LayoutDashboard },
                       { key: 'reports' as const, label: 'Reports & Export Engine', desc: 'Filtered reports, trends & print exports', icon: BarChart3 },
+                      { key: 'visitors' as const, label: 'Visitor Management', desc: 'Visitor follow-ups, calls & retention', icon: UserPlus },
                       { key: 'directory' as const, label: 'Members Directory', desc: 'Church members, families & profiles', icon: Users },
                       { key: 'ministries' as const, label: 'Ministries & Teams', desc: 'Church departments, squads & activities', icon: Landmark },
+                      { key: 'groups' as const, label: 'Small Groups & Life Groups', desc: 'Cell groups, Bible studies & group rosters', icon: Users },
                       { key: 'prayers' as const, label: 'Prayer Wall', desc: 'Intercessory requests & praise updates', icon: HeartHandshake },
+                      { key: 'pastoral' as const, label: 'Pastoral Care & Visits', desc: 'Pastoral visitation, member counseling & care logs', icon: Heart },
                       { key: 'calendar' as const, label: 'Events & Calendar', desc: 'Schedules, RSVPs & reminders', icon: Calendar },
                       { key: 'sundayschool' as const, label: 'Sunday School', desc: 'Children classes, verses & badges', icon: GraduationCap },
                       { key: 'attendance' as const, label: 'Attendance Tracker', desc: 'Sunday service & headcount logging', icon: UserCheck },
@@ -1937,18 +1963,31 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           <button
                             type="button"
                             disabled={!canEdit}
-                            onClick={() =>
+                            onClick={() => {
+                              const nextToggles = {
+                                ...formData.preferences.moduleToggles,
+                                [mod.key]: !isEnabled,
+                              };
+                              const updatedSettings: CompleteChurchSettings = {
+                                ...formData,
+                                preferences: {
+                                  ...formData.preferences,
+                                  moduleToggles: nextToggles,
+                                },
+                                updatedAt: new Date().toISOString(),
+                                updatedBy: currentUser.name,
+                              };
                               updateSettingsState((prev) => ({
                                 ...prev,
                                 preferences: {
                                   ...prev.preferences,
-                                  moduleToggles: {
-                                    ...prev.preferences.moduleToggles,
-                                    [mod.key]: !isEnabled,
-                                  },
+                                  moduleToggles: nextToggles,
                                 },
-                              }))
-                            }
+                              }));
+                              onSaveSettings(updatedSettings);
+                              setSaveSuccessToast(true);
+                              setTimeout(() => setSaveSuccessToast(false), 3000);
+                            }}
                             className={`px-3 py-1 rounded-xl text-[10px] font-extrabold transition shrink-0 ${
                               isEnabled
                                 ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow'
@@ -1976,7 +2015,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           preferences: { ...prev.preferences, defaultLandingTab: e.target.value },
                         }))
                       }
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="directory">Members Directory</option>
                       <option value="prayers">Prayer Wall</option>
@@ -1997,7 +2036,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           preferences: { ...prev.preferences, defaultMemberSort: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="name_asc">Member Name (A &rarr; Z)</option>
                       <option value="name_desc">Member Name (Z &rarr; A)</option>

@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Mail, ArrowLeft, CheckCircle2, AlertCircle, ExternalLink, Copy } from 'lucide-react';
+import { authSecurityService } from '@/services/authSecurityService';
 
 export function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const { forgotPassword } = useAuth();
+  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [devResetLink, setDevResetLink] = useState<string | undefined>(undefined);
+  const [copied, setCopied] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,13 +21,30 @@ export function ForgotPasswordPage() {
 
     setIsLoading(true);
     setError(null);
-    const result = await forgotPassword(email);
-    setIsLoading(false);
+    try {
+      const result = await authSecurityService.requestPasswordReset(email);
+      setIsLoading(false);
 
-    if (result.success) {
-      setIsSubmitted(true);
-    } else {
-      setError(result.error || 'Failed to send reset link.');
+      if (result.success) {
+        setIsSubmitted(true);
+        setSuccessMessage(result.message);
+        if (result.resetLinkForDev) {
+          setDevResetLink(result.resetLinkForDev);
+        }
+      } else {
+        setError(result.message || 'Failed to send reset link.');
+      }
+    } catch (err: any) {
+      setIsLoading(false);
+      setError('An unexpected error occurred.');
+    }
+  };
+
+  const handleCopyLink = () => {
+    if (devResetLink) {
+      navigator.clipboard.writeText(devResetLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -47,9 +65,36 @@ export function ForgotPasswordPage() {
                 <CheckCircle2 className="h-10 w-10 mb-2 text-emerald-400" />
                 <h4 className="text-sm font-semibold">Check your email</h4>
                 <p className="mt-1 text-xs text-slate-300">
-                  We have sent password recovery instructions to <strong>{email}</strong>.
+                  {successMessage}
                 </p>
               </div>
+
+              {devResetLink && (
+                <div className="p-3.5 bg-slate-950/80 border border-sky-600/40 rounded-xl text-left text-xs space-y-2">
+                  <div className="flex items-center justify-between text-sky-400 font-semibold text-[11px] uppercase tracking-wider">
+                    <span>Dev Link Preview</span>
+                    <span className="text-[10px] bg-sky-950 text-sky-300 px-1.5 py-0.5 rounded border border-sky-800">Dev</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={devResetLink}
+                      className="flex-1 bg-sky-600 hover:bg-sky-500 text-white font-medium px-3 py-1.5 rounded text-xs flex items-center justify-center gap-1 transition-colors truncate"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                      <span>Open Reset Link</span>
+                    </a>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCopyLink}
+                      className="h-8 text-xs border-slate-700 bg-slate-800 text-slate-200"
+                    >
+                      <Copy className="w-3.5 h-3.5 mr-1" />
+                      {copied ? 'Copied' : 'Copy'}
+                    </Button>
+                  </div>
+                </div>
+              )}
 
               <Button asChild className="w-full bg-slate-800 hover:bg-slate-700 text-white">
                 <Link to="/login">

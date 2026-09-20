@@ -15,6 +15,8 @@ export interface Member {
   id: string;
   church_id?: string;
   churchId?: string;
+  user_id?: string;  // Link to Auth User / Profile ID
+  userId?: string;   // Link to Auth User / Profile ID
   firstName: string;
   lastName: string;
   email: string;
@@ -36,6 +38,7 @@ export interface Member {
   isPrivateNotes: boolean;
   emergencyContactName?: string;
   emergencyContactPhone?: string;
+  gender?: string;
   createdAt: string;
 }
 
@@ -257,6 +260,7 @@ export interface AppNotification {
     memberId?: string;
     memberName?: string;
     actionType?: 'member_added' | 'activity_scheduled' | 'roster_created' | 'roster_confirmed' | 'announcement';
+    [key: string]: any;
   };
 }
 
@@ -281,6 +285,7 @@ export type SaaSUserRole =
   | 'AssistantPastor'
   | 'TreasurerStaff' 
   | 'MinistryLeader' 
+  | 'CellGroupLeader'
   | 'SundaySchoolTeacher'
   | 'Member' 
   | 'Volunteer';
@@ -305,6 +310,8 @@ export interface SaaSUser {
   id: string;
   church_id: string;
   churchId?: string;
+  member_id?: string; // Link to Church Member ID
+  memberId?: string;  // Link to Church Member ID
   username: string;
   password?: string;
   name: string;
@@ -518,8 +525,10 @@ export interface ChurchModuleToggles {
   reports: boolean;       // Reports & Analytics Module
   visitors: boolean;      // Visitor Management & Follow-up
   ministries: boolean;    // Ministries Module
+  groups: boolean;        // Small Groups & Life Groups
   directory: boolean;     // Members
   prayers: boolean;       // Prayer
+  pastoral: boolean;      // Pastoral Care & Home Visits
   calendar: boolean;      // Events
   sundayschool: boolean;  // Sunday School
   attendance: boolean;    // Attendance

@@ -189,21 +189,21 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
   }, [cases]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 text-slate-100 w-full max-w-full overflow-hidden">
       {/* Top Banner & Confidential Warning */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-5 text-white shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="p-3 rounded-2xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
+          <div className="p-3 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 shadow-sm shrink-0">
             <HeartHandshake className="w-6 h-6" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-extrabold text-white tracking-tight">Pastoral Care & Support</h2>
-              <Badge variant="outline" className="bg-purple-950 text-purple-300 border-purple-700 text-[10px]">
-                <Lock className="w-3 h-3 mr-1 text-purple-400" /> Confidential
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">Pastoral Care & Support</h2>
+              <Badge variant="outline" className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px] font-semibold">
+                <Lock className="w-3 h-3 mr-1 text-amber-400" /> Confidential
               </Badge>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-400 mt-0.5">
               Compassionate, secure pastoral oversight for church members, hospital visits, counseling & care.
             </p>
           </div>
@@ -215,7 +215,7 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
             setEditingCase(null);
             setIsModalOpen(true);
           }}
-          className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-lg shadow-purple-900/30 shrink-0"
+          className="bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition shrink-0"
         >
           <Plus className="w-4 h-4 mr-1.5 stroke-[2.5]" /> Open Pastoral Case
         </Button>
@@ -223,73 +223,65 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
 
       {/* KPI Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Card className="bg-slate-900 border-slate-800 text-white">
-          <CardContent className="p-3.5 flex items-center justify-between">
-            <div>
-              <p className="text-[11px] font-medium text-slate-400">Active Care Cases</p>
-              <p className="text-xl font-extrabold text-purple-400 mt-0.5">{stats.totalActive}</p>
-            </div>
-            <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400">
-              <Activity className="w-4 h-4" />
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-slate-900 border border-slate-800 text-slate-100 shadow-xl rounded-2xl p-3.5 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-semibold text-slate-400">Active Care Cases</p>
+            <p className="text-xl font-extrabold text-purple-400 mt-0.5">{stats.totalActive}</p>
+          </div>
+          <div className="p-2 rounded-xl bg-purple-950/60 text-purple-400 border border-purple-800">
+            <Activity className="w-4 h-4" />
+          </div>
+        </div>
 
-        <Card className="bg-slate-900 border-slate-800 text-white">
-          <CardContent className="p-3.5 flex items-center justify-between">
-            <div>
-              <p className="text-[11px] font-medium text-slate-400">High / Urgent Priority</p>
-              <p className="text-xl font-extrabold text-amber-400 mt-0.5">{stats.totalUrgent}</p>
-            </div>
-            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400">
-              <Clock className="w-4 h-4" />
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-slate-900 border border-slate-800 text-slate-100 shadow-xl rounded-2xl p-3.5 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-semibold text-slate-400">High / Urgent Priority</p>
+            <p className="text-xl font-extrabold text-amber-400 mt-0.5">{stats.totalUrgent}</p>
+          </div>
+          <div className="p-2 rounded-xl bg-amber-950/60 text-amber-400 border border-amber-800">
+            <Clock className="w-4 h-4" />
+          </div>
+        </div>
 
-        <Card className="bg-slate-900 border-slate-800 text-white">
-          <CardContent className="p-3.5 flex items-center justify-between">
-            <div>
-              <p className="text-[11px] font-medium text-slate-400">Safeguarding Flags</p>
-              <p className="text-xl font-extrabold text-rose-400 mt-0.5">{stats.totalSafeguarding}</p>
-            </div>
-            <div className="p-2 rounded-xl bg-rose-500/10 text-rose-400">
-              <ShieldAlert className="w-4 h-4" />
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-slate-900 border border-slate-800 text-slate-100 shadow-xl rounded-2xl p-3.5 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-semibold text-slate-400">Safeguarding Flags</p>
+            <p className="text-xl font-extrabold text-rose-400 mt-0.5">{stats.totalSafeguarding}</p>
+          </div>
+          <div className="p-2 rounded-xl bg-rose-950/60 text-rose-400 border border-rose-800">
+            <ShieldAlert className="w-4 h-4" />
+          </div>
+        </div>
 
-        <Card className="bg-slate-900 border-slate-800 text-white">
-          <CardContent className="p-3.5 flex items-center justify-between">
-            <div>
-              <p className="text-[11px] font-medium text-slate-400">Resolved Cases</p>
-              <p className="text-xl font-extrabold text-emerald-400 mt-0.5">{stats.totalResolved}</p>
-            </div>
-            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-slate-900 border border-slate-800 text-slate-100 shadow-xl rounded-2xl p-3.5 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-semibold text-slate-400">Resolved Cases</p>
+            <p className="text-xl font-extrabold text-emerald-400 mt-0.5">{stats.totalResolved}</p>
+          </div>
+          <div className="p-2 rounded-xl bg-emerald-950/60 text-emerald-400 border border-emerald-800">
+            <CheckCircle2 className="w-4 h-4" />
+          </div>
+        </div>
       </div>
 
       {/* Filters & Search */}
-      <div className="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-3">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+      <div className="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 shadow-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="relative flex-1 min-w-[180px]">
+          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
           <Input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by person name, summary, caregiver..."
-            className="pl-9 bg-slate-800 border-slate-700 text-white text-xs"
+            className="pl-9 bg-slate-950 border-slate-800 text-white text-xs placeholder:text-slate-500 focus:bg-slate-950 focus:ring-2 focus:ring-amber-500"
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center">
           <Select value={selectedType} onValueChange={setSelectedType}>
-            <SelectTrigger className="w-[140px] bg-slate-800 border-slate-700 text-white text-xs">
+            <SelectTrigger className="w-full sm:w-[130px] bg-slate-950 border-slate-800 text-slate-200 text-xs font-medium focus:bg-slate-950">
               <SelectValue placeholder="Care Type" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-800 text-white text-xs">
+            <SelectContent className="bg-slate-900 border-slate-800 text-slate-100 text-xs shadow-xl">
               <SelectItem value="all">All Care Types</SelectItem>
               {PASTORAL_CARE_TYPES.map((t) => (
                 <SelectItem key={t.value} value={t.value}>
@@ -300,10 +292,10 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
           </Select>
 
           <Select value={selectedStage} onValueChange={setSelectedStage}>
-            <SelectTrigger className="w-[140px] bg-slate-800 border-slate-700 text-white text-xs">
+            <SelectTrigger className="w-full sm:w-[120px] bg-slate-950 border-slate-800 text-slate-200 text-xs font-medium focus:bg-slate-950">
               <SelectValue placeholder="Stage" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-800 text-white text-xs">
+            <SelectContent className="bg-slate-900 border-slate-800 text-slate-100 text-xs shadow-xl">
               <SelectItem value="all">All Stages</SelectItem>
               {PASTORAL_STAGES.map((s) => (
                 <SelectItem key={s.value} value={s.value}>
@@ -314,10 +306,10 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
           </Select>
 
           <Select value={selectedPriority} onValueChange={setSelectedPriority}>
-            <SelectTrigger className="w-[130px] bg-slate-800 border-slate-700 text-white text-xs">
+            <SelectTrigger className="w-full sm:w-[120px] bg-slate-950 border-slate-800 text-slate-200 text-xs font-medium focus:bg-slate-950">
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-800 text-white text-xs">
+            <SelectContent className="bg-slate-900 border-slate-800 text-slate-100 text-xs shadow-xl">
               <SelectItem value="all">All Priorities</SelectItem>
               <SelectItem value="low">Low</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
@@ -330,13 +322,13 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
 
       {/* Main Split Content View */}
       {filteredCases.length === 0 ? (
-        <Card className="bg-slate-900 border-dashed border-slate-800 text-center p-8 text-slate-400">
-          <HeartHandshake className="w-10 h-10 mx-auto text-slate-600 mb-2" />
+        <div className="bg-slate-900 border border-dashed border-slate-800 text-center p-8 text-slate-400 rounded-2xl shadow-none">
+          <HeartHandshake className="w-10 h-10 mx-auto text-amber-400 mb-2" />
           <h4 className="font-bold text-white text-sm">No Pastoral Care Records Found</h4>
           <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
             {searchTerm ? 'No cases match your active filters.' : 'Click "Open Pastoral Case" to create a new confidential care record.'}
           </p>
-        </Card>
+        </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
           {/* Left Column: Case Cards List */}
@@ -350,8 +342,8 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                   onClick={() => setSelectedCaseId(c.id)}
                   className={`p-4 rounded-2xl border transition cursor-pointer relative ${
                     isSelected
-                      ? 'bg-slate-800/90 border-purple-500 shadow-md'
-                      : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+                      ? 'bg-amber-500/10 border-amber-500 shadow-xl ring-1 ring-amber-500/50'
+                      : 'bg-slate-900 border-slate-800 hover:border-slate-700 shadow-lg'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -362,7 +354,7 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                           {c.person_type === 'visitor' ? 'Visitor' : 'Member'}
                         </Badge>
                       </div>
-                      <p className="text-xs text-purple-300 font-semibold mt-0.5 capitalize">
+                      <p className="text-xs text-amber-400 font-semibold mt-0.5 capitalize">
                         {c.care_type.replace('_', ' ')}
                       </p>
                     </div>
@@ -370,9 +362,9 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                     <Badge
                       className={`text-[9px] px-2 py-0.5 ${
                         c.priority === 'urgent'
-                          ? 'bg-rose-500 text-white'
+                          ? 'bg-rose-600 text-white'
                           : c.priority === 'high'
-                          ? 'bg-amber-500 text-slate-950'
+                          ? 'bg-amber-500 text-slate-950 font-bold'
                           : 'bg-slate-800 text-slate-300'
                       }`}
                     >
@@ -380,21 +372,21 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                     </Badge>
                   </div>
 
-                  <p className="text-xs text-slate-300 line-clamp-2 mt-2 leading-relaxed">{c.summary}</p>
+                  <p className="text-xs text-slate-400 line-clamp-2 mt-2 leading-relaxed">{c.summary}</p>
 
-                  <div className="flex items-center justify-between pt-3 mt-3 border-t border-slate-800 text-[11px] text-slate-400">
-                    <span className="flex items-center gap-1">
-                      <UserCheck className="w-3.5 h-3.5 text-purple-400" />
+                  <div className="flex items-center justify-between pt-3 mt-3 border-t border-slate-800/80 text-[11px] text-slate-400">
+                    <span className="flex items-center gap-1 font-medium">
+                      <UserCheck className="w-3.5 h-3.5 text-amber-400" />
                       {c.assigned_to_name || 'Unassigned'}
                     </span>
-                    <span className="flex items-center gap-1">
+                    <span className="flex items-center gap-1 font-medium">
                       <Clock className="w-3.5 h-3.5 text-slate-500" />
                       {new Date(c.created_at).toLocaleDateString()}
                     </span>
                   </div>
 
                   {c.safeguarding_flag && (
-                    <div className="absolute top-2 right-2 flex items-center gap-1 bg-rose-500/20 text-rose-300 text-[9px] px-2 py-0.5 rounded-full border border-rose-500/30">
+                    <div className="absolute top-2 right-2 flex items-center gap-1 bg-rose-950 text-rose-300 text-[9px] px-2 py-0.5 rounded-full border border-rose-800 font-medium">
                       <ShieldAlert className="w-3 h-3 text-rose-400" /> Safeguarding
                     </div>
                   )}
@@ -406,18 +398,18 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
           {/* Right Column: Case Details & Timeline Logs */}
           <div className="lg:col-span-7">
             {activeCase ? (
-              <Card className="bg-slate-900 border-slate-800 text-white shadow-2xl rounded-2xl overflow-hidden">
+              <Card className="bg-slate-900 border-slate-800 text-slate-100 shadow-xl rounded-2xl overflow-hidden">
                 {/* Detail Header */}
-                <div className="p-5 border-b border-slate-800 bg-slate-950/40 space-y-3">
+                <div className="p-4 sm:p-5 border-b border-slate-800 bg-slate-900/90 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="text-lg font-bold text-white">{activeCase.person_name}</h3>
-                        <Badge variant="outline" className="text-[10px] bg-purple-950 text-purple-300 border-purple-800">
+                        <Badge variant="outline" className="text-[10px] bg-amber-500/20 text-amber-300 border-amber-500/30 font-semibold">
                           <Lock className="w-3 h-3 mr-1" /> {activeCase.confidentiality_level.replace('_', ' ')}
                         </Badge>
                       </div>
-                      <p className="text-xs text-purple-400 font-semibold mt-0.5">
+                      <p className="text-xs text-amber-400 font-semibold mt-0.5">
                         {PASTORAL_CARE_TYPES.find((t) => t.value === activeCase.care_type)?.label || activeCase.care_type}
                       </p>
                     </div>
@@ -431,7 +423,7 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                           setModalMode('edit');
                           setIsModalOpen(true);
                         }}
-                        className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 text-xs h-8"
+                        className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:text-white text-xs h-8 font-medium"
                       >
                         <Edit3 className="w-3.5 h-3.5 mr-1" /> Edit
                       </Button>
@@ -439,7 +431,7 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                         size="sm"
                         variant="destructive"
                         onClick={() => handleDeleteCase(activeCase.id)}
-                        className="h-8 text-xs"
+                        className="h-8 text-xs bg-rose-600 hover:bg-rose-700 text-white"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>
@@ -447,28 +439,28 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                   </div>
 
                   {/* Summary & Contact */}
-                  <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 space-y-1.5">
-                    <p className="text-xs font-semibold text-slate-200">Pastoral Summary:</p>
+                  <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                    <p className="text-xs font-semibold text-slate-300">Pastoral Summary:</p>
                     <p className="text-xs text-slate-300 leading-relaxed">{activeCase.summary}</p>
                   </div>
 
                   {/* Private Notes (Pastoral Staff Only) */}
                   {activeCase.private_notes && (
-                    <div className="bg-purple-950/30 border border-purple-900/50 p-3 rounded-xl space-y-1">
-                      <p className="text-[11px] font-bold text-purple-300 flex items-center gap-1.5">
-                        <Lock className="w-3 h-3 text-purple-400" /> Confidential Pastoral Notes:
+                    <div className="bg-amber-950/30 border border-amber-800/60 p-3 rounded-xl space-y-1">
+                      <p className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
+                        <Lock className="w-3 h-3 text-amber-400" /> Confidential Pastoral Notes:
                       </p>
-                      <p className="text-xs text-purple-100 whitespace-pre-wrap leading-relaxed">{activeCase.private_notes}</p>
+                      <p className="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">{activeCase.private_notes}</p>
                     </div>
                   )}
 
                   {/* Safeguarding Alert */}
                   {activeCase.safeguarding_flag && (
-                    <div className="bg-rose-950/40 border border-rose-800/60 p-3 rounded-xl flex items-start gap-2.5 text-xs text-rose-200">
+                    <div className="bg-rose-950/40 border border-rose-800 p-3 rounded-xl flex items-start gap-2.5 text-xs text-rose-200">
                       <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                       <div>
                         <p className="font-bold text-rose-300">Safeguarding Flag Activated</p>
-                        <p className="text-[11px] text-rose-200/90 mt-0.5">{activeCase.safeguarding_notes || 'High risk awareness protocol active.'}</p>
+                        <p className="text-[11px] text-rose-400 mt-0.5">{activeCase.safeguarding_notes || 'High risk awareness protocol active.'}</p>
                       </div>
                     </div>
                   )}
@@ -481,7 +473,7 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                     </div>
                     <div>
                       <span className="text-slate-500 block">Current Stage:</span>
-                      <strong className="text-purple-300 capitalize">{activeCase.stage.replace('_', ' ')}</strong>
+                      <strong className="text-amber-400 capitalize">{activeCase.stage.replace('_', ' ')}</strong>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Scheduled Follow-up:</span>
@@ -491,16 +483,16 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                 </div>
 
                 {/* Timeline Interaction History */}
-                <div className="p-5 space-y-4">
+                <div className="p-4 sm:p-5 space-y-4">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-purple-400" />
+                    <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-amber-400" />
                       Pastoral Care Interaction History ({activeCase.logs?.length || 0})
                     </h4>
                     <Button
                       size="sm"
                       onClick={() => setActiveLogCaseId(activeCase.id)}
-                      className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold h-7 px-3 rounded-lg"
+                      className="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold h-7 px-3 rounded-lg"
                     >
                       <Plus className="w-3.5 h-3.5 mr-1" /> Add Log Note
                     </Button>
@@ -508,14 +500,14 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
 
                   {/* Log Addition Form (Inlined) */}
                   {activeLogCaseId === activeCase.id && (
-                    <div className="p-4 bg-slate-800 rounded-2xl border border-purple-500/40 space-y-3 animate-in fade-in">
-                      <h5 className="text-xs font-bold text-purple-300">Record New Pastoral Interaction</h5>
+                    <div className="p-4 bg-slate-950 rounded-2xl border border-amber-500/40 space-y-3 animate-in fade-in">
+                      <h5 className="text-xs font-bold text-amber-400">Record New Pastoral Interaction</h5>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <Select value={logMethod} onValueChange={setLogMethod}>
-                          <SelectTrigger className="bg-slate-900 border-slate-700 text-white text-xs">
+                          <SelectTrigger className="bg-slate-900 border-slate-800 text-white text-xs">
                             <SelectValue placeholder="Contact Method" />
                           </SelectTrigger>
-                          <SelectContent className="bg-slate-900 border-slate-800 text-white">
+                          <SelectContent className="bg-slate-900 border-slate-800 text-slate-100">
                             <SelectItem value="in_person">In-Person Visit</SelectItem>
                             <SelectItem value="phone_call">Phone Call</SelectItem>
                             <SelectItem value="hospital_visit">Hospital Visit</SelectItem>
@@ -530,7 +522,7 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                           value={logNextActionDate}
                           onChange={(e) => setLogNextActionDate(e.target.value)}
                           placeholder="Next Action Date"
-                          className="bg-slate-900 border-slate-700 text-white text-xs"
+                          className="bg-slate-900 border-slate-800 text-white text-xs"
                         />
                       </div>
 
@@ -539,14 +531,14 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setLogNotes(e.target.value)}
                         placeholder="Detail the pastoral conversation, intercessory prayer offered, and outcome..."
                         rows={2}
-                        className="w-full bg-slate-900 border border-slate-700 text-white text-xs p-2 rounded-xl outline-none"
+                        className="w-full bg-slate-900 border border-slate-800 text-white text-xs p-2 rounded-xl outline-none focus:ring-2 focus:ring-amber-500"
                       />
 
                       <Input
                         value={logNextAction}
                         onChange={(e) => setLogNextAction(e.target.value)}
                         placeholder="Next pastoral action item (e.g. Follow-up phone call next week)"
-                        className="bg-slate-900 border-slate-700 text-white text-xs"
+                        className="bg-slate-900 border-slate-800 text-white text-xs"
                       />
 
                       <div className="flex items-center justify-end gap-2 pt-1">
@@ -561,7 +553,7 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                         <Button
                           size="sm"
                           onClick={() => handleAddLogSubmit(activeCase.id)}
-                          className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold h-7"
+                          className="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold h-7"
                         >
                           Save Log Entry
                         </Button>
@@ -577,10 +569,10 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                   ) : (
                     <div className="space-y-3">
                       {activeCase.logs.map((log) => (
-                        <div key={log.id} className="p-3.5 bg-slate-950/60 border border-slate-800 rounded-xl space-y-1.5">
+                        <div key={log.id} className="p-3.5 bg-slate-950 border border-slate-800 rounded-xl space-y-1.5">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="font-bold text-purple-300 flex items-center gap-1.5">
-                              <User className="w-3.5 h-3.5 text-purple-400" />
+                            <span className="font-bold text-amber-400 flex items-center gap-1.5">
+                              <User className="w-3.5 h-3.5 text-amber-500" />
                               {log.author_name} ({log.author_role || 'Pastoral Team'})
                             </span>
                             <span className="text-[10px] text-slate-500">
@@ -590,7 +582,7 @@ export const PastoralCareModule: React.FC<PastoralCareModuleProps> = ({ personId
                           <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">{log.notes}</p>
                           {log.next_action && (
                             <div className="mt-1.5 pt-1.5 border-t border-slate-800 flex items-center gap-2 text-[11px] text-amber-300">
-                              <Clock className="w-3.5 h-3.5 text-amber-400" />
+                              <Clock className="w-3.5 h-3.5 text-amber-500" />
                               <span>Next Action: <strong>{log.next_action}</strong></span>
                               {log.next_action_date && <span className="text-slate-500">({log.next_action_date})</span>}
                             </div>

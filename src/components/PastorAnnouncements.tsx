@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PastorAnnouncement, SaaSUser, ChurchTenant } from '../types';
-import { Megaphone, Pin, Plus, Calendar, Sparkles, User, FileText, Share2, Volume2, X, Trash2, AlertTriangle, Edit3, MessageSquare, Check, Copy } from 'lucide-react';
+import { Megaphone, Pin, Plus, Calendar, Sparkles, User, FileText, Share2, Volume2, X, Trash2, AlertTriangle, Edit3, MessageSquare, Check, Copy, Eye } from 'lucide-react';
+import { canPublishAnnouncements } from '../utils/rbac';
 
 interface PastorAnnouncementsProps {
   announcements?: PastorAnnouncement[];
@@ -29,6 +30,8 @@ export const PastorAnnouncements: React.FC<PastorAnnouncementsProps> = ({
   const safeAnnouncements = announcements || [];
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  const canPublish = canPublishAnnouncements(currentUser?.role);
+
   const handleShareAnnouncementWhatsApp = (item: PastorAnnouncement) => {
     const formatted = `📢 *${currentChurch?.name || 'Church'} - ${item.title}*\n\n` +
       `📅 *Date:* ${item.date}\n` +
@@ -47,6 +50,7 @@ export const PastorAnnouncements: React.FC<PastorAnnouncementsProps> = ({
 
 
   const handleOpenAdd = () => {
+    if (!canPublish) return;
     setEditingAnnouncement(null);
     setTitle('');
     setContent('');
@@ -57,6 +61,7 @@ export const PastorAnnouncements: React.FC<PastorAnnouncementsProps> = ({
   };
 
   const handleOpenEdit = (item: PastorAnnouncement) => {
+    if (!canPublish) return;
     setEditingAnnouncement(item);
     setTitle(item.title);
     setContent(item.content);
@@ -68,6 +73,7 @@ export const PastorAnnouncements: React.FC<PastorAnnouncementsProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canPublish) return;
     if (!title.trim() || !content.trim()) return;
 
     if (editingAnnouncement) {
@@ -117,13 +123,20 @@ export const PastorAnnouncements: React.FC<PastorAnnouncementsProps> = ({
             </p>
           </div>
 
-          <button
-            onClick={handleOpenAdd}
-            className="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-2xl shadow-lg text-xs flex items-center gap-2 transition active:scale-95 shrink-0"
-          >
-            <Plus className="w-4 h-4 stroke-[2.5]" />
-            Post New Announcement
-          </button>
+          {canPublish ? (
+            <button
+              onClick={handleOpenAdd}
+              className="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-2xl shadow-lg text-xs flex items-center gap-2 transition active:scale-95 shrink-0"
+            >
+              <Plus className="w-4 h-4 stroke-[2.5]" />
+              Post New Announcement
+            </button>
+          ) : (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-200/90 text-xs font-medium border border-amber-500/20 shrink-0">
+              <Eye className="w-3.5 h-3.5 text-amber-400" />
+              <span>Read Only Access</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -173,17 +186,19 @@ export const PastorAnnouncements: React.FC<PastorAnnouncementsProps> = ({
                   <span>{copiedId === item.id ? 'Copied & Shared!' : 'WhatsApp'}</span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => handleOpenEdit(item)}
-                  className="p-1.5 rounded-lg text-slate-500 hover:text-amber-700 hover:bg-amber-50 transition flex items-center gap-1 text-xs font-semibold"
-                  title="Edit Announcement"
-                >
-                  <Edit3 className="w-3.5 h-3.5" />
-                  <span>Edit</span>
-                </button>
+                {canPublish && (
+                  <button
+                    type="button"
+                    onClick={() => handleOpenEdit(item)}
+                    className="p-1.5 rounded-lg text-slate-500 hover:text-amber-700 hover:bg-amber-50 transition flex items-center gap-1 text-xs font-semibold"
+                    title="Edit Announcement"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    <span>Edit</span>
+                  </button>
+                )}
 
-                {onDeleteAnnouncement && (
+                {canPublish && onDeleteAnnouncement && (
                   <button
                     type="button"
                     onClick={() => setAnnouncementToDelete(item)}

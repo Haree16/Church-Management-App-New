@@ -93,6 +93,11 @@ export function isNotificationForUser(
     return false;
   }
 
+  // 2. Self-Created Suppression: Notifications created by the current user are for OTHER members (not the creator)
+  if (currentUserId && notification.createdByUserId && notification.createdByUserId === currentUserId) {
+    return false;
+  }
+
   const hasTargetUsers = Array.isArray(notification.targetUserIds) && notification.targetUserIds.length > 0;
   const hasTargetMembers = Array.isArray(notification.targetMemberIds) && notification.targetMemberIds.length > 0;
 

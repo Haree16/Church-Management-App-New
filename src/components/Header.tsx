@@ -9,7 +9,7 @@ import {
 import { AppTab } from './BottomNav';
 import { ChurchTenant, SaaSUser, ChurchModuleToggles, CompleteChurchSettings, AppNotification, Member } from '../types';
 import { isNotificationForUser, isNotificationReadByUser, getUnreadNotificationsCount } from '../utils/notificationUtils';
-import { getRoleConfig, canAccessChurchSettings } from '../utils/rbac';
+import { getRoleConfig, canAccessChurchSettings, canAccessAiPastor } from '../utils/rbac';
 import { UserAvatar } from './common/UserAvatar';
 
 interface HeaderProps {
@@ -21,6 +21,9 @@ interface HeaderProps {
   onOpenAddMember?: () => void;
   onOpenAddPrayer?: () => void;
   onOpenExportModal: () => void;
+  onOpenChurchAi?: () => void;
+  onOpenAiPastor?: () => void;
+  onOpenAiMinistry?: () => void;
   activeTab: AppTab;
   currentChurch?: ChurchTenant;
   currentUser?: SaaSUser;
@@ -93,6 +96,9 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAddMember,
   onOpenAddPrayer,
   onOpenExportModal,
+  onOpenChurchAi,
+  onOpenAiPastor,
+  onOpenAiMinistry,
   activeTab,
   currentChurch,
   currentUser,
@@ -311,22 +317,43 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Action Controls & User Profile Badge */}
         <div className="flex items-center space-x-2 ml-auto">
-          {roleConfig.allowedTabs.includes('saas') && onNavigateTab && (
+          {onOpenChurchAi && (
             <button
-              id="btn-header-saas-shortcut"
-              onClick={() => onNavigateTab('saas')}
-              className={`flex items-center space-x-1 font-semibold text-xs px-2.5 py-1.5 rounded-xl transition shadow-sm active:scale-95 ${
-                activeTab === 'saas'
-                  ? 'bg-purple-600 text-white ring-2 ring-purple-400 font-bold'
-                  : 'bg-purple-950/80 hover:bg-purple-900 text-purple-200 border border-purple-800'
-              }`}
-              title="Open Universal Multi-Church SaaS Management Console"
+              id="btn-header-church-ai"
+              onClick={onOpenChurchAi}
+              className="flex items-center space-x-1.5 font-bold text-xs px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white shadow-md active:scale-95 transition-all border border-purple-400/30"
+              title="Open Central Church AI Interface"
             >
-              <Building2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">SaaS Console</span>
-              <span className="sm:hidden">SaaS</span>
+              <Sparkles className="w-3.5 h-3.5 text-purple-200 animate-pulse" />
+              <span className="hidden sm:inline">Church AI</span>
             </button>
           )}
+
+          {canAccessAiPastor(currentUser?.role) && onOpenAiPastor && (
+            <button
+              id="btn-header-ai-pastor"
+              onClick={onOpenAiPastor}
+              className="flex items-center space-x-1.5 font-bold text-xs px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white shadow-md active:scale-95 transition-all border border-amber-400/30"
+              title="Open AI Pastor Leadership Assistant"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-200 animate-pulse" />
+              <span className="hidden sm:inline">AI Pastor</span>
+            </button>
+          )}
+
+          {onOpenAiMinistry && (
+            <button
+              id="btn-header-ai-ministry"
+              onClick={onOpenAiMinistry}
+              className="flex items-center space-x-1.5 font-bold text-xs px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-md active:scale-95 transition-all border border-indigo-400/30"
+              title="Consult AI Ministry Assistant"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-200 animate-pulse" />
+              <span className="hidden sm:inline">AI Ministry</span>
+            </button>
+          )}
+
+
 
 
           {/* Top Bell Icon Notification Button */}

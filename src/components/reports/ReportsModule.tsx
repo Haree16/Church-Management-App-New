@@ -17,12 +17,20 @@ import {
 } from 'lucide-react';
 import { canAccessAllChurchReports, getRoleConfig } from '../../utils/rbac';
 import { auditService } from '../../services/auditService';
+import { AttendanceInsightsDashboard } from './AttendanceInsightsDashboard';
+import { MemberEngagementDashboard } from './MemberEngagementDashboard';
+import { AutomatedAbsenceFollowUpDashboard } from './AutomatedAbsenceFollowUpDashboard';
+import { AiReportGenerator } from './AiReportGenerator';
 
 export type ReportCategory =
   | 'members'
   | 'families'
   | 'visitors'
   | 'attendance'
+  | 'attendance-insights'
+  | 'engagement'
+  | 'absence-followup'
+  | 'ai-reports'
   | 'ministries'
   | 'sundayschool'
   | 'volunteers'
@@ -83,6 +91,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
 
   // Active Category tab
   const [activeCategory, setActiveCategory] = useState<ReportCategory>(initialCategory);
+  const [attendanceSubTab, setAttendanceSubTab] = useState<'insights' | 'logs'>('insights');
 
   // Filters
   const [dateRange, setDateRange] = useState<ReportDateFilter>('this_month');
@@ -524,7 +533,11 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
             { id: 'members' as ReportCategory, label: 'Members', icon: Users },
             { id: 'families' as ReportCategory, label: 'Families', icon: Users },
             { id: 'visitors' as ReportCategory, label: 'Visitors', icon: UserPlus },
-            { id: 'attendance' as ReportCategory, label: 'Attendance', icon: UserCheck },
+            { id: 'attendance-insights' as ReportCategory, label: 'Attendance Insights', icon: BarChart3 },
+            { id: 'engagement' as ReportCategory, label: 'Member Engagement', icon: TrendingUp },
+            { id: 'absence-followup' as ReportCategory, label: 'Absence Follow-Up', icon: AlertTriangle },
+            { id: 'ai-reports' as ReportCategory, label: 'AI Report Generator', icon: Sparkles },
+            { id: 'attendance' as ReportCategory, label: 'Attendance Logs', icon: UserCheck },
             { id: 'ministries' as ReportCategory, label: 'Ministries', icon: Landmark },
             { id: 'sundayschool' as ReportCategory, label: 'Sunday School', icon: GraduationCap },
             { id: 'volunteers' as ReportCategory, label: 'Volunteers & Roster', icon: HeartHandshake },
@@ -981,8 +994,117 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
       {/* ----------------------------------------------------------------------- */}
       {/* REPORT 4: ATTENDANCE REPORT */}
       {/* ----------------------------------------------------------------------- */}
+      {/* ----------------------------------------------------------------------- */}
+      {/* REPORT 4: ATTENDANCE INSIGHTS & LOGS */}
+      {/* ----------------------------------------------------------------------- */}
+      {activeCategory === 'attendance-insights' && (
+        <AttendanceInsightsDashboard
+          currentChurch={currentChurch}
+          currentUser={currentUser}
+          members={members}
+          attendanceRecords={attendance}
+          sundaySchoolClasses={sundaySchoolClasses}
+          sundaySchoolStudents={sundaySchoolStudents}
+          ministries={ministries}
+          ministryMembers={ministryMembers}
+          ministryActivities={ministryActivities}
+          events={events}
+          churchSettings={churchSettings}
+          onNavigateTab={onNavigateTab}
+        />
+      )}
+
+      {activeCategory === 'engagement' && (
+        <MemberEngagementDashboard
+          currentChurch={currentChurch}
+          currentUser={currentUser}
+          members={members}
+          attendanceRecords={attendance}
+          ministries={ministries}
+          ministryMembers={ministryMembers}
+          ministryActivities={ministryActivities}
+          events={events}
+          roster={roster}
+          churchSettings={churchSettings}
+          onNavigateTab={onNavigateTab}
+        />
+      )}
+
+      {activeCategory === 'absence-followup' && (
+        <AutomatedAbsenceFollowUpDashboard
+          currentChurch={currentChurch}
+          currentUser={currentUser}
+          members={members}
+          attendance={attendance}
+          roster={roster}
+          events={events}
+          ministries={ministries}
+          onNavigateTab={onNavigateTab}
+        />
+      )}
+
+      {activeCategory === 'ai-reports' && (
+        <AiReportGenerator
+          currentChurch={currentChurch}
+          currentUser={currentUser}
+          members={members}
+          attendanceRecords={attendance}
+          sundaySchoolClasses={sundaySchoolClasses}
+          sundaySchoolStudents={sundaySchoolStudents}
+          ministries={ministries}
+          ministryMembers={ministryMembers}
+          ministryActivities={ministryActivities}
+          events={events}
+          roster={roster}
+          prayers={prayers}
+        />
+      )}
+
       {activeCategory === 'attendance' && (
         <div className="space-y-5">
+          {/* Sub-tab toggle */}
+          <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl w-fit border border-slate-200">
+            <button
+              onClick={() => setAttendanceSubTab('insights')}
+              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                attendanceSubTab === 'insights'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <BarChart3 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Insights & Analytics</span>
+            </button>
+            <button
+              onClick={() => setAttendanceSubTab('logs')}
+              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                attendanceSubTab === 'logs'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <UserCheck className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Service Logs Table</span>
+            </button>
+          </div>
+
+          {attendanceSubTab === 'insights' ? (
+            <AttendanceInsightsDashboard
+              currentChurch={currentChurch}
+              currentUser={currentUser}
+              members={members}
+              attendanceRecords={attendance}
+              sundaySchoolClasses={sundaySchoolClasses}
+              sundaySchoolStudents={sundaySchoolStudents}
+              ministries={ministries}
+              ministryMembers={ministryMembers}
+              ministryActivities={ministryActivities}
+              events={events}
+              churchSettings={churchSettings}
+              onNavigateTab={onNavigateTab}
+            />
+          ) : (
+            <>
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
@@ -1116,6 +1238,8 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
               </table>
             </div>
           </div>
+          </>
+          )}
         </div>
       )}
 

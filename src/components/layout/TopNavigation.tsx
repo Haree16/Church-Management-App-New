@@ -22,11 +22,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { GlobalSearchDialog } from '@/components/search/GlobalSearchDialog';
 import { CreateChurchDialog } from '@/components/church/CreateChurchDialog';
 
+import { canAccessAiPastor } from '@/utils/rbac';
+
 interface TopNavigationProps {
   onOpenMobileMenu: () => void;
+  onOpenChurchAi?: () => void;
+  onOpenAiPastor?: () => void;
+  onOpenAiMinistry?: () => void;
 }
 
-export function TopNavigation({ onOpenMobileMenu }: TopNavigationProps) {
+export function TopNavigation({ onOpenMobileMenu, onOpenChurchAi, onOpenAiPastor, onOpenAiMinistry }: TopNavigationProps) {
   const { user, profile, activeChurch, availableChurches, currentRole, switchRole, switchChurch, createChurch, setDemoUser, logout } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const navigate = useNavigate();
@@ -35,43 +40,38 @@ export function TopNavigation({ onOpenMobileMenu }: TopNavigationProps) {
 
   const currentRoleDef = currentRole ? ROLE_DEFINITIONS[currentRole] : null;
 
+  // Keyboard shortcut ⌘K for search
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setIsSearchOpen((prev) => !prev);
+        setIsSearchOpen((open) => !open);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
   }, []);
 
   return (
     <>
-      <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-slate-800 dark:bg-slate-900/95">
-        {/* Left section: Mobile menu trigger + Breadcrumbs */}
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={onOpenMobileMenu}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100 focus:outline-none lg:hidden dark:border-slate-800 dark:hover:bg-slate-800"
-          >
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Open navigation menu</span>
-          </button>
+      <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 px-4 sm:px-6 backdrop-blur-xs">
+        {/* Left Side: Mobile Menu Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden h-9 w-9 text-slate-600 dark:text-slate-300"
+          onClick={onOpenMobileMenu}
+        >
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle sidebar</span>
+        </Button>
 
-          <div className="hidden sm:block">
-            <Breadcrumbs />
-          </div>
-        </div>
-
-        {/* Middle / Right section: Global Search & Controls */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Global Search Button */}
+        {/* Global Search Bar Button */}
+        <div className="flex flex-1 items-center gap-2 max-w-md">
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 transition-colors text-xs"
+            className="flex h-9 w-full items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-xs text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
           >
             <Search className="h-3.5 w-3.5" />
             <span className="hidden md:inline">Search church records...</span>
@@ -79,6 +79,45 @@ export function TopNavigation({ onOpenMobileMenu }: TopNavigationProps) {
               ⌘K
             </kbd>
           </button>
+
+          {/* Church AI Quick Launcher */}
+          {onOpenChurchAi && (
+            <button
+              type="button"
+              onClick={onOpenChurchAi}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-900/10 dark:bg-purple-950/50 border border-purple-300 dark:border-purple-800 text-purple-800 dark:text-purple-300 hover:bg-purple-900/20 transition-colors text-xs font-semibold"
+              title="Open Central Church AI Interface"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400 animate-pulse" />
+              <span>Church AI</span>
+            </button>
+          )}
+
+          {/* AI Pastor Quick Launcher */}
+          {canAccessAiPastor(currentRole || undefined) && onOpenAiPastor && (
+            <button
+              type="button"
+              onClick={onOpenAiPastor}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-900/10 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-300 hover:bg-amber-900/20 transition-colors text-xs font-semibold"
+              title="Open AI Pastor Leadership Assistant"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 animate-pulse" />
+              <span className="hidden sm:inline">AI Pastor</span>
+            </button>
+          )}
+
+          {/* AI Ministry Assistant Quick Launcher */}
+          {onOpenAiMinistry && (
+            <button
+              type="button"
+              onClick={onOpenAiMinistry}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-900/10 dark:bg-indigo-950/50 border border-indigo-300 dark:border-indigo-800 text-indigo-800 dark:text-indigo-300 hover:bg-indigo-900/20 transition-colors text-xs font-semibold"
+              title="Consult AI Ministry Assistant"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400 animate-pulse" />
+              <span className="hidden sm:inline">AI Ministry</span>
+            </button>
+          )}
 
           {/* Church Switcher Dropdown */}
           <DropdownMenu>

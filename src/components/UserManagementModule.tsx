@@ -269,6 +269,7 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
       case 'AssistantPastor': return 'Assistant / Associate Pastor';
       case 'TreasurerStaff': return 'Church Office & Finance Staff';
       case 'MinistryLeader': return 'Worship & Ministry Leader';
+      case 'CellGroupLeader': return 'Cell Group Leader';
       case 'SundaySchoolTeacher': return 'Children Sunday School Teacher';
       case 'Member': return 'Church Member / Attender';
       case 'Volunteer': return 'Ministry Team Volunteer';
@@ -451,6 +452,7 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
               <option value="AssistantPastor">Assistant Pastor</option>
               <option value="TreasurerStaff">TreasurerStaff</option>
               <option value="MinistryLeader">MinistryLeader</option>
+              <option value="CellGroupLeader">Cell Group Leader</option>
               <option value="SundaySchoolTeacher">SundaySchoolTeacher</option>
               <option value="Member">Member</option>
               <option value="Volunteer">Volunteer</option>
@@ -505,7 +507,7 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {(['SuperAdmin', 'PastorAdmin', 'AssistantPastor', 'TreasurerStaff', 'MinistryLeader', 'SundaySchoolTeacher', 'Volunteer', 'Member'] as SaaSUserRole[]).map(r => {
+                {(['SuperAdmin', 'PastorAdmin', 'AssistantPastor', 'TreasurerStaff', 'MinistryLeader', 'CellGroupLeader', 'SundaySchoolTeacher', 'Volunteer', 'Member'] as SaaSUserRole[]).map(r => {
                   const cfg = ROLE_CONFIGS[r];
                   return (
                     <tr key={r} className="hover:bg-slate-50/80 transition">
@@ -671,15 +673,7 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                     )}
                   </button>
 
-                  {!isCurrentUser && isSuperAdmin && (
-                    <button
-                      onClick={() => onSwitchUser(user)}
-                      className="px-3 py-2 text-xs font-bold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white transition flex items-center justify-center gap-1 flex-1 shadow-sm"
-                    >
-                      <span>Impersonate</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  )}
+
                 </div>
               </div>
             );
@@ -775,16 +769,7 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
-                          {!isCurrentUser && isSuperAdmin && (
-                            <button
-                              onClick={() => onSwitchUser(user)}
-                              title="Switch into this user session"
-                              className="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-700 text-[11px] font-bold rounded-xl transition flex items-center gap-1"
-                            >
-                              <span>Switch</span>
-                              <ArrowRight className="w-3 h-3" />
-                            </button>
-                          )}
+
                         </div>
                       </td>
                     </tr>
@@ -902,7 +887,7 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                   Security Role & Access Permission <span className="text-rose-500">*</span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-52 overflow-y-auto p-1">
-                  {(['SuperAdmin', 'PastorAdmin', 'AssistantPastor', 'TreasurerStaff', 'MinistryLeader', 'SundaySchoolTeacher', 'Member', 'Volunteer'] as SaaSUserRole[])
+                  {(['SuperAdmin', 'PastorAdmin', 'AssistantPastor', 'TreasurerStaff', 'MinistryLeader', 'CellGroupLeader', 'SundaySchoolTeacher', 'Member', 'Volunteer'] as SaaSUserRole[])
                     .filter(roleKey => isSuperAdmin || roleKey !== 'SuperAdmin')
                     .map(roleKey => {
                     const cfg = ROLE_CONFIGS[roleKey];

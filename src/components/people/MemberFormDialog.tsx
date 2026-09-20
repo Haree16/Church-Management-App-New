@@ -517,6 +517,7 @@ export function MemberFormDialog({
                       <SelectContent>
                         <SelectItem value="member">Member</SelectItem>
                         <SelectItem value="volunteer">Volunteer</SelectItem>
+                        <SelectItem value="cell_group_leader">Cell Group Leader</SelectItem>
                         <SelectItem value="group_leader">Group Leader</SelectItem>
                         <SelectItem value="ministry_leader">Ministry Leader</SelectItem>
                         <SelectItem value="pastor">Pastor</SelectItem>

@@ -124,6 +124,7 @@ export function ConvertVisitorDialog({
                 </SelectTrigger>
                 <SelectContent className="bg-white text-slate-900 border border-slate-200 shadow-xl">
                   <SelectItem value="member">Church Member</SelectItem>
+                  <SelectItem value="cell_group_leader">Cell Group Leader</SelectItem>
                   <SelectItem value="group_leader">Small Group Leader</SelectItem>
                   <SelectItem value="ministry_leader">Ministry Leader</SelectItem>
                   <SelectItem value="volunteer">Ministry Volunteer</SelectItem>

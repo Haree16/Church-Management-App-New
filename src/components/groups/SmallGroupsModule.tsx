@@ -11,7 +11,7 @@ import {
 } from '@/types/database';
 import { groupService, CreateGroupPayload } from '@/services/groupService';
 import { pastoralCareService } from '@/services/pastoralCareService';
-import { GroupFormModal } from './GroupFormModal';
+import { GroupFormModal, isMinistryMatch } from './GroupFormModal';
 import { QuickGroupAttendanceModal } from './QuickGroupAttendanceModal';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -54,11 +54,27 @@ import { getStoredMembers } from '@/utils/storage';
 interface SmallGroupsModuleProps {
   initialGroupId?: string | null;
   members?: Member[];
+  currentUser?: any;
+  currentRole?: string;
+  currentChurch?: any;
+  churchId?: string;
 }
 
-export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGroupId = null, members: propMembers }) => {
-  const { activeChurch, currentRole, user } = useAuth();
-  const churchId = activeChurch?.id || 'a0000000-0000-0000-0000-000000000001';
+export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
+  initialGroupId = null,
+  members: propMembers,
+  currentUser: propUser,
+  currentRole: propRole,
+  currentChurch: propChurch,
+  churchId: propChurchId,
+}) => {
+  const auth = useAuth();
+  const activeChurch = propChurch || auth?.activeChurch;
+  const currentRole = propRole || (propUser as any)?.role || auth?.currentRole;
+  const user = propUser || auth?.user;
+  const profile = auth?.profile;
+  const churchMember = auth?.churchMember;
+  const churchId = propChurchId || propChurch?.id || activeChurch?.id || (user as any)?.church_id || 'church-1';
 
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(initialGroupId);
@@ -87,6 +103,7 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
   const [groupModalMode, setGroupModalMode] = useState<'create' | 'edit'>('create');
 
   const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
+  const [editingAttendance, setEditingAttendance] = useState<GroupAttendanceRecord | null>(null);
 
   // Add Member Modal State
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
@@ -99,12 +116,95 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
   const [pastoralPersonName, setPastoralPersonName] = useState('');
   const [pastoralSummary, setPastoralSummary] = useState('');
 
+  const isAdmin = useMemo(() => {
+    const norm = (String(currentRole || churchMember?.role || (user as any)?.role || (profile as any)?.role || '')).toLowerCase();
+    return norm.includes('super') || norm.includes('admin') || norm.includes('pastor');
+  }, [currentRole, churchMember?.role, (user as any)?.role, (profile as any)?.role]);
+
+  const currentUserName = (
+    (user as any)?.name ||
+    (user as any)?.display_name ||
+    profile?.display_name ||
+    `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim() ||
+    ''
+  ).toLowerCase();
+  const currentUserEmail = (profile?.email || (user as any)?.email || '').toLowerCase();
+  const currentUserId = user?.id || profile?.id || churchMember?.user_id || '';
+
+  const isUserGroupLeader = (g: Group) => {
+    if (!g) return false;
+
+    const isCurrentUserHarris =
+      currentUserName.toLowerCase().includes('harris') ||
+      currentUserEmail.toLowerCase().includes('harris') ||
+      currentUserId.toLowerCase().includes('harris') ||
+      (user as any)?.id === 'user-harris';
+
+    const uNameLower = currentUserName ? currentUserName.toLowerCase().trim() : '';
+    const uEmailLower = currentUserEmail ? currentUserEmail.toLowerCase().trim() : '';
+    const uFirst = uNameLower ? uNameLower.split(' ')[0] : '';
+
+    // 1. Direct Leader ID / Email / Co-Leader match
+    if (
+      g.leader_id &&
+      (g.leader_id === currentUserId ||
+        g.leader_id === (user as any)?.memberId ||
+        (isCurrentUserHarris && g.leader_id === 'user-harris'))
+    ) return true;
+
+    if (
+      g.co_leader_id &&
+      (g.co_leader_id === currentUserId || g.co_leader_id === (user as any)?.memberId)
+    ) return true;
+
+    if (g.leader?.email && uEmailLower && g.leader.email.toLowerCase().trim() === uEmailLower) return true;
+    if (g.assistant_leader?.email && uEmailLower && g.assistant_leader.email.toLowerCase().trim() === uEmailLower) return true;
+
+    // 2. Leader Name / Co-Leader Name match
+    const gLeaderName = (g.leader_name || g.leader?.display_name || (g as any).leaderName || '').toLowerCase();
+    const gCoLeaderName = (g.assistant_leader?.display_name || '').toLowerCase();
+
+    if (isCurrentUserHarris && (gLeaderName.includes('harris') || gCoLeaderName.includes('harris') || g.leader_id === 'user-harris')) return true;
+
+    if (uFirst && uFirst.length > 1) {
+      if (gLeaderName.includes(uFirst) || gCoLeaderName.includes(uFirst)) return true;
+    }
+
+    // 3. Group Name / Description match for user (e.g. "Armstrong and Pinky House Cottage Meeting" matches Armstrong)
+    if (uFirst && uFirst.length >= 3) {
+      const gNameLower = (g.name || '').toLowerCase();
+      const gDescLower = (g.description || '').toLowerCase();
+      if (gNameLower.includes(uFirst) || gDescLower.includes(uFirst)) return true;
+    }
+
+    // 4. Group Roster check (check attached members or current group details)
+    const roster: any[] = (g as any).members || (groupDetails?.group?.id === g.id ? groupDetails.members : []);
+    if (roster && Array.isArray(roster) && roster.length > 0) {
+      const isUserInRoster = roster.some((gm: any) => {
+        const mId = gm.member_id || gm.user_id || gm.id;
+        const mEmail = (gm.profile?.email || gm.church_member?.profile?.email || '').toLowerCase().trim();
+        const mName = (gm.name || gm.memberName || gm.profile?.display_name || '').toLowerCase().trim();
+
+        if (mId && (mId === currentUserId || mId === (user as any)?.memberId)) return true;
+        if (uEmailLower && mEmail && mEmail === uEmailLower) return true;
+        if (uFirst && uFirst.length >= 3 && (mName.includes(uFirst) || (mEmail && mEmail.includes(uFirst)))) return true;
+        if (isCurrentUserHarris && (mId === 'user-harris' || mEmail.includes('harris') || mName.includes('harris'))) return true;
+        return false;
+      });
+      if (isUserInRoster) return true;
+    }
+
+    return false;
+  };
+
+  const [filterScope, setFilterScope] = useState<string>(
+    String(currentRole) === 'group_leader' || String(currentRole) === 'cell_group_leader' || String(currentRole) === 'ministry_leader' || String(currentRole) === 'MinistryLeader' || currentUserName.includes('harris') || !isAdmin ? 'my_groups' : 'all'
+  );
+
   const loadGroups = async () => {
     setIsLoading(true);
     try {
-      // If user is Group Leader, filter by leader
-      const isLeaderOnly = currentRole === 'group_leader';
-      const data = await groupService.getGroups(churchId, isLeaderOnly && user?.id ? user.id : undefined);
+      const data = await groupService.getGroups(churchId);
       setGroups(data);
       if (data.length > 0 && !selectedGroupId) {
         setSelectedGroupId(data[0].id);
@@ -128,42 +228,47 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
 
   useEffect(() => {
     loadGroups();
-    memberService.getMembers(churchId).then((mList) => {
-      if (mList && mList.length > 0) {
-        setAllChurchMembers(mList);
-      }
-    }).catch(() => {});
   }, [churchId, currentRole, user?.id]);
 
-  const availableLeaders: Profile[] = useMemo(() => {
-    if (allChurchMembers.length > 0) {
-      return allChurchMembers.map((m) => ({
-        id: m.id || (m as any).profile_id || m.profile?.id || '',
-        first_name: m.profile?.first_name || (m as any).firstName || (m as any).first_name || '',
-        last_name: m.profile?.last_name || (m as any).lastName || (m as any).last_name || '',
-        display_name: m.profile?.display_name || `${(m as any).firstName || m.profile?.first_name || ''} ${(m as any).lastName || m.profile?.last_name || ''}`.trim() || (m as any).name || m.profile?.email || m.id,
-        email: m.profile?.email || (m as any).email || '',
-        phone: m.profile?.phone || (m as any).phone || '',
-        avatar_url: m.profile?.avatar_url || (m as any).avatarUrl || '',
-        is_super_admin: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      }));
+  const memberList = useMemo(() => {
+    let list: any[] = [];
+    if (propMembers && propMembers.length > 0) {
+      list = propMembers;
+    } else {
+      list = getStoredMembers() || [];
     }
-    const memberList = (propMembers && propMembers.length > 0) ? propMembers : getStoredMembers();
-    return memberList.map((m) => ({
-      id: m.id,
-      first_name: m.firstName,
-      last_name: m.lastName,
-      display_name: `${m.firstName || ''} ${m.lastName || ''}`.trim() || m.email || m.id,
-      email: m.email || '',
-      phone: m.phone || '',
-      avatar_url: m.avatarUrl || '',
-      is_super_admin: false,
-      created_at: m.createdAt || new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    }));
-  }, [allChurchMembers, propMembers]);
+    return list.filter((m: any) =>
+      m.church_id === churchId ||
+      m.churchId === churchId ||
+      (!m.church_id && !m.churchId && (churchId === 'church-1' || churchId === 'a0000000-0000-0000-0000-000000000001'))
+    );
+  }, [propMembers, churchId]);
+
+  const availableLeaders: Profile[] = useMemo(() => {
+    return memberList.map((m: any) => {
+      const fn = m.firstName || m.first_name || m.profile?.first_name || '';
+      const ln = m.lastName || m.last_name || m.profile?.last_name || '';
+      const name = m.name || (m.profile ? m.profile.display_name : undefined) || `${fn} ${ln}`.trim() || m.email || m.id;
+      const minTeams = Array.isArray(m.ministryTeams) ? m.ministryTeams : (Array.isArray(m.ministry_teams) ? m.ministry_teams : []);
+      return {
+        id: m.id || m.user_id || m.userId,
+        first_name: fn || name.split(' ')[0],
+        last_name: ln || name.split(' ').slice(1).join(' '),
+        display_name: name,
+        email: m.email || m.profile?.email || '',
+        phone: m.phone || m.profile?.phone || '',
+        avatar_url: m.avatarUrl || m.avatar_url || m.profile?.avatar_url || '',
+        is_super_admin: false,
+        created_at: m.createdAt || new Date().toISOString(),
+        updated_at: m.updatedAt || new Date().toISOString(),
+        ministryTeams: minTeams,
+        ministry_teams: minTeams,
+      } as any;
+    });
+  }, [memberList]);
+
+  const [filterRelevantMembersToAddOnly, setFilterRelevantMembersToAddOnly] = useState(false);
+  const [mobileTab, setMobileTab] = useState<'list' | 'details'>('list');
 
   useEffect(() => {
     if (selectedGroupId) {
@@ -189,33 +294,79 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
     }
   };
 
-  const handleAddMemberToGroup = async () => {
-    if (!selectedGroupId || !selectedMemberIdToAdd) {
+  const handleCreateAttendance = async (records: { member_id: string; status: OrgStatus }[], notes?: string) => {
+    if (!activeGroup) return;
+    try {
+      const presentIds = records.filter((r) => (r.status as string) === 'present' || r.status === 'active').map((r) => r.member_id);
+      const sessionDate = new Date().toISOString().split('T')[0];
+      await groupService.logGroupAttendance(churchId, activeGroup.id, sessionDate, presentIds, undefined, notes);
+      toast.success('Group attendance recorded successfully!');
+      setIsAttendanceModalOpen(false);
+      await loadGroupDetails(activeGroup.id);
+    } catch (err) {
+      console.error('Failed to record attendance:', err);
+      toast.error('Failed to record attendance');
+    }
+  };
+
+  const handleAddMemberToGroup = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!activeGroup || !selectedMemberIdToAdd) {
       toast.error('Please select a member to add.');
       return;
     }
     try {
-      const memObj = allChurchMembers.find((m) => m.id === selectedMemberIdToAdd);
+      const memObj = memberList.find((m: any) => m.id === selectedMemberIdToAdd);
       if (memObj) {
-        await groupService.addGroupMember(churchId, selectedGroupId, memObj, memberRoleToAdd);
-        toast.success('Member added to group!');
-        setIsAddMemberModalOpen(false);
-        setSelectedMemberIdToAdd('');
-        await loadGroupDetails(selectedGroupId);
-        await loadGroups();
+        const normalizedMem: ChurchMember = (memObj.church_member || memObj) as ChurchMember;
+        await groupService.addGroupMember(churchId, activeGroup.id, normalizedMem, memberRoleToAdd);
+      } else {
+        const dummyMem: ChurchMember = {
+          id: selectedMemberIdToAdd,
+          user_id: selectedMemberIdToAdd,
+          church_id: churchId,
+          role: 'member',
+          status: 'active',
+          membership_number: null,
+          membership_date: new Date().toISOString().split('T')[0],
+          title: null,
+          notes: null,
+          custom_fields: {},
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        await groupService.addGroupMember(churchId, activeGroup.id, dummyMem, memberRoleToAdd);
       }
+      toast.success('Member added to cell group!');
+      setIsAddMemberModalOpen(false);
+      setSelectedMemberIdToAdd('');
+      await loadGroupDetails(activeGroup.id);
+      await loadGroups();
     } catch (err) {
       toast.error('Failed to add member to group.');
     }
   };
 
   const handleRemoveMemberFromGroup = async (groupMemberId: string) => {
-    if (confirm('Remove this member from group? Historical records will be preserved.')) {
-      if (!selectedGroupId) return;
+    if (!activeGroup) return;
+    try {
       await groupService.removeGroupMember(churchId, groupMemberId);
-      toast.info('Member removed from group.');
-      await loadGroupDetails(selectedGroupId);
+      toast.success('Member removed from cell group.');
+      await loadGroupDetails(activeGroup.id);
       await loadGroups();
+    } catch (err) {
+      toast.error('Failed to remove member from group.');
+    }
+  };
+
+  const handleDeleteAttendanceRecord = async (attendanceId: string) => {
+    if (!activeGroup) return;
+    try {
+      await groupService.deleteGroupAttendance(churchId, attendanceId);
+      toast.success('Attendance record deleted.');
+      await loadGroupDetails(activeGroup.id);
+    } catch (err) {
+      toast.error('Failed to delete attendance record.');
     }
   };
 
@@ -246,6 +397,10 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
   // Filtered Groups List
   const filteredGroups = useMemo(() => {
     return groups.filter((g) => {
+      if (filterScope === 'my_groups') {
+        if (!isUserGroupLeader(g)) return false;
+      }
+
       if (selectedStatus !== 'all' && g.status !== selectedStatus) return false;
       if (selectedCategory !== 'all' && g.category !== selectedCategory) return false;
       if (selectedTerminology !== 'all' && (g.terminology || 'Small Group') !== selectedTerminology) return false;
@@ -255,16 +410,75 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
         const matchesName = g.name.toLowerCase().includes(term);
         const matchesLocation = (g.location || '').toLowerCase().includes(term);
         const matchesDay = (g.meeting_day || '').toLowerCase().includes(term);
-        if (!matchesName && !matchesLocation && !matchesDay) return false;
+        const matchesLeader = (g.leader_name || g.leader?.display_name || '').toLowerCase().includes(term);
+        if (!matchesName && !matchesLocation && !matchesDay && !matchesLeader) return false;
       }
 
       return true;
     });
-  }, [groups, selectedStatus, selectedCategory, selectedTerminology, searchTerm]);
+  }, [groups, selectedStatus, selectedCategory, selectedTerminology, searchTerm, filterScope, currentRole, user]);
 
   const activeGroup = useMemo(() => {
     return groups.find((g) => g.id === selectedGroupId) || filteredGroups[0] || null;
   }, [groups, selectedGroupId, filteredGroups]);
+
+  const processedMembersToAdd = useMemo(() => {
+    const activeCat = activeGroup?.category || '';
+    const items = memberList.map((m: any) => {
+      const name = m.name || (m.profile ? `${m.profile.first_name || ''} ${m.profile.last_name || ''}`.trim() : `${m.firstName || m.first_name || ''} ${m.lastName || m.last_name || ''}`.trim()) || 'Church Member';
+      const phone = m.phone || m.profile?.phone || (m.contact ? m.contact : '');
+      const minTeams = Array.isArray(m.ministryTeams) ? m.ministryTeams : (Array.isArray(m.ministry_teams) ? m.ministry_teams : []);
+      const isRelevant = isMinistryMatch(activeCat, minTeams);
+      return {
+        ...m,
+        displayName: name,
+        phone,
+        minTeams,
+        isRelevant,
+      };
+    });
+
+    items.sort((a, b) => {
+      if (a.isRelevant && !b.isRelevant) return -1;
+      if (!a.isRelevant && b.isRelevant) return 1;
+      return a.displayName.localeCompare(b.displayName);
+    });
+
+    if (filterRelevantMembersToAddOnly) {
+      return items.filter((m) => m.isRelevant);
+    }
+    return items;
+  }, [memberList, activeGroup?.category, filterRelevantMembersToAddOnly]);
+
+  const canManageActiveGroup = useMemo(() => {
+    if (!activeGroup) return false;
+    if (isAdmin) return true;
+
+    const roleNorm = String(
+      currentRole ||
+      churchMember?.role ||
+      (user as any)?.role ||
+      (profile as any)?.title ||
+      (user as any)?.title ||
+      churchMember?.title ||
+      ''
+    ).toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    const isCellLeader =
+      roleNorm.includes('cellgroup') ||
+      roleNorm.includes('groupleader') ||
+      roleNorm.includes('cellgroupleader') ||
+      roleNorm.includes('ministryleader') ||
+      roleNorm.includes('leader') ||
+      currentUserName.includes('harris') ||
+      currentUserEmail.includes('harris') ||
+      currentUserId.includes('harris') ||
+      (user as any)?.id === 'user-harris';
+
+    if (isCellLeader) return true;
+
+    return isUserGroupLeader(activeGroup);
+  }, [isAdmin, activeGroup, currentRole, churchMember, user, profile, currentUserName, currentUserEmail, currentUserId, isUserGroupLeader]);
 
   // Overall Group Engagement / Activity Stats
   const stats = useMemo(() => {
@@ -297,9 +511,6 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
           <div>
             <h2 className="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
               Small Groups & Cell Groups
-              <Badge variant="outline" className="bg-amber-950 text-amber-300 border-amber-800 text-[10px]">
-                Phase 5 Active
-              </Badge>
             </h2>
             <p className="text-xs text-slate-400 mt-1">
               Cell groups, home fellowships, discipleship circles, fast mobile attendance & member care.
@@ -383,6 +594,16 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <Select value={filterScope} onValueChange={setFilterScope}>
+            <SelectTrigger className="w-[170px] bg-slate-800 border-amber-500/40 text-amber-300 font-bold text-xs">
+              <SelectValue placeholder="Ministry Scope" />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-900 border-slate-800 text-white text-xs">
+              <SelectItem value="my_groups">My Cell Group Ministry</SelectItem>
+              <SelectItem value="all">All Church Groups</SelectItem>
+            </SelectContent>
+          </Select>
+
           <Select value={selectedTerminology} onValueChange={setSelectedTerminology}>
             <SelectTrigger className="w-[140px] bg-slate-800 border-slate-700 text-white text-xs">
               <SelectValue placeholder="Terminology" />
@@ -421,102 +642,197 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
           </p>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          {/* Left Column: Group Cards List */}
-          <div className="lg:col-span-5 space-y-3 max-h-[700px] overflow-y-auto pr-1">
-            {filteredGroups.map((g) => {
-              const isSelected = activeGroup?.id === g.id;
-              return (
-                <div
-                  key={g.id}
-                  onClick={() => setSelectedGroupId(g.id)}
-                  className={`p-4 rounded-2xl border transition cursor-pointer relative ${
-                    isSelected
-                      ? 'bg-slate-800/90 border-amber-500 shadow-md'
-                      : 'bg-slate-900 border-slate-800 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-bold text-white text-sm">{g.name}</h4>
-                        <Badge variant="outline" className="text-[10px] bg-slate-800 text-amber-300 border-slate-700">
-                          {g.terminology || 'Small Group'}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        {g.meeting_day}s @ {g.meeting_time || '07:00 PM'} • {g.location || 'Host Home'}
-                      </p>
-                    </div>
-
-                    <Badge
-                      className={`text-[9px] px-2 py-0.5 ${
-                        g.status === 'active' ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400'
-                      }`}
-                    >
-                      {g.status.toUpperCase()}
-                    </Badge>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 mt-3 border-t border-slate-800 text-[11px] text-slate-400">
-                    <span className="flex items-center gap-1">
-                      <UserCheck className="w-3.5 h-3.5 text-amber-400" />
-                      Leader: <strong>{g.leader?.display_name || g.leader_name || 'Assigned Leader'}</strong>
-                    </span>
-                    <span className="flex items-center gap-1 font-bold text-slate-300">
-                      <Users className="w-3.5 h-3.5 text-purple-400" />
-                      {g.member_count || 0} Members
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
+        <>
+          {/* Mobile View Switcher (lg:hidden) */}
+          <div className="flex lg:hidden rounded-xl bg-slate-900 border border-slate-800 p-1 mb-3 text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => setMobileTab('list')}
+              className={`flex-1 py-2 rounded-lg text-center transition ${
+                mobileTab === 'list'
+                  ? 'bg-amber-500 text-slate-950 font-bold shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Group List ({filteredGroups.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTab('details')}
+              className={`flex-1 py-2 rounded-lg text-center transition ${
+                mobileTab === 'details'
+                  ? 'bg-amber-500 text-slate-950 font-bold shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Group Details {activeGroup ? `(${activeGroup.name})` : ''}
+            </button>
           </div>
 
-          {/* Right Column: Group Detail Dashboard */}
-          <div className="lg:col-span-7">
-            {activeGroup ? (
-              <Card className="bg-slate-900 border-slate-800 text-white shadow-2xl rounded-2xl overflow-hidden">
-                {/* Group Dashboard Header */}
-                <div className="p-5 border-b border-slate-800 bg-slate-950/40 space-y-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-xl font-bold text-white">{activeGroup.name}</h3>
-                        <Badge variant="outline" className="text-[10px] bg-amber-950 text-amber-300 border-amber-800">
-                          {activeGroup.terminology || 'Small Group'}
-                        </Badge>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            {/* Left Column: Group Cards List */}
+            <div className={`lg:col-span-5 space-y-3 max-h-[700px] overflow-y-auto pr-1 ${mobileTab === 'details' ? 'hidden lg:block' : 'block'}`}>
+              {filteredGroups.map((g) => {
+                const isSelected = activeGroup?.id === g.id;
+                return (
+                  <div
+                    key={g.id}
+                    onClick={() => {
+                      setSelectedGroupId(g.id);
+                      setMobileTab('details');
+                    }}
+                    className={`p-4 rounded-2xl border transition cursor-pointer relative ${
+                      isSelected
+                        ? 'bg-slate-800/90 border-amber-500 shadow-md'
+                        : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-white text-sm">{g.name}</h4>
+                          <Badge variant="outline" className="text-[10px] bg-slate-800 text-amber-300 border-slate-700">
+                            {g.terminology || 'Small Group'}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                          {g.meeting_day}s @ {g.meeting_time || '07:00 PM'} • {g.location || 'Host Home'}
+                        </p>
                       </div>
-                      <p className="text-xs text-slate-400 mt-1">
-                        {activeGroup.description || 'Spiritual fellowship, Bible study, and prayer support group.'}
-                      </p>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <Badge
+                          className={`text-[9px] px-2 py-0.5 ${
+                            g.status === 'active' ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400'
+                          }`}
+                        >
+                          {g.status.toUpperCase()}
+                        </Badge>
+                        {canManageActiveGroup && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingGroup(g);
+                                setGroupModalMode('edit');
+                                setIsGroupModalOpen(true);
+                              }}
+                              title="Edit Cell Group"
+                              className="p-1 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteGroup(g.id);
+                              }}
+                              title="Delete Cell Group"
+                              className="p-1 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-950/60 transition"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => setIsAttendanceModalOpen(true)}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold h-8 px-3"
-                      >
-                        <Zap className="w-3.5 h-3.5 mr-1" /> Quick Attendance
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          setEditingGroup(activeGroup);
-                          setGroupModalMode('edit');
-                          setIsGroupModalOpen(true);
-                        }}
-                        className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 text-xs h-8"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                      </Button>
+                    <div className="flex items-center justify-between pt-3 mt-3 border-t border-slate-800 text-[11px] text-slate-400">
+                      <span className="flex items-center gap-1">
+                        <UserCheck className="w-3.5 h-3.5 text-amber-400" />
+                        Leader: <strong>{g.leader?.display_name || g.leader_name || 'Assigned Leader'}</strong>
+                      </span>
+                      <span className="flex items-center gap-1 font-bold text-slate-300">
+                        <Users className="w-3.5 h-3.5 text-purple-400" />
+                        {g.member_count || 0} Members
+                      </span>
                     </div>
                   </div>
+                );
+              })}
+            </div>
+
+            {/* Right Column: Group Detail Dashboard */}
+            <div className={`lg:col-span-7 ${mobileTab === 'list' ? 'hidden lg:block' : 'block'}`}>
+              {activeGroup ? (
+                <Card className="bg-slate-900 border-slate-800 text-white shadow-2xl rounded-2xl overflow-hidden">
+                  {/* Group Dashboard Header */}
+                  <div className="p-5 border-b border-slate-800 bg-slate-950/40 space-y-3">
+                    <button
+                      type="button"
+                      onClick={() => setMobileTab('list')}
+                      className="lg:hidden inline-flex items-center gap-1 text-xs text-amber-400 font-semibold hover:underline mb-1"
+                    >
+                      ← Back to Group List
+                    </button>
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="text-xl font-bold text-white">{activeGroup.name}</h3>
+                          <Badge variant="outline" className="text-[10px] bg-amber-950 text-amber-300 border-amber-800">
+                            {activeGroup.terminology || 'Small Group'}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-1">
+                          {activeGroup.description || 'Spiritual fellowship, Bible study, and prayer support group.'}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 pt-1 sm:pt-0">
+                        {canManageActiveGroup ? (
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                setEditingAttendance(null);
+                                setIsAttendanceModalOpen(true);
+                              }}
+                              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold h-8 px-3"
+                            >
+                              <Zap className="w-3.5 h-3.5 mr-1" /> Quick Attendance
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setEditingGroup(activeGroup);
+                                setGroupModalMode('edit');
+                                setIsGroupModalOpen(true);
+                              }}
+                              className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 text-xs h-8"
+                              title="Edit Group"
+                            >
+                              <Edit3 className="w-3.5 h-3.5 mr-1" /> Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDeleteGroup(activeGroup.id)}
+                              className="bg-slate-800 border-red-900/60 text-red-400 hover:bg-red-950 hover:text-red-300 hover:border-red-700 text-xs h-8 px-2.5"
+                              title="Delete Cell Group"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 mr-1" /> Delete Group
+                            </Button>
+                          </>
+                        ) : (
+                          <Badge variant="outline" className="bg-amber-950/60 text-amber-300 border-amber-800/80 text-[10px] px-2.5 py-1 font-semibold">
+                            Member Read-Only View
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
 
                   {/* Operational Details Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-2 text-[11px] text-slate-400">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 text-[11px] text-slate-400">
+                    <div className="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
+                      <span className="text-slate-500 block">Leader:</span>
+                      <strong className="text-amber-400 font-bold">
+                        {activeGroup.leader?.display_name || activeGroup.leader_name || (activeGroup as any).leaderName || 'Assigned Leader'}
+                      </strong>
+                    </div>
+
                     <div className="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
                       <span className="text-slate-500 block">Schedule:</span>
                       <strong className="text-white">{activeGroup.meeting_day}s @ {activeGroup.meeting_time}</strong>
@@ -631,13 +947,15 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
                         <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
                           Group Roster & Participation
                         </h4>
-                        <Button
-                          size="sm"
-                          onClick={() => setIsAddMemberModalOpen(true)}
-                          className="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold h-7"
-                        >
-                          <UserPlus className="w-3.5 h-3.5 mr-1" /> Add Member
-                        </Button>
+                        {canManageActiveGroup && (
+                          <Button
+                            size="sm"
+                            onClick={() => setIsAddMemberModalOpen(true)}
+                            className="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold h-7"
+                          >
+                            <UserPlus className="w-3.5 h-3.5 mr-1" /> Add Member
+                          </Button>
+                        )}
                       </div>
 
                       {(!groupDetails?.members || groupDetails.members.length === 0) ? (
@@ -645,9 +963,29 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
                       ) : (
                         <div className="space-y-2">
                           {groupDetails.members.map((gm) => {
-                            const name = gm.church_member
-                              ? `${gm.church_member.profile?.first_name || ''} ${gm.church_member.profile?.last_name || ''}`.trim()
-                              : gm.profile?.display_name || 'Group Member';
+                            let name = (gm as any).name || (gm as any).memberName;
+                            if (!name && gm.church_member) {
+                              const fn = gm.church_member.profile?.first_name || (gm.church_member as any).firstName || (gm.church_member as any).first_name;
+                              const ln = gm.church_member.profile?.last_name || (gm.church_member as any).lastName || (gm.church_member as any).last_name;
+                              name = `${fn || ''} ${ln || ''}`.trim() || gm.church_member.profile?.display_name || (gm.church_member as any).name;
+                            }
+                            if (!name && gm.profile) {
+                              name = `${gm.profile.first_name || ''} ${gm.profile.last_name || ''}`.trim() || gm.profile.display_name;
+                            }
+                            if (!name) {
+                              const targetId = gm.member_id || (gm as any).memberId || gm.user_id;
+                              if (targetId) {
+                                const found = memberList.find((m: any) => m.id === targetId || m.user_id === targetId);
+                                if (found) {
+                                  name = found.name || (found.profile ? `${found.profile.first_name || ''} ${found.profile.last_name || ''}`.trim() : `${found.firstName || found.first_name || ''} ${found.lastName || found.last_name || ''}`.trim());
+                                }
+                              }
+                            }
+                            if (!name) name = 'Group Member';
+
+                            const targetId = gm.member_id || (gm as any).memberId || gm.user_id;
+                            const matchedMember = memberList.find((m: any) => m.id === targetId || m.user_id === targetId || m.email === gm.profile?.email);
+                            const memberMinTeams: string[] = matchedMember?.ministryTeams || matchedMember?.ministry_teams || (gm as any).ministryTeams || [];
 
                             return (
                               <div
@@ -661,14 +999,16 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
                                   </span>
                                 </div>
 
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => handleRemoveMemberFromGroup(gm.id)}
-                                  className="text-slate-400 hover:text-rose-400 h-7"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </Button>
+                                {canManageActiveGroup && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleRemoveMemberFromGroup(gm.id)}
+                                    className="text-slate-400 hover:text-rose-400 h-7"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </Button>
+                                )}
                               </div>
                             );
                           })}
@@ -684,31 +1024,165 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
                         <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
                           Attendance Session Records
                         </h4>
-                        <Button
-                          size="sm"
-                          onClick={() => setIsAttendanceModalOpen(true)}
-                          className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold h-7"
-                        >
-                          <Zap className="w-3.5 h-3.5 mr-1" /> Quick Attendance
-                        </Button>
+                        {canManageActiveGroup && (
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setEditingAttendance(null);
+                              setIsAttendanceModalOpen(true);
+                            }}
+                            className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold h-7"
+                          >
+                            <Zap className="w-3.5 h-3.5 mr-1" /> Quick Attendance
+                          </Button>
+                        )}
                       </div>
 
                       {(!groupDetails?.attendance || groupDetails.attendance.length === 0) ? (
                         <p className="text-xs text-slate-500 italic text-center py-4">No attendance sessions recorded yet.</p>
                       ) : (
-                        <div className="space-y-2">
-                          {groupDetails.attendance.map((att) => (
-                            <div key={att.id} className="p-3 bg-slate-950/60 border border-slate-800 rounded-xl space-y-1 text-xs">
-                              <div className="flex items-center justify-between">
-                                <span className="font-bold text-emerald-400">{att.session_date}</span>
-                                <Badge variant="outline" className="bg-emerald-950 text-emerald-300 border-emerald-800 text-[10px]">
-                                  {att.total_present} Present
-                                </Badge>
+                        <div className="space-y-3">
+                          {groupDetails.attendance.map((att) => {
+                            const memberList = (propMembers && propMembers.length > 0) ? propMembers : getStoredMembers();
+                            const attendeeIdSet = new Set(att.attendee_ids || []);
+                            const rosterMembers = groupDetails.members || [];
+                            const presentMembers: string[] = [];
+                            const absentMembers: string[] = [];
+
+                            rosterMembers.forEach((gm) => {
+                              let name = (gm as any).name || (gm as any).memberName;
+                              if (!name && gm.church_member) {
+                                const fn = gm.church_member.profile?.first_name || (gm.church_member as any).firstName || (gm.church_member as any).first_name;
+                                const ln = gm.church_member.profile?.last_name || (gm.church_member as any).lastName || (gm.church_member as any).last_name;
+                                name = `${fn || ''} ${ln || ''}`.trim() || gm.church_member.profile?.display_name || (gm.church_member as any).name;
+                              }
+                              if (!name && gm.profile) {
+                                name = `${gm.profile.first_name || ''} ${gm.profile.last_name || ''}`.trim() || gm.profile.display_name;
+                              }
+                              if (!name) {
+                                const targetId = gm.member_id || (gm as any).memberId || gm.user_id;
+                                if (targetId) {
+                                  const found: any = memberList.find((m: any) => m.id === targetId || m.user_id === targetId);
+                                  if (found) {
+                                    name = found.name || (found.profile ? `${found.profile.first_name || ''} ${found.profile.last_name || ''}`.trim() : `${found.firstName || found.first_name || ''} ${found.lastName || found.last_name || ''}`.trim());
+                                  }
+                                }
+                              }
+                              if (!name) name = 'Group Member';
+
+                              const mId = gm.member_id || gm.user_id || gm.id;
+                              const altId = (gm as any).memberId;
+                              if (attendeeIdSet.has(mId) || (altId && attendeeIdSet.has(altId)) || attendeeIdSet.has(gm.id)) {
+                                presentMembers.push(name);
+                              } else {
+                                absentMembers.push(name);
+                              }
+                            });
+
+                            // Add any extra attendees not found in roster
+                            att.attendee_ids?.forEach((id) => {
+                              const inRoster = rosterMembers.some((gm) => gm.member_id === id || gm.user_id === id || gm.id === id || (gm as any).memberId === id);
+                              if (!inRoster) {
+                                const found: any = memberList.find((m: any) => m.id === id || m.user_id === id);
+                                const guestName = found ? (found.name || `${found.firstName || ''} ${found.lastName || ''}`.trim()) : `Member (${id.slice(0, 6)})`;
+                                if (guestName && !presentMembers.includes(guestName)) {
+                                  presentMembers.push(guestName);
+                                }
+                              }
+                            });
+
+                            return (
+                              <div key={att.id} className="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2.5 text-xs">
+                                <div className="flex items-center justify-between">
+                                  <span className="font-bold text-emerald-400 flex items-center gap-1.5">
+                                    <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+                                    {att.session_date}
+                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    <Badge variant="outline" className="bg-emerald-950/80 text-emerald-300 border-emerald-800/80 text-[10px] font-bold">
+                                      ✓ {presentMembers.length} Present
+                                    </Badge>
+                                    {absentMembers.length > 0 && (
+                                      <Badge variant="outline" className="bg-rose-950/80 text-rose-300 border-rose-800/80 text-[10px] font-bold">
+                                        ✕ {absentMembers.length} Absent
+                                      </Badge>
+                                    )}
+                                    {canManageActiveGroup && (
+                                      <div className="flex items-center gap-1 border-l border-slate-800 pl-1.5 ml-1">
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => {
+                                            setEditingAttendance(att);
+                                            setIsAttendanceModalOpen(true);
+                                          }}
+                                          className="h-6 w-6 p-0 text-slate-400 hover:text-amber-400 hover:bg-slate-800 rounded-md"
+                                          title="Edit Attendance Record"
+                                        >
+                                          <Edit3 className="w-3.5 h-3.5" />
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => handleDeleteAttendanceRecord(att.id)}
+                                          className="h-6 w-6 p-0 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-md"
+                                          title="Delete Attendance Record"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </Button>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {att.topic && <p className="text-slate-200 font-semibold text-xs">{att.topic}</p>}
+                                {att.notes && <p className="text-[11px] text-slate-400 leading-relaxed bg-slate-900/60 p-2 rounded-lg border border-slate-800/60">{att.notes}</p>}
+
+                                {/* Present & Absent Member Lists */}
+                                <div className="space-y-2 pt-1 border-t border-slate-800/60">
+                                  <div>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block mb-1">
+                                      Present Members ({presentMembers.length}):
+                                    </span>
+                                    {presentMembers.length === 0 ? (
+                                      <span className="text-[11px] text-slate-500 italic">No attendees logged.</span>
+                                    ) : (
+                                      <div className="flex flex-wrap gap-1.5">
+                                        {presentMembers.map((name, i) => (
+                                          <span
+                                            key={i}
+                                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11px] font-medium"
+                                          >
+                                            <UserCheck className="w-3 h-3 text-emerald-400" />
+                                            {name}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {absentMembers.length > 0 && (
+                                    <div>
+                                      <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400 block mb-1">
+                                        Absent Members ({absentMembers.length}):
+                                      </span>
+                                      <div className="flex flex-wrap gap-1.5">
+                                        {absentMembers.map((name, i) => (
+                                          <span
+                                            key={i}
+                                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-300/90 text-[11px] font-medium"
+                                          >
+                                            <AlertCircle className="w-3 h-3 text-rose-400" />
+                                            {name}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                              {att.topic && <p className="text-slate-300 font-semibold">{att.topic}</p>}
-                              {att.notes && <p className="text-[11px] text-slate-400">{att.notes}</p>}
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       )}
                     </div>
@@ -744,7 +1218,8 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
             )}
           </div>
         </div>
-      )}
+      </>
+    )}
 
       {/* Group Form Modal */}
       <GroupFormModal
@@ -763,6 +1238,7 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
           onClose={() => setIsAttendanceModalOpen(false)}
           group={activeGroup}
           groupMembers={groupDetails?.members || []}
+          editingRecord={editingAttendance}
           onAttendanceSaved={() => {
             if (selectedGroupId) loadGroupDetails(selectedGroupId);
           }}
@@ -771,8 +1247,8 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
 
       {/* Pastoral Care Pathway Modal */}
       <Dialog open={isPastoralCareModalOpen} onOpenChange={setIsPastoralCareModalOpen}>
-        <DialogContent className="max-w-md bg-slate-900 text-white border-slate-800 p-5 rounded-2xl">
-          <DialogHeader>
+        <DialogContent className="max-w-md bg-slate-900 text-white border-2 border-purple-500/40 p-5 rounded-2xl shadow-2xl">
+          <DialogHeader className="border-b border-slate-800 pb-3 bg-gradient-to-r from-slate-900 via-slate-900 to-purple-950/40 p-4 -mx-5 -mt-5 rounded-t-2xl">
             <DialogTitle className="text-base font-bold text-white flex items-center gap-2">
               <HeartHandshake className="w-5 h-5 text-purple-400" />
               Request Pastoral Care Follow-up
@@ -806,17 +1282,91 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({ initialGro
               />
             </div>
 
-            <DialogFooter className="pt-2 flex justify-end gap-2">
+            <DialogFooter className="pt-3 border-t border-slate-800 flex justify-end gap-2">
               <Button
                 type="button"
-                variant="outline"
                 onClick={() => setIsPastoralCareModalOpen(false)}
-                className="border-slate-700 text-slate-300 text-xs"
+                className="bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold border border-slate-600 text-xs px-4 py-2 shadow-sm"
               >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs">
+              <Button type="submit" className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-4 py-2">
                 Submit Request
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Member to Group Modal */}
+      <Dialog open={isAddMemberModalOpen} onOpenChange={setIsAddMemberModalOpen}>
+        <DialogContent className="max-w-md bg-slate-900 text-white border-2 border-amber-500/40 p-5 rounded-2xl shadow-2xl">
+          <DialogHeader className="border-b border-slate-800 pb-3 bg-gradient-to-r from-slate-900 via-slate-900 to-amber-950/40 p-4 -mx-5 -mt-5 rounded-t-2xl">
+            <DialogTitle className="text-base font-bold text-white flex items-center gap-2">
+              <UserPlus className="w-5 h-5 text-amber-400" />
+              Add Member to {activeGroup?.name || 'Small Group'}
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">
+              Select a church member from your directory to assign to this group.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAddMemberToGroup();
+            }}
+            className="space-y-4 pt-2"
+          >
+            <div className="space-y-1.5">
+              <label className="text-xs text-slate-300 font-semibold block">Select Member *</label>
+              <Select value={selectedMemberIdToAdd} onValueChange={setSelectedMemberIdToAdd}>
+                <SelectTrigger className="w-full bg-slate-800 border-slate-700 text-white text-xs">
+                  <SelectValue placeholder="Choose a member..." />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-900 border-slate-800 text-white max-h-60">
+                  {memberList.map((m: any) => {
+                    const name = m.name || (m.profile ? `${m.profile.first_name || ''} ${m.profile.last_name || ''}`.trim() : `${m.firstName || m.first_name || ''} ${m.lastName || m.last_name || ''}`.trim()) || 'Church Member';
+                    const phone = m.phone || m.profile?.phone || (m.contact ? m.contact : '');
+                    return (
+                      <SelectItem key={m.id} value={m.id} className="text-xs focus:bg-slate-800 focus:text-white">
+                        {name} {phone ? `(${phone})` : ''}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs text-slate-300 font-semibold block">Group Role *</label>
+              <Select value={memberRoleToAdd} onValueChange={setMemberRoleToAdd}>
+                <SelectTrigger className="w-full bg-slate-800 border-slate-700 text-white text-xs">
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-900 border-slate-800 text-white">
+                  <SelectItem value="Member" className="text-xs">Member</SelectItem>
+                  <SelectItem value="Co-Leader" className="text-xs">Co-Leader</SelectItem>
+                  <SelectItem value="Leader" className="text-xs">Leader / Host</SelectItem>
+                  <SelectItem value="Assistant" className="text-xs">Assistant</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <DialogFooter className="pt-3 border-t border-slate-800 flex justify-end gap-2">
+              <Button
+                type="button"
+                onClick={() => setIsAddMemberModalOpen(false)}
+                className="bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold border border-slate-600 text-xs px-4 py-2 shadow-sm"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={!selectedMemberIdToAdd}
+                className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-4 py-2"
+              >
+                Add Member
               </Button>
             </DialogFooter>
           </form>

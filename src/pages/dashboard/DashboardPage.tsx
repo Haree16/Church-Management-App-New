@@ -82,7 +82,7 @@ export function DashboardPage() {
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant="secondary" className="bg-white/20 text-white hover:bg-white/30 border-none text-xs">
-                {activeChurch?.name || 'Grace City Church'}
+                {activeChurch?.name || 'New Creation Assembly Church'}
               </Badge>
               {roleDef && (
                 <Badge variant="default" className="bg-sky-400 text-sky-950 hover:bg-sky-300 font-semibold text-xs">

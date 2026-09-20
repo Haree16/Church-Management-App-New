@@ -49,6 +49,7 @@ interface MinistriesModuleProps {
   onDeleteRosterAssignment?: (id: string) => Promise<void> | void;
   onNavigateTab?: (tab: string) => void;
   initialSelectedMinistryId?: string | null;
+  onOpenAiMinistry?: () => void;
 }
 
 type MinistryTab = 
@@ -91,6 +92,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
   onDeleteRosterAssignment,
   onNavigateTab,
   initialSelectedMinistryId = null,
+  onOpenAiMinistry,
 }) => {
   const activeChurchId = currentChurch?.id || 'church-1';
   const userRole = currentUser?.role || 'Member';
@@ -262,17 +264,72 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
     });
   }, [accessibleMinistries, searchQuery, statusFilter]);
 
+  // Permission check for managing active ministry (Creation / Edit / Management actions)
+  const canManageActiveMinistry = useMemo(() => {
+    if (isSuperOrPastor) return true;
+    if (!activeMinistry || !currentUser) return false;
+
+    const userName = (currentUser.name || '').trim().toLowerCase();
+    const userEmail = (currentUser.email || '').trim().toLowerCase();
+    const userPhone = (currentUser.phone || '').replace(/\D/g, '').slice(-10);
+
+    // 1. Is user linked to leaderMemberId or assistantLeaderMemberId?
+    if (currentMemberRecord) {
+      if (activeMinistry.leaderMemberId && currentMemberRecord.id === activeMinistry.leaderMemberId) return true;
+      if (activeMinistry.assistantLeaderMemberId && currentMemberRecord.id === activeMinistry.assistantLeaderMemberId) return true;
+    }
+
+    // 2. Is leaderName, contactEmail, contactPhone matching currentUser?
+    const minLeader = (activeMinistry.leaderName || '').trim().toLowerCase();
+    const minContactEmail = (activeMinistry.contactEmail || '').trim().toLowerCase();
+    const minContactPhone = (activeMinistry.contactPhone || '').replace(/\D/g, '').slice(-10);
+
+    if (minLeader && userName && minLeader.length > 1 && userName.length > 1) {
+      if (minLeader === userName || minLeader.includes(userName) || userName.includes(minLeader)) {
+        return true;
+      }
+    }
+    if (minContactEmail && userEmail && minContactEmail === userEmail) {
+      return true;
+    }
+    if (minContactPhone && userPhone && userPhone.length >= 7 && minContactPhone === userPhone) {
+      return true;
+    }
+
+    // 3. Is user a MinistryMember in this active ministry with a leader/coordinator/director role?
+    const isLeadershipMember = churchMinistryMembers.some((mm) => {
+      if (mm.ministryId !== activeMinistry.id) return false;
+
+      // Check if mm is current user
+      let isUserMatch = false;
+      if (currentMemberRecord && mm.memberId === currentMemberRecord.id) {
+        isUserMatch = true;
+      } else {
+        const memberObj = churchMembers.find((m) => m.id === mm.memberId);
+        if (memberObj) {
+          const memFullName = `${memberObj.firstName || ''} ${memberObj.lastName || ''}`.trim().toLowerCase();
+          if (userName && memFullName === userName) isUserMatch = true;
+          if (userEmail && memberObj.email && memberObj.email.trim().toLowerCase() === userEmail) isUserMatch = true;
+          if (userPhone && memberObj.phone && memberObj.phone.replace(/\D/g, '').slice(-10) === userPhone) isUserMatch = true;
+        }
+      }
+
+      if (!isUserMatch) return false;
+
+      // Must have leadership role in this ministry
+      const roleLower = (mm.ministryRole || mm.role || '').toLowerCase();
+      return roleLower.includes('leader') || roleLower.includes('director') || roleLower.includes('coordinator') || roleLower.includes('head') || roleLower.includes('chair');
+    });
+
+    if (isLeadershipMember) {
+      return true;
+    }
+
+    return false;
+  }, [isSuperOrPastor, activeMinistry, currentUser, currentMemberRecord, churchMinistryMembers, churchMembers]);
+
   // Permission check for managing announcements (Admin or Ministry Leader)
-  const canManageAnnouncements = isSuperOrPastor || Boolean(
-    activeMinistry && (
-      (activeMinistry.leaderName && currentUser?.name && (
-        activeMinistry.leaderName.toLowerCase().trim() === currentUser.name.toLowerCase().trim() ||
-        activeMinistry.leaderName.toLowerCase().includes(currentUser.name.toLowerCase().trim())
-      )) ||
-      (activeMinistry.contactEmail && currentUser?.email && activeMinistry.contactEmail.toLowerCase().trim() === currentUser.email.toLowerCase().trim()) ||
-      userRole === 'MinistryLeader'
-    )
-  );
+  const canManageAnnouncements = isSuperOrPastor || canManageActiveMinistry;
 
   // Ministry-specific associated data
   const currentMinMembers = useMemo(() => {
@@ -703,7 +760,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                 <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${activeMinistry.status === 'Active' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-slate-700 text-slate-400 border-slate-600'}`}>
                   {activeMinistry.status}
                 </span>
-                {isSuperOrPastor && (
+                {(isSuperOrPastor || canManageActiveMinistry) && (
                   <button
                     onClick={() => {
                       setEditingMinistry(activeMinistry);
@@ -771,7 +828,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                 { id: 'volunteers' as MinistryTab, label: `Volunteers (${potentialVolunteers.length})`, icon: Heart },
                 { id: 'communication' as MinistryTab, label: 'Communication', icon: MessageSquare },
                 { id: 'reports' as MinistryTab, label: 'Reports', icon: FileText },
-                ...(isSuperOrPastor ? [{ id: 'settings' as MinistryTab, label: 'Settings', icon: Edit3 }] : []),
+                ...((isSuperOrPastor || canManageActiveMinistry) ? [{ id: 'settings' as MinistryTab, label: 'Settings', icon: Edit3 }] : []),
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeMinistryTab === tab.id;
@@ -1007,13 +1064,15 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                     <Download className="w-3.5 h-3.5" />
                     <span>Export CSV</span>
                   </button>
-                  <button
-                    onClick={() => setIsAddMemberModalOpen(true)}
-                    className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
-                  >
-                    <UserPlus className="w-3.5 h-3.5" />
-                    <span>Add Member</span>
-                  </button>
+                  {canManageActiveMinistry && (
+                    <button
+                      onClick={() => setIsAddMemberModalOpen(true)}
+                      className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+                    >
+                      <UserPlus className="w-3.5 h-3.5" />
+                      <span>Add Member</span>
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -1053,7 +1112,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                           </div>
                         </div>
 
-                        {isSuperOrPastor && (
+                        {canManageActiveMinistry && (
                           <button
                             onClick={() => handleRemoveMember(mm.id, fullName)}
                             className="text-slate-300 hover:text-rose-500 p-1 transition opacity-0 group-hover:opacity-100"
@@ -1073,13 +1132,15 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
                     Add church members to {activeMinistry.name} to assign specific roles, track attendance, and schedule teams.
                   </p>
-                  <button
-                    onClick={() => setIsAddMemberModalOpen(true)}
-                    className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs inline-flex items-center gap-1.5"
-                  >
-                    <UserPlus className="w-3.5 h-3.5" />
-                    <span>Assign First Member</span>
-                  </button>
+                  {canManageActiveMinistry && (
+                    <button
+                      onClick={() => setIsAddMemberModalOpen(true)}
+                      className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs inline-flex items-center gap-1.5"
+                    >
+                      <UserPlus className="w-3.5 h-3.5" />
+                      <span>Assign First Member</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -1096,19 +1157,21 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                   <p className="text-xs text-slate-500">Organize sub-teams (e.g. Vocalists, Praise Band, Tech, Ushers) within {activeMinistry.name}.</p>
                 </div>
 
-                <button
-                  onClick={() => {
-                    setEditingTeam(null);
-                    setTeamFormName('');
-                    setTeamFormDesc('');
-                    setTeamFormLeader('');
-                    setIsTeamModalOpen(true);
-                  }}
-                  className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Create Team</span>
-                </button>
+                {canManageActiveMinistry && (
+                  <button
+                    onClick={() => {
+                      setEditingTeam(null);
+                      setTeamFormName('');
+                      setTeamFormDesc('');
+                      setTeamFormLeader('');
+                      setIsTeamModalOpen(true);
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Create Team</span>
+                  </button>
+                )}
               </div>
 
               {currentMinTeams.length > 0 ? (
@@ -1128,7 +1191,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                             )}
                           </div>
 
-                          {isSuperOrPastor && (
+                          {(isSuperOrPastor || canManageActiveMinistry) && (
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => {
@@ -1181,7 +1244,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                 </div>
               ) : (
                 <div className="text-center py-10 text-slate-400 text-xs italic">
-                  No teams configured yet. Click "Create Team" to organize sub-squads.
+                  No teams configured yet. {canManageActiveMinistry ? 'Click "Create Team" to organize sub-squads.' : ''}
                 </div>
               )}
             </div>
@@ -1198,13 +1261,15 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                   <p className="text-xs text-slate-500">Recurring and upcoming rehearsals, Bible studies, and trainings.</p>
                 </div>
 
-                <button
-                  onClick={handleOpenCreateActivity}
-                  className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Schedule Activity</span>
-                </button>
+                {canManageActiveMinistry && (
+                  <button
+                    onClick={handleOpenCreateActivity}
+                    className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Schedule Activity</span>
+                  </button>
+                )}
               </div>
 
               {currentMinActivities.length > 0 ? (
@@ -1240,16 +1305,18 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                             {act.status}
                           </span>
 
-                          <button
-                            type="button"
-                            onClick={() => handleOpenEditActivity(act)}
-                            className="p-1 text-slate-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition"
-                            title="Edit Activity Details"
-                          >
-                            <Edit3 className="w-3.5 h-3.5" />
-                          </button>
+                          {canManageActiveMinistry && (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditActivity(act)}
+                              className="p-1 text-slate-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition"
+                              title="Edit Activity Details"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
 
-                          {isSuperOrPastor && (
+                          {(isSuperOrPastor || canManageActiveMinistry) && (
                             <button
                               type="button"
                               onClick={async () => {
@@ -1281,12 +1348,17 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                             return (
                               <button
                                 key={mm.id}
-                                onClick={() => handleToggleActivityAttendance(act, mm.memberId)}
+                                onClick={() => {
+                                  if (canManageActiveMinistry) {
+                                    handleToggleActivityAttendance(act, mm.memberId);
+                                  }
+                                }}
+                                disabled={!canManageActiveMinistry}
                                 className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border ${
                                   isPresent 
                                     ? 'bg-emerald-50 text-emerald-800 border-emerald-300' 
-                                    : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
-                                }`}
+                                    : 'bg-white text-slate-500 border-slate-200'
+                                } ${!canManageActiveMinistry ? 'cursor-default opacity-85' : 'hover:border-slate-300'}`}
                               >
                                 {isPresent ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <Square className="w-3.5 h-3.5 text-slate-300" />}
                                 <span>{m ? `${m.firstName} ${m.lastName}` : 'Member'}</span>
@@ -1403,7 +1475,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                   <p className="text-xs text-slate-500">Service duties assigned to {activeMinistry.name}.</p>
                 </div>
 
-                {onSaveRosterAssignment && (
+                {onSaveRosterAssignment && canManageActiveMinistry && (
                   <button
                     onClick={() => setIsRosterModalOpen(true)}
                     className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
@@ -1426,7 +1498,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border ${r.confirmed ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-amber-50 text-amber-800 border-amber-300'}`}>
                           {r.confirmed ? 'Confirmed' : 'Pending'}
                         </span>
-                        {onDeleteRosterAssignment && (isSuperOrPastor || userRole === 'MinistryLeader') && (
+                        {onDeleteRosterAssignment && canManageActiveMinistry && (
                           <button
                             type="button"
                             title="Delete Roster Duty"
@@ -1476,26 +1548,28 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                           </span>
                         ))}
                       </div>
-                      <button
-                        onClick={async () => {
-                          const newMembership: MinistryMember = {
-                            id: `mm-${Date.now()}`,
-                            church_id: activeChurchId,
-                            churchId: activeChurchId,
-                            ministryId: activeMinistry.id,
-                            memberId: m.id,
-                            ministryRole: 'Volunteer',
-                            status: 'Active',
-                            joinedAt: new Date().toISOString().split('T')[0],
-                            createdAt: new Date().toISOString(),
-                            updatedAt: new Date().toISOString(),
-                          };
-                          await onSaveMinistryMember(newMembership);
-                        }}
-                        className="w-full mt-2 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition"
-                      >
-                        + Recruit to Ministry
-                      </button>
+                      {canManageActiveMinistry && (
+                        <button
+                          onClick={async () => {
+                            const newMembership: MinistryMember = {
+                              id: `mm-${Date.now()}`,
+                              church_id: activeChurchId,
+                              churchId: activeChurchId,
+                              ministryId: activeMinistry.id,
+                              memberId: m.id,
+                              ministryRole: 'Volunteer',
+                              status: 'Active',
+                              joinedAt: new Date().toISOString().split('T')[0],
+                              createdAt: new Date().toISOString(),
+                              updatedAt: new Date().toISOString(),
+                            };
+                            await onSaveMinistryMember(newMembership);
+                          }}
+                          className="w-full mt-2 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition"
+                        >
+                          + Recruit to Ministry
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -1729,15 +1803,26 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
               </p>
             </div>
 
-            {isSuperOrPastor && (
-              <button
-                onClick={handleOpenCreateMinistry}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/20 transition active:scale-95"
-              >
-                <Plus className="w-4 h-4 stroke-[3]" />
-                <span>New Ministry</span>
-              </button>
-            )}
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              {onOpenAiMinistry && (
+                <button
+                  onClick={onOpenAiMinistry}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-indigo-600/20 transition active:scale-95"
+                >
+                  <Sparkles className="w-4 h-4 text-indigo-200" />
+                  <span>AI Ministry Assistant</span>
+                </button>
+              )}
+              {isSuperOrPastor && (
+                <button
+                  onClick={handleOpenCreateMinistry}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/20 transition active:scale-95"
+                >
+                  <Plus className="w-4 h-4 stroke-[3]" />
+                  <span>New Ministry</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Search & Filter Bar */}

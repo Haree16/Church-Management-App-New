@@ -26,14 +26,14 @@ import {
 } from '@/types/database';
 
 export const DEMO_CHURCH: Church = {
-  id: 'a0000000-0000-0000-0000-000000000001',
-  name: 'Grace City Church',
-  slug: 'grace-city-chennai',
-  tagline: 'Loving God, Loving People, Serving Chennai',
-  logo_url: 'https://images.unsplash.com/photo-1548625361-195fe578b9ec?w=200&auto=format&fit=crop&q=80',
-  email: 'office@gracecitychennai.org',
-  phone: '+91 44 2836 1234',
-  website: 'https://gracecitychennai.org',
+  id: 'church-1',
+  name: 'New Creation Assembly Church',
+  slug: 'nca-church',
+  tagline: '',
+  logo_url: '/nca_church_logo.jpg',
+  email: 'office@newcreation.org.in',
+  phone: '+91 98401 23456',
+  website: '',
   address: 'No. 12, Mount Road, Anna Salai',
   city: 'Chennai',
   state: 'Tamil Nadu',
@@ -47,18 +47,18 @@ export const DEMO_CHURCH: Church = {
 };
 
 export const DEMO_CHURCH_2: Church = {
-  id: 'a0000000-0000-0000-0000-000000000002',
-  name: 'Bethel Fellowship Chennai',
-  slug: 'bethel-chennai',
-  tagline: 'House of God in the Heart of Chennai',
-  logo_url: 'https://images.unsplash.com/photo-1519817650390-64a93db51149?w=200&auto=format&fit=crop&q=80',
-  email: 'contact@bethelchennai.org',
-  phone: '+91 44 2491 5678',
-  website: 'https://bethelchennai.org',
-  address: '45, 100 Feet Road, Velachery',
+  id: 'church-1',
+  name: 'New Creation Assembly Church',
+  slug: 'nca-church',
+  tagline: '',
+  logo_url: '/nca_church_logo.jpg',
+  email: 'office@newcreation.org.in',
+  phone: '+91 98401 23456',
+  website: '',
+  address: 'No. 12, Mount Road, Anna Salai',
   city: 'Chennai',
   state: 'Tamil Nadu',
-  postal_code: '600042',
+  postal_code: '600002',
   country: 'India',
   timezone: 'Asia/Kolkata',
   currency: 'INR',
@@ -69,7 +69,7 @@ export const DEMO_CHURCH_2: Church = {
 
 export interface DemoUserOption {
   email: string;
-  role: 'super_admin' | 'pastor' | 'church_admin' | 'ministry_leader' | 'group_leader' | 'volunteer' | 'member';
+  role: 'super_admin' | 'pastor' | 'church_admin' | 'ministry_leader' | 'group_leader' | 'cell_group_leader' | 'volunteer' | 'member';
   name: string;
   title: string;
   avatar: string;
@@ -79,42 +79,65 @@ export interface DemoUserOption {
 
 export const DEMO_USERS: DemoUserOption[] = [
   {
-    id: 'u0000000-0000-0000-0000-000000000001',
-    email: 'superadmin@churchcms.io',
+    id: 'user-001',
+    email: 'admin@newcreation.org.in',
     role: 'super_admin',
-    name: 'Universal Super Administrator',
-    title: 'Super Platform Admin',
+    name: 'Rev. Dr. David Paul',
+    title: 'Senior Pastor & Super Admin',
     avatar: '',
-    phone: '+91 98400 00001',
+    phone: '+91 98400 12345',
+  },
+  {
+    id: 'user-002',
+    email: 'pastor.mathew@newcreation.org.in',
+    role: 'pastor',
+    name: 'Pastor Mathew Thomas',
+    title: 'Associate Pastor',
+    avatar: '',
+    phone: '+91 98400 67890',
+  },
+  {
+    id: 'user-003',
+    email: 'grace.admin@newcreation.org.in',
+    role: 'church_admin',
+    name: 'Grace Samuel',
+    title: 'Church Administrator',
+    avatar: '',
+    phone: '+91 98401 11111',
+  },
+  {
+    id: 'user-004',
+    email: 'daniel.worship@newcreation.org.in',
+    role: 'ministry_leader',
+    name: 'Daniel Raj',
+    title: 'Worship Ministry Leader',
+    avatar: '',
+    phone: '+91 98401 22222',
+  },
+  {
+    id: 'user-harris',
+    email: 'harris.leader@newcreation.org.in',
+    role: 'cell_group_leader',
+    name: 'Harris',
+    title: 'Cell Group Leader',
+    avatar: '',
+    phone: '+91 98401 55555',
+  },
+  {
+    id: 'user-mary',
+    email: 'mary.member@newcreation.org.in',
+    role: 'member',
+    name: 'Mary Doe',
+    title: 'Church Member (No Ministry)',
+    avatar: '',
+    phone: '+91 98401 44444',
   },
 ];
 
 export const DEMO_SETTINGS: ChurchSettings = {
   id: 'cs-001',
   church_id: DEMO_CHURCH.id,
-  service_timings: [
-    {
-      id: 'st-01',
-      name: 'Sunday Tamil Service',
-      day: 'Sunday',
-      time: '07:30 AM',
-      type: 'In-Person & Online',
-    },
-    {
-      id: 'st-02',
-      name: 'Sunday English Service',
-      day: 'Sunday',
-      time: '09:30 AM',
-      type: 'In-Person & Online',
-    },
-    {
-      id: 'st-03',
-      name: 'Wednesday Bible Study & Prayer',
-      day: 'Wednesday',
-      time: '07:00 PM',
-      type: 'In-Person',
-    },
-  ],
+  service_timings: [],
   general_settings: {},
   feature_flags: {
     online_giving: true,

@@ -18,6 +18,7 @@ import {
   ChurchMinistry, MinistryMember, MinistryTeam, MinistryTeamMember,
   MinistryActivity, MinistryAnnouncement
 } from '../types';
+import { Visitor, VisitorVisit } from '../types/database';
 import { 
   INITIAL_MEMBERS, INITIAL_PRAYERS, INITIAL_ROSTER, INITIAL_ATTENDANCE, 
   INITIAL_EVENTS, INITIAL_NOTIFICATIONS, INITIAL_ANNOUNCEMENTS,
@@ -170,12 +171,45 @@ export async function seedFirestoreIfEmpty(): Promise<void> {
 }
 
 // CHURCHES
+const REMOVED_MOCK_CHURCH_IDS = new Set([
+  'church-2',
+  'church-3',
+  'church-crc',
+  'church-gwc',
+  'a0000000-0000-0000-0000-000000000002',
+  'a0000000-0000-0000-0000-000000000003'
+]);
+
+const REMOVED_MOCK_CHURCH_NAMES = new Set([
+  'calvary revival chapel',
+  'grace worship center'
+]);
+
 export function subscribeChurches(onUpdate: (data: ChurchTenant[]) => void): () => void {
   return onSnapshot(collection(db, CHURCHES_COL), (snapshot) => {
-    const list: ChurchTenant[] = [];
+    let list: ChurchTenant[] = [];
     snapshot.forEach((d) => {
       const data = d.data() as ChurchTenant;
+      if (
+        REMOVED_MOCK_CHURCH_IDS.has(d.id) ||
+        REMOVED_MOCK_CHURCH_IDS.has(data.id) ||
+        REMOVED_MOCK_CHURCH_NAMES.has(data.name?.toLowerCase()?.trim())
+      ) {
+        deleteDoc(doc(db, CHURCHES_COL, d.id)).catch(console.warn);
+        return;
+      }
       list.push(data);
+    });
+
+    const localChurches = getStoredChurches() || [];
+    localChurches.forEach((localC) => {
+      if (
+        !REMOVED_MOCK_CHURCH_IDS.has(localC.id) &&
+        !REMOVED_MOCK_CHURCH_NAMES.has(localC.name?.toLowerCase()?.trim()) &&
+        !list.some((c) => c.id === localC.id)
+      ) {
+        list.push(localC);
+      }
     });
 
     INITIAL_CHURCHES.forEach((initChurch) => {
@@ -183,6 +217,12 @@ export function subscribeChurches(onUpdate: (data: ChurchTenant[]) => void): () 
         list.push(initChurch);
       }
     });
+
+    list = list.filter(
+      (c) =>
+        !REMOVED_MOCK_CHURCH_IDS.has(c.id) &&
+        !REMOVED_MOCK_CHURCH_NAMES.has(c.name?.toLowerCase()?.trim())
+    );
 
     saveStoredChurches(list);
     onUpdate(list);
@@ -219,10 +259,23 @@ export function subscribeChurchSettings(onUpdate: (data: Record<string, Complete
       };
     });
 
-    // Ensure all initial churches have fallback settings in local state without auto-pushing mock data to cloud
-    Object.entries(INITIAL_CHURCH_SETTINGS).forEach(([churchId, initSettings]) => {
+    // Ensure all churches have settings preserved from local storage or defaults without overwriting local custom data
+    const localMap = getAllStoredChurchSettings() || {};
+    const allKnownChurchIds = new Set([
+      ...Object.keys(settingsMap),
+      ...Object.keys(localMap),
+      ...Object.keys(INITIAL_CHURCH_SETTINGS)
+    ]);
+
+    allKnownChurchIds.forEach((churchId) => {
       if (!settingsMap[churchId]) {
-        settingsMap[churchId] = initSettings;
+        settingsMap[churchId] = localMap[churchId] || INITIAL_CHURCH_SETTINGS[churchId] || getDefaultChurchSettings(churchId);
+      } else if (localMap[churchId]) {
+        const cloudTime = settingsMap[churchId].updatedAt ? new Date(settingsMap[churchId].updatedAt).getTime() : 0;
+        const localTime = localMap[churchId].updatedAt ? new Date(localMap[churchId].updatedAt).getTime() : 0;
+        if (localTime > cloudTime) {
+          settingsMap[churchId] = localMap[churchId];
+        }
       }
     });
 
@@ -250,6 +303,16 @@ const REMOVED_MOCK_USER_IDS = new Set([
   'user-thomas-volunteer',
   'user-pastor-david',
   'user-pastor-mathew',
+  'user-pastor',
+  'user-david',
+  'user-john',
+  'user-mary',
+  'user-harris',
+  'mem-pastor',
+  'mem-david',
+  'mem-john',
+  'mem-mary',
+  'mem-harris',
 ]);
 
 const REMOVED_MOCK_USERNAMES = new Set([
@@ -263,6 +326,10 @@ const REMOVED_MOCK_USERNAMES = new Set([
   'thomas.volunteer',
   'pastor.david',
   'pastor.mathew',
+  'david.leader',
+  'john.member',
+  'mary.member',
+  'harris.leader',
 ]);
 
 const REMOVED_MOCK_MEMBER_IDS = new Set([
@@ -808,6 +875,36 @@ export async function saveMinistryAnnouncementToFirestore(ann: MinistryAnnouncem
 export async function deleteMinistryAnnouncementFromFirestore(id: string): Promise<void> {
   if (!id) return;
   await deleteDoc(doc(db, MINISTRY_ANNOUNCEMENTS_COL, id));
+}
+
+// VISITORS
+const VISITORS_COL = 'visitors';
+const VISITOR_VISITS_COL = 'visitor_visits';
+
+export function subscribeVisitors(onUpdate: (data: Visitor[]) => void): () => void {
+  return onSnapshot(collection(db, VISITORS_COL), (snapshot) => {
+    const list: Visitor[] = [];
+    snapshot.forEach((d) => {
+      const data = d.data() as Visitor;
+      list.push({ ...data, id: d.id || data.id });
+    });
+    onUpdate(list);
+  }, (err) => {
+    console.error('subscribeVisitors error:', err);
+  });
+}
+
+export async function saveVisitorToFirestore(visitor: Visitor): Promise<void> {
+  await setDoc(doc(db, VISITORS_COL, visitor.id), cleanForFirestore(visitor), { merge: true });
+}
+
+export async function deleteVisitorFromFirestore(id: string): Promise<void> {
+  if (!id) return;
+  await deleteDoc(doc(db, VISITORS_COL, id));
+}
+
+export async function saveVisitorVisitToFirestore(visit: VisitorVisit): Promise<void> {
+  await setDoc(doc(db, VISITOR_VISITS_COL, visit.id), cleanForFirestore(visit), { merge: true });
 }
 
 

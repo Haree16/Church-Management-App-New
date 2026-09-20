@@ -10,16 +10,16 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-sky-600 text-white shadow hover:bg-sky-700 active:bg-sky-800 dark:bg-sky-500 dark:hover:bg-sky-600",
+          "bg-sky-600 text-white shadow hover:bg-sky-700 active:bg-sky-800",
         destructive:
           "bg-red-600 text-white shadow-sm hover:bg-red-700 active:bg-red-800",
         outline:
-          "border border-slate-200 bg-white shadow-sm hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50",
+          "border border-slate-200 bg-white text-slate-900 shadow-sm hover:bg-slate-50 hover:text-slate-900",
         secondary:
-          "bg-slate-100 text-slate-900 shadow-sm hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700",
+          "bg-slate-100 text-slate-900 shadow-sm hover:bg-slate-200",
         ghost:
-          "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50",
-        link: "text-sky-600 underline-offset-4 hover:underline dark:text-sky-400",
+          "hover:bg-slate-100 hover:text-slate-900 text-slate-700",
+        link: "text-sky-600 underline-offset-4 hover:underline",
         church: "bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow hover:from-sky-700 hover:to-indigo-700 active:scale-[0.98]",
       },
       size: {

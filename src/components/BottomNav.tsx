@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Users, Heart, Calendar, Bell, 
   Megaphone, HeartHandshake, UserCheck, Menu, X,
   GraduationCap, MessageSquare, Building2, Settings, Landmark,
-  LayoutDashboard, BarChart3, UserPlus
+  LayoutDashboard, BarChart3, UserPlus, BookOpen, User
 } from 'lucide-react';
-import { SaaSUserRole, ChurchModuleToggles } from '../types';
+import { SaaSUserRole, ChurchModuleToggles, SaaSUser, Member, ChurchMinistry, MinistryMember } from '../types';
 import { isTabAllowed, getRoleConfig, isModuleEnabledInChurch } from '../utils/rbac';
+import { getUserAssignedMinistries } from '../utils/ministryPermissions';
 
 export type AppTab = 
   | 'dashboard'
@@ -14,6 +15,10 @@ export type AppTab =
   | 'visitors'
   | 'directory' 
   | 'ministries'
+  | 'my-ministry'
+  | 'my-assignments'
+  | 'my-attendance'
+  | 'my-profile'
   | 'groups'
   | 'attendance' 
   | 'prayers' 
@@ -35,6 +40,11 @@ interface BottomNavProps {
   unreadNotifCount: number;
   userRole?: SaaSUserRole;
   moduleToggles?: ChurchModuleToggles;
+  currentUser?: SaaSUser;
+  members?: Member[];
+  ministries?: ChurchMinistry[];
+  ministryMembers?: MinistryMember[];
+  onOpenMyProfile?: () => void;
 }
 
 export const BottomNav: React.FC<BottomNavProps> = ({
@@ -44,12 +54,28 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   unreadNotifCount,
   userRole = 'PastorAdmin' as SaaSUserRole,
   moduleToggles,
+  currentUser,
+  members = [],
+  ministries = [],
+  ministryMembers = [],
+  onOpenMyProfile,
 }) => {
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const roleConfig = getRoleConfig(userRole);
 
+  const userMinistries = useMemo(() => {
+    return getUserAssignedMinistries(currentUser, members, ministries, ministryMembers);
+  }, [currentUser, members, ministries, ministryMembers]);
+
+  const isMinistryMember = userMinistries.length > 0;
+  const isNormalMemberRole = userRole === 'Member' || userRole === 'Volunteer';
+
   const ALL_MODULES = [
     { id: 'dashboard' as AppTab, label: 'Dashboard', icon: LayoutDashboard, desc: 'Church analytics & personalized overview' },
+    { id: 'my-ministry' as AppTab, label: 'My Ministry', icon: Landmark, desc: 'My assigned ministry team, events & members' },
+    { id: 'my-assignments' as AppTab, label: 'My Assignments', icon: HeartHandshake, desc: 'My duty roster shifts & serving tasks' },
+    { id: 'my-attendance' as AppTab, label: 'My Attendance', icon: UserCheck, desc: 'My attendance records & participation rate' },
+    { id: 'my-profile' as AppTab, label: 'My Profile', icon: User, desc: 'View my member profile details' },
     { id: 'reports' as AppTab, label: 'Reports', icon: BarChart3, desc: 'Detailed reports, growth trends & exports' },
     { id: 'visitors' as AppTab, label: 'Visitors', icon: UserPlus, desc: 'Visitor lifecycle, follow-ups & conversion' },
     { id: 'directory' as AppTab, label: 'Members', icon: Users, desc: 'Church member & family directory' },
@@ -69,16 +95,72 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     { id: 'settings' as AppTab, label: 'Settings', icon: Settings, desc: 'Church profile, services, ministries & preferences' },
   ];
 
-  // Filter and order modules permitted for this role and active church module toggles
-  const allowedModules = roleConfig.allowedTabs
-    .filter((tabId) => isModuleEnabledInChurch(tabId, moduleToggles))
-    .map((tabId) => ALL_MODULES.find((m) => m.id === tabId))
-    .filter(Boolean) as typeof ALL_MODULES;
+  // Tailored tab lists for Normal Member vs Ministry Member (Section 11)
+  const allowedModules = useMemo(() => {
+    if (isNormalMemberRole) {
+      if (isMinistryMember) {
+        // Section 11: Ministry Member More Menu
+        // Bible (Sunday School), Bulletins, Alerts, My Ministry, My Assignments, My Attendance, My Profile, My Prayer Requests, Small Groups, Settings
+        const tabOrder: AppTab[] = [
+          'dashboard',
+          'prayers',
+          'groups',
+          'ministries',
+          'calendar',
+          'announcements',
+          'notifications',
+          'my-ministry',
+          'my-assignments',
+          'my-attendance',
+          'my-profile',
+        ];
+        return tabOrder
+          .filter((tabId) => isTabAllowed(userRole, tabId, moduleToggles))
+          .map((tabId) => ALL_MODULES.find((m) => m.id === tabId))
+          .filter(Boolean) as typeof ALL_MODULES;
+      } else {
+        // Section 11: Normal Member More Menu
+        // Bulletins, Alerts, My Profile, My Prayer Requests, My Attendance, Small Groups
+        const tabOrder: AppTab[] = [
+          'dashboard',
+          'prayers',
+          'groups',
+          'ministries',
+          'calendar',
+          'announcements',
+          'notifications',
+          'my-attendance',
+          'my-profile',
+        ];
+        return tabOrder
+          .filter((tabId) => isTabAllowed(userRole, tabId, moduleToggles))
+          .map((tabId) => ALL_MODULES.find((m) => m.id === tabId))
+          .filter(Boolean) as typeof ALL_MODULES;
+      }
+    }
 
-  // If role has <= 5 tabs, show them directly in the bottom bar!
+    // Default admin / leader tabs
+    return roleConfig.allowedTabs
+      .filter((tabId) => isModuleEnabledInChurch(tabId, moduleToggles))
+      .map((tabId) => ALL_MODULES.find((m) => m.id === tabId))
+      .filter(Boolean) as typeof ALL_MODULES;
+  }, [isNormalMemberRole, isMinistryMember, roleConfig, moduleToggles]);
+
+  // Primary 4 tabs in bottom bar
   const hasMoreMenu = allowedModules.length > 5;
-  const primaryTabs = hasMoreMenu ? allowedModules.slice(0, 4) : allowedModules;
-  const overflowTabs = hasMoreMenu ? allowedModules.slice(4) : [];
+  const primaryTabs = isNormalMemberRole
+    ? [
+        ALL_MODULES.find((m) => m.id === 'dashboard')!,
+        ALL_MODULES.find((m) => m.id === 'prayers')!,
+        ALL_MODULES.find((m) => m.id === 'ministries')!,
+        ALL_MODULES.find((m) => m.id === 'calendar')!,
+      ].filter(Boolean)
+    : (hasMoreMenu ? allowedModules.slice(0, 4) : allowedModules);
+
+  // Overflow items for More Menu
+  const overflowTabs = isNormalMemberRole
+    ? allowedModules.filter((m) => !primaryTabs.some((p) => p.id === m.id))
+    : (hasMoreMenu ? allowedModules.slice(4) : []);
 
   return (
     <>
@@ -92,10 +174,14 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                   <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
                     <Menu className="w-4 h-4" />
                   </div>
-                  <h3 className="font-extrabold text-base text-white">More Permitted Modules</h3>
+                  <h3 className="font-extrabold text-base text-white">
+                    {isMinistryMember ? 'Ministry Member Menu' : 'Member Menu'}
+                  </h3>
                 </div>
                 <p className="text-[11px] text-slate-400 mt-0.5">
-                  Filtered for role: <strong className="text-amber-300">{roleConfig.label}</strong>
+                  {isMinistryMember
+                    ? 'Includes your assigned ministry screens, roster assignments & attendance'
+                    : 'Church bulletins, prayer requests & member portal'}
                 </p>
               </div>
 
@@ -117,7 +203,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                     key={mod.id}
                     id={`btn-menu-${mod.id}`}
                     onClick={() => {
-                      setActiveTab(mod.id);
+                      if (mod.id === 'my-profile' && onOpenMyProfile) {
+                        onOpenMyProfile();
+                      } else {
+                        setActiveTab(mod.id);
+                      }
                       setShowMoreMenu(false);
                     }}
                     className={`p-3 rounded-2xl border text-left transition flex items-start gap-3 ${
@@ -147,7 +237,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       )}
 
       {/* Main Bottom Nav Bar */}
-      <nav className="bg-slate-950 border-t border-slate-800/80 text-slate-400 sticky bottom-0 z-30 px-2 py-1.5 shadow-2xl">
+      <nav className="bg-slate-950/95 backdrop-blur-md border-t border-slate-800/80 text-slate-400 fixed bottom-0 left-0 right-0 z-30 px-2 py-1.5 shadow-2xl">
         <div className="max-w-md mx-auto flex items-center justify-around">
           {primaryTabs.map((tab) => {
             const Icon = tab.icon;

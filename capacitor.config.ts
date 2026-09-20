@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.saaschurchmanagementapp',
-  appName: 'New Creation Assembly Church',
+  appName: 'Church Management App',
   webDir: 'dist',
   server: {
     androidScheme: 'https'

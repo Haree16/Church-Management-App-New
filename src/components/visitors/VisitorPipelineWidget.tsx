@@ -9,25 +9,25 @@ interface VisitorPipelineWidgetProps {
 }
 
 const STAGES: { key: VisitorStatus; label: string; color: string; bgColor: string; borderColor: string }[] = [
-  { key: 'new', label: 'New Guests', color: 'text-emerald-800', bgColor: 'bg-emerald-50/70', borderColor: 'border-emerald-200' },
-  { key: 'contact_pending', label: 'Contact Pending', color: 'text-amber-800', bgColor: 'bg-amber-50/70', borderColor: 'border-amber-200' },
-  { key: 'contacted', label: 'Contacted', color: 'text-blue-800', bgColor: 'bg-blue-50/70', borderColor: 'border-blue-200' },
-  { key: 'follow_up_scheduled', label: 'Follow-up Due', color: 'text-indigo-800', bgColor: 'bg-indigo-50/70', borderColor: 'border-indigo-200' },
-  { key: 'follow_up_completed', label: 'Follow-up Done', color: 'text-purple-800', bgColor: 'bg-purple-50/70', borderColor: 'border-purple-200' },
-  { key: 'returned_visitor', label: 'Returned Visitor', color: 'text-sky-800', bgColor: 'bg-sky-50/70', borderColor: 'border-sky-200' },
-  { key: 'regular_attendee', label: 'Regular Attendee', color: 'text-teal-800', bgColor: 'bg-teal-50/70', borderColor: 'border-teal-200' },
-  { key: 'became_member', label: 'Became Member', color: 'text-violet-800', bgColor: 'bg-violet-50/70', borderColor: 'border-violet-200' },
+  { key: 'new', label: 'New Guests', color: 'text-emerald-400', bgColor: 'bg-slate-900', borderColor: 'border-emerald-800/80' },
+  { key: 'contact_pending', label: 'Contact Pending', color: 'text-amber-400', bgColor: 'bg-slate-900', borderColor: 'border-amber-800/80' },
+  { key: 'contacted', label: 'Contacted', color: 'text-sky-400', bgColor: 'bg-slate-900', borderColor: 'border-sky-800/80' },
+  { key: 'follow_up_scheduled', label: 'Follow-up Due', color: 'text-indigo-400', bgColor: 'bg-slate-900', borderColor: 'border-indigo-800/80' },
+  { key: 'follow_up_completed', label: 'Follow-up Done', color: 'text-purple-400', bgColor: 'bg-slate-900', borderColor: 'border-purple-800/80' },
+  { key: 'returned_visitor', label: 'Returned Visitor', color: 'text-teal-400', bgColor: 'bg-slate-900', borderColor: 'border-teal-800/80' },
+  { key: 'regular_attendee', label: 'Regular Attendee', color: 'text-cyan-400', bgColor: 'bg-slate-900', borderColor: 'border-cyan-800/80' },
+  { key: 'became_member', label: 'Became Member', color: 'text-violet-400', bgColor: 'bg-slate-900', borderColor: 'border-violet-800/80' },
 ];
 
 export function VisitorPipelineWidget({ visitors, onSelectVisitor }: VisitorPipelineWidgetProps) {
   return (
     <div className="space-y-4">
-      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+      <div className="bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-xl flex items-center justify-between text-white">
         <div>
-          <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-            <UserCheck className="w-5 h-5 text-sky-600" /> Visitor Journey Pipeline
+          <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+            <UserCheck className="w-5 h-5 text-amber-400" /> Visitor Journey Pipeline
           </h3>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-400 mt-0.5">
             Track visitors through stages from first Sunday attendance to member conversion.
           </p>
         </div>
@@ -40,37 +40,37 @@ export function VisitorPipelineWidget({ visitors, onSelectVisitor }: VisitorPipe
           return (
             <div
               key={stage.key}
-              className={`rounded-2xl border ${stage.borderColor} ${stage.bgColor} p-3 flex flex-col justify-between min-h-[320px] shadow-xs`}
+              className={`rounded-2xl border ${stage.borderColor} ${stage.bgColor} p-3 flex flex-col justify-between min-h-[320px] shadow-lg text-white`}
             >
               <div>
-                <div className="flex items-center justify-between mb-3 border-b border-slate-200/60 pb-2">
+                <div className="flex items-center justify-between mb-3 border-b border-slate-800/80 pb-2">
                   <h4 className={`text-xs font-black uppercase tracking-tight ${stage.color}`}>{stage.label}</h4>
-                  <span className="text-xs font-extrabold px-2 py-0.5 rounded-full bg-white text-slate-800 shadow-xs border border-slate-200">
+                  <span className="text-xs font-extrabold px-2 py-0.5 rounded-full bg-slate-950 text-slate-200 border border-slate-700">
                     {stageVisitors.length}
                   </span>
                 </div>
 
                 <div className="space-y-2 mt-2">
                   {stageVisitors.length === 0 ? (
-                    <div className="text-[11px] text-slate-400 font-medium italic text-center py-8">No guests</div>
+                    <div className="text-[11px] text-slate-500 font-semibold italic text-center py-8">No guests</div>
                   ) : (
                     stageVisitors.map((v) => (
                       <div
                         key={v.id}
                         onClick={() => onSelectVisitor(v)}
-                        className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs hover:shadow-md cursor-pointer transition hover:border-sky-400 group"
+                        className="bg-slate-950 p-3 rounded-xl border border-slate-800 shadow-md hover:shadow-xl cursor-pointer transition hover:border-amber-500/60 group text-white"
                       >
-                        <div className="font-extrabold text-slate-900 text-xs group-hover:text-sky-600 transition flex items-center justify-between">
+                        <div className="font-extrabold text-white text-xs group-hover:text-amber-400 transition flex items-center justify-between">
                           <span>
                             {v.first_name} {v.last_name}
                           </span>
                           <ChevronRight className="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition" />
                         </div>
-                        <div className="text-[11px] text-slate-500 font-medium mt-1 space-y-0.5">
+                        <div className="text-[11px] text-slate-400 font-medium mt-1 space-y-0.5">
                           {v.phone && <div>📞 {v.phone}</div>}
                           <div>📅 {v.visit_date}</div>
                           {(v.visit_count || 1) > 1 && (
-                            <div className="text-sky-600 font-extrabold">🔁 {v.visit_count} visits</div>
+                            <div className="text-amber-400 font-extrabold">🔁 {v.visit_count} visits</div>
                           )}
                         </div>
                       </div>

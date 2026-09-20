@@ -9,6 +9,9 @@ import { Visitor360Profile } from '@/components/visitors/Visitor360Profile';
 import { VisitorPipelineWidget } from '@/components/visitors/VisitorPipelineWidget';
 import { FollowUpQueueView } from '@/components/visitors/FollowUpQueueView';
 import { VisitorDashboardView } from '@/components/visitors/VisitorDashboardView';
+import { AutomatedVisitorFollowUpDashboard } from '@/components/visitors/AutomatedVisitorFollowUpDashboard';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import {
   UserCheck,
@@ -37,7 +40,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-type VisitorViewMode = 'dashboard' | 'pipeline' | 'directory' | 'followups';
+type VisitorViewMode = 'dashboard' | 'pipeline' | 'directory' | 'followups' | 'automated-followups';
 
 interface VisitorsPageProps {
   currentChurch?: any;
@@ -79,6 +82,12 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
       const followUpsData = await followUpService.getFollowUps(activeChurch.id);
       setVisitors(visitorsData);
       setFollowUps(followUpsData);
+
+      setSelectedVisitor360((prev) => {
+        if (!prev) return null;
+        const updated = visitorsData.find((v) => v.id === prev.id);
+        return updated || prev;
+      });
     } catch (err: any) {
       console.error('Failed to load visitor data:', err);
       setError(err.message || 'Failed to load guest records.');
@@ -181,40 +190,40 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
   const getStatusBadge = (status: VisitorStatus) => {
     switch (status) {
       case 'new':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">New Guest</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">New Guest</span>;
       case 'contact_pending':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">Contact Pending</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-950 text-amber-300 border border-amber-800">Contact Pending</span>;
       case 'contacted':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">Contacted</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-950 text-sky-300 border border-sky-800">Contacted</span>;
       case 'follow_up_scheduled':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">Follow-up Scheduled</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-950 text-indigo-300 border border-indigo-800">Follow-up Scheduled</span>;
       case 'follow_up_completed':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800 border border-purple-200">Follow-up Completed</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-950 text-purple-300 border border-purple-800">Follow-up Completed</span>;
       case 'returned_visitor':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-800 border border-sky-200">Returned Visitor</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-teal-950 text-teal-300 border border-teal-800">Returned Visitor</span>;
       case 'regular_attendee':
       case 'regular_attender':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-teal-100 text-teal-800 border border-teal-200">Regular Attendee</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">Regular Attendee</span>;
       case 'became_member':
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-violet-100 text-violet-800 border border-violet-200">Became Member</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-violet-950 text-violet-300 border border-violet-800">Became Member</span>;
       default:
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">{status.replace(/_/g, ' ')}</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">{status.replace(/_/g, ' ')}</span>;
     }
   };
 
   return (
-    <div className="space-y-4">
-      {/* Top Banner Header matching ShepherdHub design */}
-      <div className="bg-slate-900 text-white p-5 rounded-2xl shadow-sm border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-4 text-slate-100 w-full max-w-full overflow-hidden">
+      {/* Top Banner Header matching CMS dark design */}
+      <div className="bg-slate-900 text-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl shadow-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center border border-sky-500/30 shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shrink-0">
             <UserCheck className="w-6 h-6" />
           </div>
           <div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
               Visitor Management & Follow-up
             </h1>
-            <p className="text-xs text-slate-300 mt-0.5 max-w-xl">
+            <p className="text-xs text-slate-400 mt-0.5 max-w-xl">
               Capture Sunday guest cards, automate pastoral care follow-ups, track return visits, and convert guests into covenant members.
             </p>
           </div>
@@ -222,22 +231,22 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
 
         <button
           onClick={() => setIsAddOpen(true)}
-          className="px-4 py-2.5 bg-sky-500 hover:bg-sky-400 active:bg-sky-600 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5 shrink-0"
+          className="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-extrabold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-1.5 shrink-0"
         >
-          <UserPlus className="w-4 h-4 shrink-0" />
+          <UserPlus className="w-4 h-4 shrink-0 stroke-[2.5]" />
           <span>+ Record Sunday Guest</span>
         </button>
       </div>
 
-      {/* Main View Switcher Tabs matching ShepherdHub modules */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200 shadow-sm">
+      {/* Main View Switcher Tabs matching CMS dark design */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900 p-2 sm:p-2.5 rounded-2xl border border-slate-800 shadow-xl">
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scrollbar-none max-w-full pb-0.5">
           <button
             onClick={() => setViewMode('dashboard')}
             className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-2 whitespace-nowrap shrink-0 ${
               viewMode === 'dashboard'
-                ? 'bg-slate-900 text-sky-400 shadow-sm'
-                : 'text-slate-600 hover:bg-slate-100'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
             }`}
           >
             <BarChart2 className="w-4 h-4 shrink-0" />
@@ -248,8 +257,8 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
             onClick={() => setViewMode('pipeline')}
             className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-2 whitespace-nowrap shrink-0 ${
               viewMode === 'pipeline'
-                ? 'bg-slate-900 text-sky-400 shadow-sm'
-                : 'text-slate-600 hover:bg-slate-100'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
             }`}
           >
             <LayoutGrid className="w-4 h-4 shrink-0" />
@@ -260,8 +269,8 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
             onClick={() => setViewMode('directory')}
             className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-2 whitespace-nowrap shrink-0 ${
               viewMode === 'directory'
-                ? 'bg-slate-900 text-sky-400 shadow-sm'
-                : 'text-slate-600 hover:bg-slate-100'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
             }`}
           >
             <List className="w-4 h-4 shrink-0" />
@@ -272,17 +281,37 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
             onClick={() => setViewMode('followups')}
             className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-2 whitespace-nowrap shrink-0 ${
               viewMode === 'followups'
-                ? 'bg-slate-900 text-sky-400 shadow-sm'
-                : 'text-slate-600 hover:bg-slate-100'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
             }`}
           >
             <CheckSquare className="w-4 h-4 shrink-0" />
             <span>Follow-ups Queue ({followUps.length})</span>
           </button>
+
+          <button
+            onClick={() => setViewMode('automated-followups')}
+            className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-2 whitespace-nowrap shrink-0 ${
+              viewMode === 'automated-followups'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 shrink-0" />
+            <span>Automated Follow-ups</span>
+          </button>
         </div>
       </div>
 
       {/* Render Active View */}
+      {viewMode === 'automated-followups' && (
+        <AutomatedVisitorFollowUpDashboard
+          currentChurch={activeChurch || { id: 'church-1', name: 'My Church' }}
+          currentUser={user}
+          visitors={visitors}
+        />
+      )}
+
       {viewMode === 'dashboard' && (
         <VisitorDashboardView
           visitors={visitors}
@@ -314,7 +343,7 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
       {viewMode === 'directory' && (
         <div className="space-y-4">
           {/* Search & Action Bar */}
-          <div className="bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+          <div className="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 shadow-xl space-y-2.5">
             <div className="relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               <input
@@ -322,12 +351,12 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
                 placeholder="Search by visitor name, phone, or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition"
+                className="w-full pl-9 pr-8 py-2 bg-slate-800 border border-slate-700 text-white placeholder-slate-400 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition"
               />
               {searchTerm && (
                 <button
                   onClick={() => setSearchTerm('')}
-                  className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-3 text-slate-400 hover:text-white"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -353,8 +382,8 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
                   onClick={() => setStatusFilter(st.key)}
                   className={`px-2.5 py-1 rounded-lg border font-medium shrink-0 transition ${
                     statusFilter === st.key
-                      ? 'bg-slate-900 text-sky-400 border-slate-900 shadow-sm font-extrabold'
-                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                      ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-sm font-extrabold'
+                      : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white'
                   }`}
                 >
                   {st.label}
@@ -364,11 +393,11 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
           </div>
 
           {/* Directory Table */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
+          <div className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl overflow-hidden">
+            <div className="p-4 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400 font-medium">
               <span>
-                Showing <strong className="text-slate-900">{filteredVisitors.length}</strong> of{' '}
-                <strong className="text-slate-900">{visitors.length}</strong> recorded guest cards
+                Showing <strong className="text-white">{filteredVisitors.length}</strong> of{' '}
+                <strong className="text-white">{visitors.length}</strong> recorded guest cards
               </span>
             </div>
 
@@ -376,8 +405,8 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
               <div className="p-8 text-center text-slate-400 text-xs font-semibold">Loading guest records...</div>
             ) : filteredVisitors.length === 0 ? (
               <div className="p-12 text-center text-slate-400 text-sm space-y-3">
-                <UserCheck className="w-12 h-12 text-slate-300 mx-auto" />
-                <p className="font-semibold text-slate-700">No visitors found.</p>
+                <UserCheck className="w-12 h-12 text-slate-500 mx-auto" />
+                <p className="font-semibold text-white">No visitors found.</p>
                 <p className="text-xs text-slate-400 max-w-sm mx-auto">
                   {searchTerm || statusFilter !== 'ALL'
                     ? 'No visitor records match your selected search or filters.'
@@ -385,37 +414,37 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
                 </p>
                 <button
                   onClick={() => setIsAddOpen(true)}
-                  className="px-4 py-2 bg-sky-600 text-white font-extrabold text-xs rounded-xl shadow hover:bg-sky-700 transition"
+                  className="px-4 py-2 bg-amber-500 text-slate-950 font-bold text-xs rounded-xl shadow hover:bg-amber-400 transition"
                 >
                   + Add Visitor Card
                 </button>
               </div>
             ) : (
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y divide-slate-800/80">
                 {filteredVisitors.map((v) => (
                   <div
                     key={v.id}
                     onClick={() => setSelectedVisitor360(v)}
-                    className="p-4 hover:bg-slate-50/80 transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    className="p-4 hover:bg-slate-800/60 transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                   >
                     <div className="flex items-center gap-3.5">
-                      <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-600 text-white font-bold text-base flex items-center justify-center shadow-sm shrink-0">
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-amber-500 to-amber-600 text-slate-950 font-black text-base flex items-center justify-center shadow-md shrink-0">
                         {v.first_name?.[0]}
                         {v.last_name?.[0]}
                       </div>
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-extrabold text-slate-900 text-sm">
+                          <span className="font-extrabold text-white text-sm">
                             {v.first_name} {v.last_name}
                           </span>
                           {getStatusBadge(v.status)}
                           {(v.visit_count || 1) > 1 && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-950 text-teal-300 border border-teal-800">
                               🔁 {v.visit_count} Visits
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-3 text-xs text-slate-500 mt-1 flex-wrap">
+                        <div className="flex items-center gap-3 text-xs text-slate-400 mt-1 flex-wrap">
                           {v.phone && <span>📞 {v.phone}</span>}
                           {v.email && <span>✉️ {v.email}</span>}
                           <span>📅 First visit: {v.first_visit_date || v.visit_date}</span>
@@ -426,7 +455,7 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
                     <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => setSelectedVisitor360(v)}
-                        className="px-3 py-1.5 text-xs font-extrabold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-xl transition"
+                        className="px-3 py-1.5 text-xs font-bold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition"
                       >
                         View 360° Profile
                       </button>
@@ -434,11 +463,19 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
                       {v.status !== 'became_member' && (
                         <button
                           onClick={() => setConvertingVisitor(v)}
-                          className="px-3 py-1.5 text-xs font-extrabold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition flex items-center gap-1"
+                          className="px-3 py-1.5 text-xs font-bold text-emerald-300 bg-emerald-950 hover:bg-emerald-900 border border-emerald-800 rounded-xl transition flex items-center gap-1"
                         >
                           <UserPlus className="w-3.5 h-3.5" /> Convert
                         </button>
                       )}
+
+                      <button
+                        onClick={() => setVisitorToDelete(v)}
+                        className="px-2.5 py-1.5 text-xs font-bold text-rose-400 bg-rose-950/60 hover:bg-rose-900/60 border border-rose-800/80 rounded-xl transition flex items-center gap-1"
+                        title="Delete Guest Record"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -463,8 +500,37 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
             setSelectedVisitor360(null);
             setEditingVisitor(v);
           }}
+          onDelete={(v) => {
+            setSelectedVisitor360(null);
+            setVisitorToDelete(v);
+          }}
         />
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!visitorToDelete} onOpenChange={(open) => !open && setVisitorToDelete(null)}>
+        <DialogContent className="sm:max-w-[425px] bg-slate-900 text-white border-slate-800">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Trash2 className="w-5 h-5 text-rose-500" /> Delete Guest Record?
+            </DialogTitle>
+            <DialogDescription className="text-slate-400">
+              This will permanently delete the visitor record for{' '}
+              <strong className="text-white">
+                {visitorToDelete?.first_name} {visitorToDelete?.last_name}
+              </strong>. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0 mt-4">
+            <Button variant="outline" onClick={() => setVisitorToDelete(null)} className="border-slate-700 text-slate-300 hover:bg-slate-800">
+              Cancel
+            </Button>
+            <Button onClick={handleDeleteConfirm} className="bg-rose-600 hover:bg-rose-500 text-white font-bold">
+              Delete Record
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Add Guest Dialog */}
       <VisitorFormDialog

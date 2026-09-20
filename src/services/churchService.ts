@@ -239,8 +239,8 @@ export const churchService = {
     if (!updated) {
       const createdFallback: Church = {
         id,
-        name: payload.name || 'Grace City Church',
-        slug: payload.slug || 'grace-city',
+        name: payload.name || 'New Creation Assembly Church',
+        slug: payload.slug || 'nca-church',
         tagline: payload.tagline || null,
         logo_url: payload.logo_url || null,
         email: payload.email || null,

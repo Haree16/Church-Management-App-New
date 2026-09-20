@@ -5,7 +5,7 @@ import {
   Users, UserPlus, UserCheck, Calendar, Heart, 
   Landmark, Sparkles, MessageSquare, Clock 
 } from 'lucide-react';
-import { getRoleConfig } from '@/utils/rbac';
+import { getRoleConfig, canAccessAiPastor } from '@/utils/rbac';
 
 interface WelcomeHeaderProps {
   currentChurch: ChurchTenant;
@@ -18,6 +18,9 @@ interface WelcomeHeaderProps {
   onOpenAddEvent?: () => void;
   onOpenRecordAttendance?: () => void;
   onOpenCreateMinistry?: () => void;
+  onOpenChurchAi?: () => void;
+  onOpenAiPastor?: () => void;
+  onOpenAiMinistry?: () => void;
 }
 
 export const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({
@@ -31,6 +34,9 @@ export const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({
   onOpenAddEvent,
   onOpenRecordAttendance,
   onOpenCreateMinistry,
+  onOpenChurchAi,
+  onOpenAiPastor,
+  onOpenAiMinistry,
 }) => {
   const userRole = currentUser?.role || 'Member';
   const roleConfig = getRoleConfig(userRole);
@@ -106,6 +112,39 @@ export const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({
 
         {/* Right Side: Quick Action Buttons (Permission Scoped) */}
         <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0">
+          {onOpenChurchAi && (
+            <button
+              onClick={onOpenChurchAi}
+              className="px-3.5 py-2 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center gap-1.5 active:scale-95 border border-purple-400/30"
+              title="Open Central Church AI Interface"
+            >
+              <Sparkles className="w-4 h-4 text-purple-200 animate-pulse" />
+              <span>Church AI</span>
+            </button>
+          )}
+
+          {canAccessAiPastor(userRole) && onOpenAiPastor && (
+            <button
+              onClick={onOpenAiPastor}
+              className="px-3.5 py-2 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center gap-1.5 active:scale-95 border border-amber-400/30"
+              title="Open AI Pastor Leadership Assistant"
+            >
+              <Sparkles className="w-4 h-4 text-amber-200 animate-pulse" />
+              <span>AI Pastor</span>
+            </button>
+          )}
+
+          {onOpenAiMinistry && (
+            <button
+              onClick={onOpenAiMinistry}
+              className="px-3.5 py-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center gap-1.5 active:scale-95 border border-indigo-400/30"
+              title="Consult AI Ministry Assistant"
+            >
+              <Sparkles className="w-4 h-4 text-indigo-200 animate-pulse" />
+              <span>AI Ministry Assistant</span>
+            </button>
+          )}
+
           {roleConfig.canManageMembers && onOpenAddMember && (
             <button
               onClick={onOpenAddMember}

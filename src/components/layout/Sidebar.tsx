@@ -72,7 +72,6 @@ export function Sidebar({ className, onClose }: { className?: string; onClose?: 
     },
     {
       title: 'Church',
-      permission: 'ministries:read',
       items: [
         { title: 'Ministries', href: '/church/ministries', icon: Layers, permission: 'ministries:read' },
         { title: 'Groups', href: '/church/groups', icon: ChurchIcon, permission: 'groups:read' },

@@ -84,28 +84,28 @@ export function FollowUpQueueView({ churchId, currentUserId, onSelectVisitor }: 
   return (
     <div className="space-y-4">
       {/* Top Controls Banner */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-white">
         <div>
-          <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-indigo-600" /> Visitor Follow-up & Care Queue
+          <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+            <Clock className="w-5 h-5 text-amber-400" /> Visitor Follow-up & Care Queue
           </h3>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-400 mt-0.5">
             Manage pastoral calls, welcome check-ins, and small group connection tasks.
           </p>
         </div>
 
-        <div className="bg-slate-100 p-1 rounded-xl flex items-center gap-1 text-xs shrink-0">
+        <div className="bg-slate-800 p-1 rounded-xl flex items-center gap-1 text-xs shrink-0 border border-slate-700">
           <button
-            className={`px-3.5 py-1.5 rounded-lg font-extrabold transition ${
-              scopeTab === 'my' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'
+            className={`px-3.5 py-1.5 rounded-lg font-bold transition ${
+              scopeTab === 'my' ? 'bg-amber-500 text-slate-950 font-extrabold shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
             onClick={() => setScopeTab('my')}
           >
             My Assigned Tasks
           </button>
           <button
-            className={`px-3.5 py-1.5 rounded-lg font-extrabold transition ${
-              scopeTab === 'team' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'
+            className={`px-3.5 py-1.5 rounded-lg font-bold transition ${
+              scopeTab === 'team' ? 'bg-amber-500 text-slate-950 font-extrabold shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
             onClick={() => setScopeTab('team')}
           >
@@ -115,24 +115,24 @@ export function FollowUpQueueView({ churchId, currentUserId, onSelectVisitor }: 
       </div>
 
       {/* Date Filter Pills */}
-      <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-1.5 overflow-x-auto no-scrollbar scrollbar-none text-xs">
+      <div className="bg-slate-900 p-3 rounded-2xl border border-slate-800 shadow-xl flex items-center gap-1.5 overflow-x-auto no-scrollbar scrollbar-none text-xs">
         <span className="text-slate-400 font-medium px-1 flex items-center gap-1 shrink-0">
           <Filter className="w-3.5 h-3.5" /> Due Filter:
         </span>
         {[
-          { key: 'today', label: 'Due Today', icon: Calendar, color: 'border-indigo-500 text-indigo-700' },
-          { key: 'overdue', label: 'Overdue', icon: AlertTriangle, color: 'border-amber-500 text-amber-700' },
-          { key: 'upcoming', label: 'Upcoming', icon: Clock, color: 'border-sky-500 text-sky-700' },
-          { key: 'completed', label: 'Completed', icon: CheckCircle2, color: 'border-emerald-500 text-emerald-700' },
-          { key: 'all', label: 'All Tasks', icon: Calendar, color: 'border-slate-800 text-slate-900' },
+          { key: 'today', label: 'Due Today', icon: Calendar },
+          { key: 'overdue', label: 'Overdue', icon: AlertTriangle },
+          { key: 'upcoming', label: 'Upcoming', icon: Clock },
+          { key: 'completed', label: 'Completed', icon: CheckCircle2 },
+          { key: 'all', label: 'All Tasks', icon: Calendar },
         ].map((f) => (
           <button
             key={f.key}
             onClick={() => setFilterTab(f.key as any)}
-            className={`px-3 py-1.5 rounded-xl border font-extrabold shrink-0 transition flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl border font-bold shrink-0 transition flex items-center gap-1.5 ${
               filterTab === f.key
-                ? 'bg-slate-900 text-sky-400 border-slate-900 shadow-sm'
-                : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-sm font-extrabold'
+                : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white'
             }`}
           >
             <span>{f.label}</span>
@@ -143,51 +143,51 @@ export function FollowUpQueueView({ churchId, currentUserId, onSelectVisitor }: 
       {/* Tasks List */}
       <div className="space-y-3">
         {loading ? (
-          <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-400 text-xs font-semibold">
+          <div className="bg-slate-900 p-8 rounded-2xl border border-slate-800 text-center text-slate-400 text-xs font-semibold shadow-xl">
             Loading follow-up tasks...
           </div>
         ) : filteredFollowUps.length === 0 ? (
-          <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-400 text-xs font-medium">
+          <div className="bg-slate-900 p-8 rounded-2xl border border-slate-800 text-center text-slate-400 text-xs font-medium shadow-xl">
             No follow-up tasks match this filter.
           </div>
         ) : (
           filteredFollowUps.map((task) => (
             <div
               key={task.id}
-              className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col md:flex-row md:items-center justify-between gap-4"
+              className="bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-xl hover:border-slate-700 transition flex flex-col md:flex-row md:items-center justify-between gap-4 text-white"
             >
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-extrabold text-slate-900 text-sm sm:text-base">{task.title}</span>
+                  <span className="font-extrabold text-white text-sm sm:text-base">{task.title}</span>
                   <span
                     className={`text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider ${
                       task.priority === 'urgent' || task.priority === 'high'
-                        ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                        : 'bg-slate-100 text-slate-700 border border-slate-200'
+                        ? 'bg-rose-950 text-rose-300 border border-rose-800'
+                        : 'bg-slate-800 text-slate-300 border border-slate-700'
                     }`}
                   >
                     {task.priority} Priority
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3 text-xs text-slate-500 font-semibold flex-wrap">
-                  <span className="text-slate-900">👤 {task.person_name || 'Guest Visitor'}</span>
+                <div className="flex items-center gap-3 text-xs text-slate-400 font-semibold flex-wrap">
+                  <span className="text-amber-300 font-bold">👤 {task.person_name || 'Guest Visitor'}</span>
                   {task.person_phone && (
-                    <a href={`tel:${task.person_phone}`} className="hover:text-sky-600 flex items-center gap-1">
+                    <a href={`tel:${task.person_phone}`} className="hover:text-amber-400 flex items-center gap-1">
                       <Phone className="w-3 h-3 text-slate-400" /> {task.person_phone}
                     </a>
                   )}
                   {task.person_email && (
-                    <a href={`mailto:${task.person_email}`} className="hover:text-sky-600 flex items-center gap-1">
+                    <a href={`mailto:${task.person_email}`} className="hover:text-amber-400 flex items-center gap-1">
                       <Mail className="w-3 h-3 text-slate-400" /> {task.person_email}
                     </a>
                   )}
                   <span>📅 Due: {task.due_date}</span>
                 </div>
 
-                {task.notes && <p className="text-xs text-slate-600 font-medium">{task.notes}</p>}
+                {task.notes && <p className="text-xs text-slate-300 font-medium">{task.notes}</p>}
                 {task.outcome && (
-                  <div className="text-xs font-bold text-emerald-800 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
+                  <div className="text-xs font-bold text-emerald-300 bg-emerald-950/80 p-2.5 rounded-xl border border-emerald-800/60">
                     Outcome: {task.outcome}
                   </div>
                 )}
@@ -197,7 +197,7 @@ export function FollowUpQueueView({ churchId, currentUserId, onSelectVisitor }: 
                 {task.visitor_id && onSelectVisitor && (
                   <button
                     onClick={() => onSelectVisitor(task.visitor_id!)}
-                    className="px-3.5 py-2 text-xs font-extrabold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
+                    className="px-3.5 py-2 text-xs font-bold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition"
                   >
                     View Guest 360°
                   </button>
@@ -206,7 +206,7 @@ export function FollowUpQueueView({ churchId, currentUserId, onSelectVisitor }: 
                 {task.status !== 'completed' && (
                   <button
                     onClick={() => setSelectedFollowUp(task)}
-                    className="px-3.5 py-2 text-xs font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-xl shadow transition flex items-center gap-1"
+                    className="px-3.5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow transition flex items-center gap-1"
                   >
                     <Check className="w-3.5 h-3.5" /> Complete
                   </button>
@@ -220,22 +220,22 @@ export function FollowUpQueueView({ churchId, currentUserId, onSelectVisitor }: 
       {/* Complete Follow-up Modal */}
       {selectedFollowUp && (
         <Dialog open={!!selectedFollowUp} onOpenChange={(open) => !open && setSelectedFollowUp(null)}>
-          <DialogContent className="max-w-md bg-white rounded-2xl p-6">
+          <DialogContent className="max-w-md bg-slate-900 text-white border-2 border-emerald-500/40 p-6 rounded-2xl shadow-2xl">
             <form onSubmit={handleCompleteSubmit}>
-              <DialogHeader>
-                <DialogTitle className="text-base font-extrabold text-slate-900">Complete Guest Follow-up</DialogTitle>
-                <DialogDescription className="text-xs text-slate-500">
+              <DialogHeader className="border-b border-slate-800 pb-3">
+                <DialogTitle className="text-base font-extrabold text-white">Complete Guest Follow-up</DialogTitle>
+                <DialogDescription className="text-xs text-slate-400">
                   Record outcome for {selectedFollowUp.person_name}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-4 my-4">
                 <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">Interaction Outcome</label>
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">Interaction Outcome</label>
                   <select
                     value={outcome}
                     onChange={(e) => setOutcome(e.target.value)}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-sky-500"
+                    className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-white outline-none focus:border-amber-500"
                   >
                     <option value="Connected - Welcomed & Prayed">Connected - Welcomed & Prayed</option>
                     <option value="Connected - Interested in Small Groups">Connected - Interested in Small Groups</option>
@@ -247,29 +247,29 @@ export function FollowUpQueueView({ churchId, currentUserId, onSelectVisitor }: 
                 </div>
 
                 <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">Pastoral Notes</label>
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">Pastoral Notes</label>
                   <textarea
                     rows={3}
                     value={completionNotes}
                     onChange={(e) => setCompletionNotes(e.target.value)}
                     placeholder="Details of conversation, prayer needs, or small group connection..."
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-sky-500"
+                    className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white outline-none focus:border-amber-500"
                   />
                 </div>
               </div>
 
-              <DialogFooter className="gap-2">
+              <DialogFooter className="gap-2 pt-2 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => setSelectedFollowUp(null)}
-                  className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition"
+                  className="px-4 py-2 text-xs font-bold text-slate-100 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl shadow-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 text-xs font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow transition"
+                  className="px-4 py-2 text-xs font-extrabold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow"
                 >
                   {submitting ? 'Saving...' : 'Save & Mark Complete'}
                 </button>

@@ -139,7 +139,7 @@ export const auditService = {
       resource_id: payload.resource_id || null,
       details: payload.details || {},
       ip_address: '127.0.0.1',
-      user_agent: navigator.userAgent,
+      user_agent: typeof navigator !== 'undefined' && navigator.userAgent ? navigator.userAgent : 'Server/MobileApp',
       created_at: new Date().toISOString(),
     };
 

@@ -38,6 +38,10 @@ export const ROLE_CONFIGS: Record<SaaSUserRole, RoleConfig> = {
       'directory',
       'visitors',
       'ministries',
+      'my-ministry',
+      'my-assignments',
+      'my-attendance',
+      'my-profile',
       'groups',
       'attendance',
       'whatsapp',
@@ -79,6 +83,10 @@ export const ROLE_CONFIGS: Record<SaaSUserRole, RoleConfig> = {
       'directory',
       'visitors',
       'ministries',
+      'my-ministry',
+      'my-assignments',
+      'my-attendance',
+      'my-profile',
       'groups',
       'prayers',
       'pastoral',
@@ -121,6 +129,10 @@ export const ROLE_CONFIGS: Record<SaaSUserRole, RoleConfig> = {
       'directory',
       'visitors',
       'ministries',
+      'my-ministry',
+      'my-assignments',
+      'my-attendance',
+      'my-profile',
       'groups',
       'prayers',
       'pastoral',
@@ -158,10 +170,12 @@ export const ROLE_CONFIGS: Record<SaaSUserRole, RoleConfig> = {
     description: 'Member directories, ministries, attendance tracking & church administration',
     allowedTabs: [
       'dashboard',
-      'reports',
-      'directory',
       'visitors',
       'ministries',
+      'my-ministry',
+      'my-assignments',
+      'my-attendance',
+      'my-profile',
       'groups',
       'attendance',
       'calendar',
@@ -171,18 +185,18 @@ export const ROLE_CONFIGS: Record<SaaSUserRole, RoleConfig> = {
       'settings',
     ],
     canSwitchChurch: false,
-    canManageMembers: true,
+    canManageMembers: false,
     canManageMinistries: false,
     canManagePrayers: false,
     canManageRoster: false,
     canRecordAttendance: true,
     canManageSundaySchool: false,
-    canPublishAnnouncements: true,
+    canPublishAnnouncements: false,
     canSendWhatsApp: true,
     canManageEvents: false,
     canAccessSettings: true,
     canEditSettings: true,
-    canAccessReports: true,
+    canAccessReports: false,
     canManageVisitors: true,
     canManagePastoralCare: false,
     canModeratePrayerWall: false,
@@ -194,9 +208,12 @@ export const ROLE_CONFIGS: Record<SaaSUserRole, RoleConfig> = {
     description: 'Service roster planning, ministry teams, volunteers, prayer team & schedules',
     allowedTabs: [
       'dashboard',
-      'reports',
       'visitors',
       'ministries',
+      'my-ministry',
+      'my-assignments',
+      'my-attendance',
+      'my-profile',
       'groups',
       'prayers',
       'roster',
@@ -218,10 +235,45 @@ export const ROLE_CONFIGS: Record<SaaSUserRole, RoleConfig> = {
     canManageEvents: false,
     canAccessSettings: false,
     canEditSettings: false,
-    canAccessReports: true,
+    canAccessReports: false,
     canManageVisitors: true,
     canManagePastoralCare: false,
     canModeratePrayerWall: true,
+  },
+  CellGroupLeader: {
+    role: 'CellGroupLeader',
+    label: 'Cell Group Leader',
+    badgeColor: 'bg-amber-100 text-amber-900 border-amber-300',
+    description: 'Leads assigned cell group ministry, manages group roster & logs attendance',
+    allowedTabs: [
+      'dashboard',
+      'groups',
+      'attendance',
+      'my-ministry',
+      'my-assignments',
+      'my-attendance',
+      'my-profile',
+      'prayers',
+      'calendar',
+      'announcements',
+      'notifications',
+    ],
+    canSwitchChurch: false,
+    canManageMembers: false,
+    canManageMinistries: false,
+    canManagePrayers: true,
+    canManageRoster: true,
+    canRecordAttendance: true,
+    canManageSundaySchool: false,
+    canPublishAnnouncements: false,
+    canSendWhatsApp: true,
+    canManageEvents: false,
+    canAccessSettings: false,
+    canEditSettings: false,
+    canAccessReports: false,
+    canManageVisitors: false,
+    canManagePastoralCare: false,
+    canModeratePrayerWall: false,
   },
   SundaySchoolTeacher: {
     role: 'SundaySchoolTeacher',
@@ -230,9 +282,12 @@ export const ROLE_CONFIGS: Record<SaaSUserRole, RoleConfig> = {
     description: 'Children ministry classes, student badges, verses & attendance',
     allowedTabs: [
       'dashboard',
-      'reports',
       'sundayschool',
       'ministries',
+      'my-ministry',
+      'my-assignments',
+      'my-attendance',
+      'my-profile',
       'groups',
       'attendance',
       'calendar',
@@ -252,7 +307,7 @@ export const ROLE_CONFIGS: Record<SaaSUserRole, RoleConfig> = {
     canManageEvents: false,
     canAccessSettings: false,
     canEditSettings: false,
-    canAccessReports: true,
+    canAccessReports: false,
     canManageVisitors: false,
     canManagePastoralCare: false,
     canModeratePrayerWall: false,
@@ -266,6 +321,10 @@ export const ROLE_CONFIGS: Record<SaaSUserRole, RoleConfig> = {
       'dashboard',
       'prayers',
       'ministries',
+      'my-ministry',
+      'my-assignments',
+      'my-attendance',
+      'my-profile',
       'groups',
       'calendar',
       'announcements',
@@ -297,6 +356,10 @@ export const ROLE_CONFIGS: Record<SaaSUserRole, RoleConfig> = {
       'dashboard',
       'prayers',
       'ministries',
+      'my-ministry',
+      'my-assignments',
+      'my-attendance',
+      'my-profile',
       'groups',
       'roster',
       'volunteers',
@@ -335,7 +398,7 @@ export function canModeratePrayerWall(role?: SaaSUserRole | string): boolean {
 
 export function canManageSmallGroups(role?: SaaSUserRole | string): boolean {
   const norm = normalizeRole(role);
-  return ['SuperAdmin', 'PastorAdmin', 'AssistantPastor', 'MinistryLeader'].includes(norm);
+  return ['SuperAdmin', 'PastorAdmin', 'AssistantPastor', 'MinistryLeader', 'CellGroupLeader'].includes(norm);
 }
 
 export function canManageVisitors(role?: SaaSUserRole): boolean {
@@ -355,13 +418,14 @@ export function canCreateEditMinistry(role?: SaaSUserRole): boolean {
   return role === 'SuperAdmin' || role === 'PastorAdmin';
 }
 
-export function canAccessReports(role?: SaaSUserRole): boolean {
-  const config = getRoleConfig(role);
-  return config.canAccessReports;
+export function canAccessReports(role?: SaaSUserRole | string): boolean {
+  const norm = normalizeRole(role);
+  return norm === 'SuperAdmin' || norm === 'PastorAdmin' || norm === 'AssistantPastor';
 }
 
-export function canAccessAllChurchReports(role?: SaaSUserRole): boolean {
-  return role === 'SuperAdmin' || role === 'PastorAdmin' || role === 'AssistantPastor' || role === 'TreasurerStaff';
+export function canAccessAllChurchReports(role?: SaaSUserRole | string): boolean {
+  const norm = normalizeRole(role);
+  return norm === 'SuperAdmin' || norm === 'PastorAdmin' || norm === 'AssistantPastor';
 }
 
 export function normalizeRole(role?: string): SaaSUserRole {
@@ -371,6 +435,7 @@ export function normalizeRole(role?: string): SaaSUserRole {
   if (r.includes('assistantpastor')) return 'AssistantPastor';
   if (r.includes('pastor') || r.includes('churchadmin') || r.includes('admin')) return 'PastorAdmin';
   if (r.includes('treasurer') || r.includes('finance') || r.includes('office')) return 'TreasurerStaff';
+  if (r.includes('cellgroup') || r.includes('cell_group') || r.includes('groupleader') || r.includes('group_leader')) return 'CellGroupLeader';
   if (r.includes('ministryleader') || r.includes('leader')) return 'MinistryLeader';
   if (r.includes('sundayschool') || r.includes('teacher')) return 'SundaySchoolTeacher';
   if (r.includes('volunteer')) return 'Volunteer';
@@ -391,8 +456,15 @@ export function getRoleConfig(role?: SaaSUserRole | string): RoleConfig {
 
 export function isModuleEnabledInChurch(tab: AppTab, moduleToggles?: ChurchModuleToggles): boolean {
   if (!moduleToggles) return true;
-  // Dashboard, Reports, Settings, SaaS Console and Visitors should not be completely blocked by missing module toggles
-  if (tab === 'dashboard' || tab === 'reports' || tab === 'settings' || tab === 'saas' || tab === 'visitors') return true;
+  // Dashboard, Settings, and personal member views remain active
+  if (
+    tab === 'dashboard' ||
+    tab === 'settings' ||
+    tab === 'my-ministry' ||
+    tab === 'my-assignments' ||
+    tab === 'my-attendance' ||
+    tab === 'my-profile'
+  ) return true;
   return moduleToggles[tab as keyof ChurchModuleToggles] !== false;
 }
 
@@ -403,8 +475,14 @@ export function isTabAllowed(
 ): boolean {
   const config = getRoleConfig(role);
   if (!config.allowedTabs.includes(tab)) {
-    // Fallback: allow visitors, dashboard, reports, settings to avoid rendering blank screens
-    if (tab === 'visitors' || tab === 'dashboard') return true;
+    if (
+      tab === 'dashboard' ||
+      tab === 'groups' ||
+      tab === 'my-ministry' ||
+      tab === 'my-assignments' ||
+      tab === 'my-attendance' ||
+      tab === 'my-profile'
+    ) return true;
     return false;
   }
   return isModuleEnabledInChurch(tab, moduleToggles);
@@ -433,3 +511,18 @@ export function canEditChurchSettings(role?: SaaSUserRole): boolean {
   return config.canEditSettings;
 }
 
+export function canManageSystemPreferences(role?: SaaSUserRole | string): boolean {
+  return normalizeRole(role) === 'SuperAdmin';
+}
+
+export function canPublishAnnouncements(role?: SaaSUserRole | string): boolean {
+  if (!role) return false;
+  const norm = normalizeRole(role);
+  return ['SuperAdmin', 'PastorAdmin', 'AssistantPastor'].includes(norm);
+}
+
+export function canAccessAiPastor(role?: SaaSUserRole | string): boolean {
+  if (!role) return false;
+  const norm = normalizeRole(role);
+  return ['SuperAdmin', 'PastorAdmin', 'AssistantPastor'].includes(norm);
+}

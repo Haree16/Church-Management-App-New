@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { ChurchEvent, Member, ChurchTenant } from '../types';
+import React, { useState, useEffect } from 'react';
+import { ChurchEvent, Member, ChurchTenant, SaaSUser } from '../types';
 import { 
   Calendar, MapPin, Clock, Users, Plus, CheckCircle, Sparkles, 
   X, Share2, Download, Trash2, AlertTriangle, Edit3, Save, Eye,
-  FileText, Check, Tag
+  FileText, Check, Tag, Lock
 } from 'lucide-react';
 import { UserAvatar } from './common/UserAvatar';
 
@@ -11,6 +11,7 @@ interface EventCalendarProps {
   events?: ChurchEvent[];
   members?: Member[];
   currentChurch?: ChurchTenant;
+  currentUser?: SaaSUser;
   canManageEvents?: boolean;
   onSaveEvent: (event: ChurchEvent) => void;
   onToggleRsvp: (eventId: string, memberId: string) => void;
@@ -21,6 +22,7 @@ export const EventCalendar: React.FC<EventCalendarProps> = ({
   events = [],
   members = [],
   currentChurch,
+  currentUser,
   canManageEvents = false,
   onSaveEvent,
   onToggleRsvp,
@@ -33,7 +35,30 @@ export const EventCalendar: React.FC<EventCalendarProps> = ({
   const [eventToDelete, setEventToDelete] = useState<ChurchEvent | null>(null);
   const safeMembers = members || [];
   const safeEvents = events || [];
-  const [currentMemberId, setCurrentMemberId] = useState(safeMembers[0]?.id || '');
+  const [currentMemberId, setCurrentMemberId] = useState('');
+
+  const canChangeRsvpMember = currentUser
+    ? ['SuperAdmin', 'PastorAdmin', 'AssistantPastor', 'MinistryLeader', 'TreasurerStaff', 'SundaySchoolTeacher'].includes(currentUser.role)
+    : true;
+
+  useEffect(() => {
+    if (currentUser && safeMembers.length > 0) {
+      const matchingMember = safeMembers.find(m => 
+        m.id === currentUser.id ||
+        (m.email && currentUser.email && m.email.toLowerCase() === currentUser.email.toLowerCase()) ||
+        (m.phone && currentUser.phone && m.phone === currentUser.phone) ||
+        (`${m.firstName} ${m.lastName}`.toLowerCase() === (currentUser.name || '').toLowerCase()) ||
+        (m.firstName.toLowerCase() === (currentUser.username || '').toLowerCase())
+      );
+      if (matchingMember) {
+        setCurrentMemberId(matchingMember.id);
+      } else if (!currentMemberId && safeMembers[0]) {
+        setCurrentMemberId(safeMembers[0].id);
+      }
+    } else if (!currentMemberId && safeMembers[0]) {
+      setCurrentMemberId(safeMembers[0].id);
+    }
+  }, [currentUser, safeMembers]);
 
   // Event Form State
   const [title, setTitle] = useState('');
@@ -180,8 +205,13 @@ END:VCALENDAR`;
           <span>RSVPing as:</span>
           <select
             value={currentMemberId}
+            disabled={!canChangeRsvpMember}
             onChange={(e) => setCurrentMemberId(e.target.value)}
-            className="bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1 font-bold text-slate-900 focus:outline-none"
+            className={`border border-slate-200 rounded-lg px-2.5 py-1 font-bold text-slate-900 focus:outline-none ${
+              !canChangeRsvpMember
+                ? 'bg-slate-100 opacity-80 cursor-not-allowed text-slate-600'
+                : 'bg-slate-100 hover:bg-slate-200'
+            }`}
           >
             {safeMembers.map((m) => (
               <option key={m.id} value={m.id}>

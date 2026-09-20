@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { AppNotification, ChurchTenant, SaaSUser } from '../types';
-import { isNotificationReadByUser } from '../utils/notificationUtils';
+import { isNotificationReadByUser, isNotificationForUser } from '../utils/notificationUtils';
 import { 
   Bell, BellRing, Check, ShieldAlert, Sparkles, Filter, Trash2, Send, 
-  ExternalLink, Smartphone, Users, CheckCheck, Eye
+  ExternalLink, Smartphone, Users, CheckCheck, Eye, Settings 
 } from 'lucide-react';
 import { 
   requestMobileNotificationPermission, 
   sendMobilePanelNotification 
 } from '../services/mobileNotificationService';
+import { SmartNotificationPreferencesModal } from './notifications/SmartNotificationPreferencesModal';
+import { ChurchCrossIcon } from './common/ChurchCrossIcon';
 
 interface NotificationCenterProps {
   notifications?: AppNotification[];
@@ -37,6 +39,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 }) => {
   const [filterCategory, setFilterCategory] = useState<string>('All');
   const [showSendModal, setShowSendModal] = useState(false);
+  const [showPrefsModal, setShowPrefsModal] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState<boolean>(() => {
     try {
       return localStorage.getItem('nca_mobile_notifications_enabled') === 'true';
@@ -104,8 +107,13 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     });
   };
 
+  const canSendBroadcast = currentUser
+    ? ['SuperAdmin', 'PastorAdmin', 'AssistantPastor', 'MinistryLeader'].includes(currentUser.role)
+    : false;
+
   const handleSendPush = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canSendBroadcast) return;
     if (!title || !message) return;
 
     const newNotif: AppNotification = {
@@ -140,11 +148,15 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     setMessage('');
   };
 
-  const filtered = safeNotifications.filter(
+  const userVisibleNotifications = safeNotifications.filter((n) =>
+    isNotificationForUser(n, currentUser, allUsers as any)
+  );
+
+  const filtered = userVisibleNotifications.filter(
     (n) => filterCategory === 'All' || n.category === filterCategory
   );
 
-  const unreadCount = safeNotifications.filter((n) => !isNotificationReadByUser(n, currentUser)).length;
+  const unreadCount = userVisibleNotifications.filter((n) => !isNotificationReadByUser(n, currentUser)).length;
 
   const getCategoryBadgeStyle = (cat: string) => {
     switch (cat) {
@@ -175,8 +187,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold mb-3 border border-blue-500/30">
-              <BellRing className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-amber-400 text-xs font-semibold mb-3 border border-blue-500/30">
+              <ChurchCrossIcon className="w-3.5 h-3.5 text-amber-400" />
               Church Broadcasts & Push Notifications
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
@@ -208,15 +220,33 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
             )}
 
             <button
-              onClick={() => setShowSendModal(true)}
-              className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-md text-xs flex items-center gap-2 transition"
+              onClick={() => setShowPrefsModal(true)}
+              className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-2xl shadow-md text-xs flex items-center gap-2 transition cursor-pointer border border-slate-700"
             >
-              <Send className="w-4 h-4" />
-              Send Church Broadcast
+              <Settings className="w-4 h-4 text-indigo-400" />
+              <span>Notification Preferences</span>
             </button>
+
+            {canSendBroadcast && (
+              <button
+                onClick={() => setShowSendModal(true)}
+                className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-md text-xs flex items-center gap-2 transition cursor-pointer"
+              >
+                <Send className="w-4 h-4" />
+                Send Church Broadcast
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {showPrefsModal && currentUser && (
+        <SmartNotificationPreferencesModal
+          churchId={currentChurch?.id || 'church-1'}
+          userId={currentUser.id}
+          onClose={() => setShowPrefsModal(false)}
+        />
+      )}
 
 
 
@@ -383,7 +413,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       </div>
 
       {/* Send Broadcast Modal */}
-      {showSendModal && (
+      {showSendModal && canSendBroadcast && (
         <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
             <h3 className="text-lg font-bold text-slate-900">Send New Church Broadcast</h3>

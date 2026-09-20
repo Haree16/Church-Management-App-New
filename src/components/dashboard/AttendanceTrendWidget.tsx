@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { AttendanceRecord } from '@/types';
-import { BarChart3, UserCheck, TrendingUp, Filter, AlertCircle, RefreshCw } from 'lucide-react';
+import { BarChart3, UserCheck, TrendingUp, Filter, AlertCircle, RefreshCw, ArrowRight } from 'lucide-react';
 
 interface AttendanceTrendWidgetProps {
   attendanceRecords: AttendanceRecord[];
@@ -282,8 +282,17 @@ export const AttendanceTrendWidget: React.FC<AttendanceTrendWidgetProps> = ({
                 <span>Visitors / Guests</span>
               </span>
             </div>
-            <div className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
-              Showing last {chartPoints.length} {viewMode === 'weekly' ? 'recorded sessions' : 'months'}
+            <div className="flex items-center gap-3">
+              <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                Showing last {chartPoints.length} {viewMode === 'weekly' ? 'recorded sessions' : 'months'}
+              </span>
+              <button
+                onClick={() => onNavigateTab('reports', 'attendance-insights')}
+                className="text-xs font-bold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 flex items-center gap-1 transition"
+              >
+                <span>Attendance Insights</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
         </div>

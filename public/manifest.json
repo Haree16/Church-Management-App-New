@@ -1,9 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest.json",
   "id": "/",
-  "name": "New Creation Assembly Church",
-  "short_name": "New Creation",
-  "description": "Mobile church member directory, prayer wall, and volunteer ministry rosters for New Creation Assembly Church.",
+  "name": "Church Management App",
+  "short_name": "Church App",
+  "description": "Mobile church member directory, prayer wall, visitor follow-ups, and volunteer ministry rosters for Church Management App.",
   "lang": "en-US",
   "dir": "ltr",
   "start_url": "/",

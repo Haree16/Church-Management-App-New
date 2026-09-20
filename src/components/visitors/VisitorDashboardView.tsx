@@ -50,23 +50,23 @@ export function VisitorDashboardView({
   return (
     <div className="space-y-4">
       {/* Overview Controls Card */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-white">
         <div>
-          <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-sky-600" /> Visitor Insights & Retention Overview
+          <h2 className="text-base font-extrabold text-white flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-amber-400" /> Visitor Insights & Retention Overview
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-400 mt-0.5">
             Real-time metric breakdown of guest connections, follow-up effectiveness, and member conversions.
           </p>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="bg-slate-100 p-1 rounded-xl flex items-center gap-1 text-xs">
+          <div className="bg-slate-800 p-1 rounded-xl flex items-center gap-1 text-xs">
             {(['30', '90', '365', 'all'] as const).map((r) => (
               <button
                 key={r}
-                className={`px-3 py-1.5 rounded-lg font-extrabold transition ${
-                  timeRange === r ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'
+                className={`px-3 py-1.5 rounded-lg font-bold transition ${
+                  timeRange === r ? 'bg-amber-500 text-slate-950 font-bold shadow-xs' : 'text-slate-400 hover:text-white'
                 }`}
                 onClick={() => setTimeRange(r)}
               >
@@ -77,9 +77,9 @@ export function VisitorDashboardView({
 
           <button
             onClick={onOpenAddVisitor}
-            className="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center gap-1.5"
+            className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center gap-1.5"
           >
-            <UserPlus className="w-3.5 h-3.5" />
+            <UserPlus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>+ Add Guest Card</span>
           </button>
         </div>
@@ -88,49 +88,49 @@ export function VisitorDashboardView({
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Visitors */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div className="bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-xl flex items-center justify-between text-white">
           <div>
             <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">Total Guests</span>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono mt-1">{totalVisitors}</div>
-            <span className="text-xs text-slate-500 font-semibold">Recorded guest cards</span>
+            <div className="text-2xl sm:text-3xl font-black text-white font-mono mt-1">{totalVisitors}</div>
+            <span className="text-xs text-slate-400 font-semibold">Recorded guest cards</span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0 border border-sky-100">
+          <div className="w-12 h-12 rounded-2xl bg-sky-950/80 text-sky-400 flex items-center justify-center shrink-0 border border-sky-800/60">
             <Users className="w-6 h-6" />
           </div>
         </div>
 
         {/* First Time vs Return */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div className="bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-xl flex items-center justify-between text-white">
           <div>
             <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">Return Guests</span>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono mt-1">{returnCount}</div>
-            <span className="text-xs text-sky-600 font-bold">{firstTimeCount} First-time guests</span>
+            <div className="text-2xl sm:text-3xl font-black text-white font-mono mt-1">{returnCount}</div>
+            <span className="text-xs text-emerald-400 font-bold">{firstTimeCount} First-time guests</span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-950/80 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-800/60">
             <TrendingUp className="w-6 h-6" />
           </div>
         </div>
 
         {/* Follow-up Completion Rate */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div className="bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-xl flex items-center justify-between text-white">
           <div>
             <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">Follow-up Completion</span>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono mt-1">{followUpCompletionRate}%</div>
-            <span className="text-xs text-slate-500 font-semibold">{completedFollowUps} of {totalFollowUps} Tasks Done</span>
+            <div className="text-2xl sm:text-3xl font-black text-amber-400 font-mono mt-1">{followUpCompletionRate}%</div>
+            <span className="text-xs text-slate-400 font-semibold">{completedFollowUps} of {totalFollowUps} Tasks Done</span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-950/80 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-800/60">
             <CheckCircle2 className="w-6 h-6" />
           </div>
         </div>
 
         {/* Conversion Rate */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div className="bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-xl flex items-center justify-between text-white">
           <div>
             <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">Member Conversion</span>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono mt-1">{conversionRate}%</div>
-            <span className="text-xs text-violet-600 font-bold">{convertedMembers} Converted Members</span>
+            <div className="text-2xl sm:text-3xl font-black text-purple-400 font-mono mt-1">{conversionRate}%</div>
+            <span className="text-xs text-purple-400 font-bold">{convertedMembers} Converted Members</span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center shrink-0 border border-violet-100">
+          <div className="w-12 h-12 rounded-2xl bg-purple-950/80 text-purple-400 flex items-center justify-center shrink-0 border border-purple-800/60">
             <UserCheck className="w-6 h-6" />
           </div>
         </div>
@@ -139,9 +139,9 @@ export function VisitorDashboardView({
       {/* Analytics & Referral Sources */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Source Channels */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-2">
-            <PieChart className="w-4 h-4 text-sky-600" /> Visitor Referral Sources
+        <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-xl space-y-4 text-white">
+          <h3 className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
+            <PieChart className="w-4 h-4 text-amber-400" /> Visitor Referral Sources
           </h3>
           <div className="space-y-3">
             {Object.keys(sources).length === 0 ? (
@@ -151,13 +151,13 @@ export function VisitorDashboardView({
                 const percentage = Math.round((count / totalVisitors) * 100);
                 return (
                   <div key={source} className="space-y-1.5">
-                    <div className="flex justify-between text-xs font-extrabold text-slate-800">
+                    <div className="flex justify-between text-xs font-bold text-slate-200">
                       <span>{source}</span>
                       <span>{count} ({percentage}%)</span>
                     </div>
-                    <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
                       <div
-                        className="bg-sky-500 h-2 rounded-full transition-all"
+                        className="bg-amber-500 h-2 rounded-full transition-all"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
@@ -169,9 +169,9 @@ export function VisitorDashboardView({
         </div>
 
         {/* Recent Guests List */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-xl space-y-4 text-white">
           <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-2">
-            <Users className="w-4 h-4 text-slate-500" /> Recent Sunday Guests
+            <Users className="w-4 h-4 text-slate-400" /> Recent Sunday Guests
           </h3>
           <div className="space-y-2">
             {visitors.length === 0 ? (
@@ -181,17 +181,17 @@ export function VisitorDashboardView({
                 <div
                   key={v.id}
                   onClick={() => onSelectVisitor(v)}
-                  className="p-3 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-slate-100/80 transition flex items-center justify-between cursor-pointer"
+                  className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:bg-slate-800/80 transition flex items-center justify-between cursor-pointer"
                 >
                   <div>
-                    <div className="font-extrabold text-slate-900 text-xs">
+                    <div className="font-extrabold text-white text-xs">
                       {v.first_name} {v.last_name}
                     </div>
-                    <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+                    <div className="text-[11px] text-slate-400 font-medium mt-0.5">
                       Visited {v.visit_date} • {v.service_attended || 'Sunday Service'}
                     </div>
                   </div>
-                  <span className="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-white text-slate-700 border border-slate-200">
+                  <span className="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-slate-800 text-amber-300 border border-slate-700">
                     {v.status.replace(/_/g, ' ')}
                   </span>
                 </div>

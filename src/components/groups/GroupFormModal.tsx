@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Group, OrgStatus, Profile } from '@/types/database';
 import { CreateGroupPayload } from '@/services/groupService';
 import {
@@ -55,6 +55,24 @@ export const DAYS_OF_WEEK = [
   'Saturday',
 ];
 
+export const isMinistryMatch = (groupCategory: string, minTeams: string[] = []): boolean => {
+  if (!groupCategory || !minTeams || minTeams.length === 0) return false;
+  const catLower = groupCategory.toLowerCase();
+  return minTeams.some((t) => {
+    const tLower = t.toLowerCase();
+    if (tLower === catLower) return true;
+    if (catLower.includes('youth') && tLower.includes('youth')) return true;
+    if (catLower.includes('worship') && tLower.includes('worship')) return true;
+    if (catLower.includes('prayer') && tLower.includes('prayer')) return true;
+    if (catLower.includes('men') && tLower.includes('men')) return true;
+    if (catLower.includes('women') && tLower.includes('women')) return true;
+    if (catLower.includes('child') && (tLower.includes('child') || tLower.includes('sunday school'))) return true;
+    if ((catLower.includes('media') || catLower.includes('tech')) && (tLower.includes('media') || tLower.includes('tech'))) return true;
+    if (catLower.includes('fellowship') || catLower.includes('general')) return true;
+    return false;
+  });
+};
+
 export const GroupFormModal: React.FC<GroupFormModalProps> = ({
   isOpen,
   onClose,
@@ -77,6 +95,32 @@ export const GroupFormModal: React.FC<GroupFormModalProps> = ({
   const [capacity, setCapacity] = useState(15);
   const [status, setStatus] = useState<OrgStatus>('active');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [filterRelevantLeaders, setFilterRelevantLeaders] = useState(false);
+
+  const processedLeaders = useMemo(() => {
+    const items = availableLeaders.map((u: any) => {
+      const minTeams: string[] = u.ministryTeams || u.ministry_teams || [];
+      const isRelevant = isMinistryMatch(category, minTeams);
+      return {
+        ...u,
+        minTeams,
+        isRelevant,
+      };
+    });
+
+    items.sort((a, b) => {
+      if (a.isRelevant && !b.isRelevant) return -1;
+      if (!a.isRelevant && b.isRelevant) return 1;
+      const nameA = a.display_name || `${a.first_name || ''} ${a.last_name || ''}`.trim() || '';
+      const nameB = b.display_name || `${b.first_name || ''} ${b.last_name || ''}`.trim() || '';
+      return nameA.localeCompare(nameB);
+    });
+
+    if (filterRelevantLeaders) {
+      return items.filter((u) => u.isRelevant);
+    }
+    return items;
+  }, [availableLeaders, category, filterRelevantLeaders]);
 
   useEffect(() => {
     if (initialData && mode === 'edit') {
@@ -147,8 +191,8 @@ export const GroupFormModal: React.FC<GroupFormModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-slate-900 text-white border-slate-800 p-6 rounded-2xl shadow-2xl">
-        <DialogHeader className="border-b border-slate-800 pb-4">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-slate-900 text-white border-2 border-amber-500/40 p-6 rounded-2xl shadow-2xl">
+        <DialogHeader className="border-b border-slate-800 pb-4 bg-gradient-to-r from-slate-900 via-slate-900 to-amber-950/40 p-4 -mx-6 -mt-6 rounded-t-2xl">
           <div className="flex items-center gap-2.5">
             <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-400">
               <Users className="w-5 h-5" />
@@ -251,11 +295,14 @@ export const GroupFormModal: React.FC<GroupFormModalProps> = ({
                 </SelectTrigger>
                 <SelectContent className="bg-slate-900 border-slate-800 text-white max-h-60 overflow-y-auto">
                   <SelectItem value="none">-- No Leader Assigned --</SelectItem>
-                  {availableLeaders.map((u) => (
-                    <SelectItem key={u.id} value={u.id}>
-                      {u.display_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email || u.id} {u.email ? `(${u.email})` : ''}
-                    </SelectItem>
-                  ))}
+                  {availableLeaders.map((u: any) => {
+                    const name = u.display_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email || u.id;
+                    return (
+                      <SelectItem key={u.id} value={u.id} className="text-xs">
+                        {name} {u.email ? `(${u.email})` : ''}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
@@ -268,11 +315,14 @@ export const GroupFormModal: React.FC<GroupFormModalProps> = ({
                 </SelectTrigger>
                 <SelectContent className="bg-slate-900 border-slate-800 text-white max-h-60 overflow-y-auto">
                   <SelectItem value="none">-- None --</SelectItem>
-                  {availableLeaders.map((u) => (
-                    <SelectItem key={u.id} value={u.id}>
-                      {u.display_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email || u.id} {u.email ? `(${u.email})` : ''}
-                    </SelectItem>
-                  ))}
+                  {availableLeaders.map((u: any) => {
+                    const name = u.display_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email || u.id;
+                    return (
+                      <SelectItem key={u.id} value={u.id} className="text-xs">
+                        {name} {u.email ? `(${u.email})` : ''}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
@@ -360,9 +410,8 @@ export const GroupFormModal: React.FC<GroupFormModalProps> = ({
           <DialogFooter className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
             <Button
               type="button"
-              variant="outline"
               onClick={onClose}
-              className="border-slate-700 text-slate-300 hover:bg-slate-800 text-xs"
+              className="bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold border border-slate-600 text-xs px-4 py-2 shadow-sm"
             >
               Cancel
             </Button>

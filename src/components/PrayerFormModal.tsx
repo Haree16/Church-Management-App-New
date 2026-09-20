@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { PrayerRequest, PrayerCategory, PrayerStatus, ConfidentialityLevel, Member } from '../types';
-import { X, Heart, ShieldAlert, Save, Edit3 } from 'lucide-react';
+import { PrayerRequest, PrayerCategory, PrayerStatus, ConfidentialityLevel, Member, SaaSUser } from '../types';
+import { X, Heart, ShieldAlert, Save, Edit3, Lock } from 'lucide-react';
 
 interface PrayerFormModalProps {
   isOpen: boolean;
@@ -10,6 +10,7 @@ interface PrayerFormModalProps {
   onClose: () => void;
   onSave: (prayer: PrayerRequest) => void;
   currentChurchId?: string;
+  currentUser?: SaaSUser | null;
 }
 
 const CATEGORIES: PrayerCategory[] = [
@@ -29,7 +30,8 @@ export const PrayerFormModal: React.FC<PrayerFormModalProps> = ({
   initialMember,
   onClose,
   onSave,
-  currentChurchId
+  currentChurchId,
+  currentUser
 }) => {
   const safeMembers = members || [];
   const [title, setTitle] = useState('');
@@ -39,6 +41,10 @@ export const PrayerFormModal: React.FC<PrayerFormModalProps> = ({
   const [confidentiality, setConfidentiality] = useState<ConfidentialityLevel>('Public Congregation');
   const [selectedMemberId, setSelectedMemberId] = useState('');
   const [guestName, setGuestName] = useState('');
+
+  const canSelectRequester = currentUser
+    ? ['SuperAdmin', 'PastorAdmin', 'AssistantPastor', 'MinistryLeader', 'TreasurerStaff', 'SundaySchoolTeacher'].includes(currentUser.role)
+    : true;
 
   useEffect(() => {
     if (prayerToEdit) {
@@ -63,10 +69,29 @@ export const PrayerFormModal: React.FC<PrayerFormModalProps> = ({
       setCategory('Health & Healing');
       setStatus('Active');
       setConfidentiality('Public Congregation');
-      setSelectedMemberId('');
-      setGuestName('');
+
+      if (currentUser) {
+        const matchingMember = safeMembers.find(m => 
+          m.id === currentUser.id ||
+          (m.email && currentUser.email && m.email.toLowerCase() === currentUser.email.toLowerCase()) ||
+          (m.phone && currentUser.phone && m.phone === currentUser.phone) ||
+          (`${m.firstName} ${m.lastName}`.toLowerCase() === (currentUser.name || '').toLowerCase()) ||
+          (m.firstName.toLowerCase() === (currentUser.username || '').toLowerCase())
+        );
+
+        if (matchingMember) {
+          setSelectedMemberId(matchingMember.id);
+          setGuestName(`${matchingMember.firstName} ${matchingMember.lastName}`);
+        } else {
+          setSelectedMemberId('');
+          setGuestName(currentUser.name || currentUser.username || '');
+        }
+      } else {
+        setSelectedMemberId('');
+        setGuestName('');
+      }
     }
-  }, [prayerToEdit, initialMember, isOpen]);
+  }, [prayerToEdit, initialMember, isOpen, currentUser, safeMembers]);
 
   if (!isOpen) return null;
 
@@ -145,14 +170,25 @@ export const PrayerFormModal: React.FC<PrayerFormModalProps> = ({
         <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto text-xs sm:text-sm">
           {/* Associated Member / Requester */}
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Requested By (Church Member)</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block font-semibold text-slate-700">Requested By (Church Member)</label>
+              {!canSelectRequester && (
+                <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                  <Lock className="w-3 h-3 text-slate-400" />
+                  Locked to your account
+                </span>
+              )}
+            </div>
             <select
               value={selectedMemberId}
+              disabled={!canSelectRequester}
               onChange={(e) => {
                 setSelectedMemberId(e.target.value);
                 if (e.target.value) setGuestName('');
               }}
-              className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none"
+              className={`w-full p-2.5 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none ${
+                !canSelectRequester ? 'bg-slate-100 opacity-80 cursor-not-allowed text-slate-600' : 'bg-slate-50'
+              }`}
             >
               <option value="">-- Guest or General Request --</option>
               {safeMembers.map(m => (
@@ -164,10 +200,13 @@ export const PrayerFormModal: React.FC<PrayerFormModalProps> = ({
               <div className="mt-2">
                 <input
                   type="text"
+                  disabled={!canSelectRequester}
                   placeholder="Or enter requester name (e.g. Mary Watson)"
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none text-xs"
+                  className={`w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none text-xs ${
+                    !canSelectRequester ? 'bg-slate-100 opacity-80 cursor-not-allowed text-slate-600' : 'bg-slate-50'
+                  }`}
                 />
               </div>
             )}

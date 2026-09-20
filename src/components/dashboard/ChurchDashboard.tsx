@@ -51,6 +51,9 @@ interface ChurchDashboardProps {
   onOpenAddEvent?: () => void;
   onOpenRecordAttendance?: () => void;
   onOpenCreateMinistry?: () => void;
+  onOpenChurchAi?: () => void;
+  onOpenAiPastor?: () => void;
+  onOpenAiMinistry?: () => void;
   onToggleRosterConfirm?: (assignmentId: string) => void;
 }
 
@@ -77,6 +80,9 @@ export const ChurchDashboard: React.FC<ChurchDashboardProps> = ({
   onOpenAddEvent,
   onOpenRecordAttendance,
   onOpenCreateMinistry,
+  onOpenChurchAi,
+  onOpenAiPastor,
+  onOpenAiMinistry,
   onToggleRosterConfirm,
 }) => {
   const activeChurchId = currentChurch?.id || 'church-1';
@@ -416,6 +422,64 @@ export const ChurchDashboard: React.FC<ChurchDashboardProps> = ({
           </div>
         </div>
 
+        {/* My Ministry Widget (Section 3 - Only for Ministry Members) */}
+        {myMinistries.length > 0 && (
+          <div className="bg-white rounded-3xl p-5 sm:p-6 border border-amber-200/80 shadow-md space-y-4 bg-gradient-to-r from-amber-50/70 via-white to-white relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-100 pb-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="p-1 rounded-md bg-amber-500/20 text-amber-700 font-bold text-[10px] uppercase tracking-wider">
+                    My Ministry
+                  </span>
+                  {myMinistries.length > 1 && (
+                    <span className="text-[10px] text-slate-500 font-semibold">
+                      (+{myMinistries.length - 1} more)
+                    </span>
+                  )}
+                </div>
+                <h2 className="text-lg font-black text-slate-900 mt-0.5">
+                  {myMinistries[0].name}
+                </h2>
+              </div>
+
+              <button
+                onClick={() => onNavigateTab('my-ministry')}
+                className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs rounded-2xl flex items-center justify-center gap-1.5 shadow-sm transition shrink-0"
+              >
+                <span>View Ministry</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="p-3 bg-white rounded-2xl border border-slate-200/80 space-y-1">
+                <span className="text-[10px] font-bold uppercase text-slate-400">Ministry Leader</span>
+                <div className="font-bold text-slate-900 truncate">
+                  {myMinistries[0].leaderName || 'Church Leadership'}
+                </div>
+              </div>
+
+              <div className="p-3 bg-white rounded-2xl border border-slate-200/80 space-y-1">
+                <span className="text-[10px] font-bold uppercase text-slate-400">Next Assignment</span>
+                <div className="font-bold text-amber-700 truncate">
+                  {myAssignedRoster.length > 0
+                    ? `${myAssignedRoster[0].roleName} (${myAssignedRoster[0].serviceName})`
+                    : 'No shift assigned'}
+                </div>
+              </div>
+
+              <div className="p-3 bg-white rounded-2xl border border-slate-200/80 space-y-1">
+                <span className="text-[10px] font-bold uppercase text-slate-400">Upcoming Event</span>
+                <div className="font-bold text-slate-800 truncate">
+                  {myMinistries[0].meetingDay
+                    ? `${myMinistries[0].meetingDay} ${myMinistries[0].meetingTime || ''}`
+                    : 'Regular Worship Service'}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Serving Duties Roster (If Volunteer) */}
         {myAssignedRoster.length > 0 && (
           <div className="bg-white rounded-3xl p-5 border border-amber-200 shadow-sm space-y-3 bg-gradient-to-r from-amber-50/50 to-white">
@@ -521,6 +585,9 @@ export const ChurchDashboard: React.FC<ChurchDashboardProps> = ({
         onOpenAddEvent={onOpenAddEvent}
         onOpenRecordAttendance={onOpenRecordAttendance}
         onOpenCreateMinistry={onOpenCreateMinistry}
+        onOpenChurchAi={onOpenChurchAi}
+        onOpenAiPastor={onOpenAiPastor}
+        onOpenAiMinistry={onOpenAiMinistry}
       />
 
       {/* Date Range Selector Filter Bar */}

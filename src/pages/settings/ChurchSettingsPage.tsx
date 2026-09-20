@@ -549,7 +549,7 @@ export function ChurchSettingsPage() {
                 )}
                 <div>
                   <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                    {churchForm.name || 'Grace City Church'}
+                    {churchForm.name || 'New Creation Assembly Church'}
                   </h4>
                   <p className="text-xs text-slate-500 line-clamp-1">
                     {churchForm.tagline || 'Community Church'}

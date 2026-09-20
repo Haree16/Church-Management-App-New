@@ -1,5 +1,5 @@
 {
-  "name": "New Creation Assembly Church",
+  "name": "Church Management App",
   "description": "Comprehensive full-stack church management platform featuring Member Directory, Sunday Attendance Tracker, Prayer Wall, Service Roster Planner, Ministry Volunteers, Sunday School Manager, WhatsApp Reminders, Event Calendar, Pastoral Announcements, and Multi-Tenant SaaS Console.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

@@ -135,6 +135,16 @@ const REMOVED_MOCK_USER_IDS = new Set([
   'user-thomas-volunteer',
   'user-pastor-david',
   'user-pastor-mathew',
+  'user-pastor',
+  'user-david',
+  'user-john',
+  'user-mary',
+  'user-harris',
+  'mem-pastor',
+  'mem-david',
+  'mem-john',
+  'mem-mary',
+  'mem-harris',
 ]);
 
 const REMOVED_MOCK_USERNAMES = new Set([
@@ -148,6 +158,24 @@ const REMOVED_MOCK_USERNAMES = new Set([
   'thomas.volunteer',
   'pastor.david',
   'pastor.mathew',
+  'david.leader',
+  'john.member',
+  'mary.member',
+  'harris.leader',
+]);
+
+export const REMOVED_MOCK_CHURCH_IDS = new Set([
+  'church-2',
+  'church-3',
+  'church-crc',
+  'church-gwc',
+  'a0000000-0000-0000-0000-000000000002',
+  'a0000000-0000-0000-0000-000000000003'
+]);
+
+export const REMOVED_MOCK_CHURCH_NAMES = new Set([
+  'calvary revival chapel',
+  'grace worship center'
 ]);
 
 const REMOVED_MOCK_MEMBER_IDS = new Set([
@@ -172,21 +200,25 @@ export const getStoredAuthSession = (): AuthSession | null => {
         REMOVED_MOCK_USERNAMES.has(session.user.username?.toLowerCase()))
     ) {
       session.user = INITIAL_SAAS_USERS[0];
+      session.church = INITIAL_CHURCHES[0];
+      saveStoredAuthSession(session);
+    }
+    if (
+      session?.church &&
+      (REMOVED_MOCK_CHURCH_IDS.has(session.church.id) ||
+        REMOVED_MOCK_CHURCH_NAMES.has(session.church.name?.toLowerCase()?.trim()))
+    ) {
+      session.church = INITIAL_CHURCHES[0];
       saveStoredAuthSession(session);
     }
     return session;
   } catch (err) {
-    console.error('Failed to read auth session', err);
     return null;
   }
 };
 
-export const saveStoredAuthSession = (session: AuthSession | null): void => {
-  if (session) {
-    setItem(STORAGE_KEYS.AUTH_SESSION, session);
-  } else {
-    localStorage.removeItem(STORAGE_KEYS.AUTH_SESSION);
-  }
+export const saveStoredAuthSession = (session: AuthSession): void => {
+  setItem(STORAGE_KEYS.AUTH_SESSION, session);
 };
 
 export const clearStoredAuthSession = (): void => {
@@ -194,7 +226,13 @@ export const clearStoredAuthSession = (): void => {
 };
 
 // 2. Tenants & Users
-export const getStoredChurches = (): ChurchTenant[] => getItem(STORAGE_KEYS.CHURCHES, INITIAL_CHURCHES);
+export const getStoredChurches = (): ChurchTenant[] => {
+  const churches = getItem(STORAGE_KEYS.CHURCHES, INITIAL_CHURCHES);
+  const filtered = (churches || []).filter(
+    c => !REMOVED_MOCK_CHURCH_IDS.has(c.id) && !REMOVED_MOCK_CHURCH_NAMES.has(c.name?.toLowerCase()?.trim())
+  );
+  return filtered.length > 0 ? filtered : INITIAL_CHURCHES;
+};
 export const saveStoredChurches = (data: ChurchTenant[]): void => setItem(STORAGE_KEYS.CHURCHES, data);
 
 export const getStoredUsers = (): SaaSUser[] => {

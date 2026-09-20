@@ -134,23 +134,23 @@ export function VisitorFormDialog({
     }
   };
 
-  const inputStyle = "bg-slate-50 border border-slate-200 text-slate-900 font-medium text-xs sm:text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 caret-sky-600 placeholder:text-slate-400 dark:bg-slate-50 dark:text-slate-900 dark:border-slate-200 dark:caret-sky-600";
+  const inputStyle = "bg-slate-800 border border-slate-700 text-white font-medium text-xs sm:text-sm rounded-xl focus:border-amber-500 placeholder:text-slate-500";
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl bg-white text-slate-900 border border-slate-200 shadow-2xl p-0 overflow-hidden rounded-3xl dark:bg-white dark:text-slate-900 dark:border-slate-200">
+      <DialogContent className="max-w-2xl bg-slate-900 text-white border border-slate-800 shadow-2xl p-0 overflow-hidden rounded-3xl">
         <form onSubmit={handleSubmit} className="flex flex-col max-h-[90vh]">
           {/* Header Banner */}
-          <div className="bg-slate-900 text-white p-5 flex items-center justify-between shrink-0 border-b border-slate-800">
+          <div className="bg-slate-950 text-white p-5 flex items-center justify-between shrink-0 border-b border-slate-800">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center border border-sky-500/30 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shrink-0">
                 <UserCheck className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-base font-extrabold text-white">
                   {mode === 'create' ? 'Record Sunday Guest Connection' : 'Edit Visitor Record'}
                 </h2>
-                <p className="text-xs text-slate-300 font-medium">
+                <p className="text-xs text-slate-400 font-medium">
                   Log connection card details and automate follow-up workflows for first-time visitors.
                 </p>
               </div>
@@ -168,7 +168,7 @@ export function VisitorFormDialog({
           <div className="p-5 space-y-4 overflow-y-auto flex-1">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-1">
-                <label className="text-xs font-extrabold text-slate-700 block dark:text-slate-800">
+                <label className="text-xs font-extrabold text-slate-300 block">
                   First Name *
                 </label>
                 <Input
@@ -180,7 +180,7 @@ export function VisitorFormDialog({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-extrabold text-slate-700 block dark:text-slate-800">
+                <label className="text-xs font-extrabold text-slate-300 block">
                   Last Name *
                 </label>
                 <Input
@@ -192,7 +192,7 @@ export function VisitorFormDialog({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-extrabold text-slate-700 block dark:text-slate-800">
+                <label className="text-xs font-extrabold text-slate-300 block">
                   Phone Number
                 </label>
                 <Input
@@ -205,7 +205,7 @@ export function VisitorFormDialog({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-extrabold text-slate-700 block dark:text-slate-800">
+                <label className="text-xs font-extrabold text-slate-300 block">
                   Email Address
                 </label>
                 <Input
@@ -219,7 +219,7 @@ export function VisitorFormDialog({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-extrabold text-slate-700 block dark:text-slate-800">
+                <label className="text-xs font-extrabold text-slate-300 block">
                   Visit Date *
                 </label>
                 <Input
@@ -231,7 +231,7 @@ export function VisitorFormDialog({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-extrabold text-slate-700 block dark:text-slate-800">
+                <label className="text-xs font-extrabold text-slate-300 block">
                   Service Attended
                 </label>
                 <Select
@@ -241,9 +241,17 @@ export function VisitorFormDialog({
                   <SelectTrigger className={inputStyle}>
                     <SelectValue placeholder="Select service" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white text-slate-900 border border-slate-200 shadow-xl">
-                    {DEMO_SETTINGS.service_timings.map((st) => (
-                      <SelectItem key={st.id} value={`${st.name} (${st.time})`}>
+                  <SelectContent className="bg-slate-900 text-white border border-slate-800 shadow-xl">
+                    {(DEMO_SETTINGS.service_timings.length > 0
+                      ? DEMO_SETTINGS.service_timings
+                      : [
+                          { id: 'st-1', name: 'Sunday Morning Service', time: '09:00 AM' },
+                          { id: 'st-2', name: 'Sunday Evening Service', time: '06:00 PM' },
+                          { id: 'st-3', name: 'Wednesday Prayer & Bible Study', time: '07:00 PM' },
+                          { id: 'st-4', name: 'Youth Fellowship', time: '07:30 PM' },
+                        ]
+                    ).map((st) => (
+                      <SelectItem key={st.id} value={st.name}>
                         {st.name} ({st.time})
                       </SelectItem>
                     ))}
@@ -252,7 +260,7 @@ export function VisitorFormDialog({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-extrabold text-slate-700 block dark:text-slate-800">
+                <label className="text-xs font-extrabold text-slate-300 block">
                   How Did They Hear About Us?
                 </label>
                 <Select
@@ -262,7 +270,7 @@ export function VisitorFormDialog({
                   <SelectTrigger className={inputStyle}>
                     <SelectValue placeholder="Select source" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white text-slate-900 border border-slate-200 shadow-xl">
+                  <SelectContent className="bg-slate-900 text-white border border-slate-800 shadow-xl">
                     <SelectItem value="Friend / Family">Friend or Family</SelectItem>
                     <SelectItem value="Social Media / Instagram">Social Media / Instagram / FB</SelectItem>
                     <SelectItem value="Church Website / Google Search">Google / Website</SelectItem>
@@ -274,7 +282,7 @@ export function VisitorFormDialog({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-extrabold text-slate-700 block dark:text-slate-800">
+                <label className="text-xs font-extrabold text-slate-300 block">
                   Invited By (Member Name)
                 </label>
                 <Input
@@ -286,7 +294,7 @@ export function VisitorFormDialog({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-extrabold text-slate-700 block dark:text-slate-800">
+                <label className="text-xs font-extrabold text-slate-300 block">
                   Family / Party Size
                 </label>
                 <Input
@@ -300,7 +308,7 @@ export function VisitorFormDialog({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-extrabold text-slate-700 block dark:text-slate-800">
+                <label className="text-xs font-extrabold text-slate-300 block">
                   Follow-up Status
                 </label>
                 <Select
@@ -310,7 +318,7 @@ export function VisitorFormDialog({
                   <SelectTrigger className={inputStyle}>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white text-slate-900 border border-slate-200 shadow-xl">
+                  <SelectContent className="bg-slate-900 text-white border border-slate-800 shadow-xl">
                     <SelectItem value="new">New Guest</SelectItem>
                     <SelectItem value="contact_pending">Contact Pending</SelectItem>
                     <SelectItem value="contacted">Contacted</SelectItem>
@@ -323,7 +331,7 @@ export function VisitorFormDialog({
               </div>
 
               <div className="space-y-1 sm:col-span-2">
-                <label className="text-xs font-extrabold text-slate-700 block dark:text-slate-800">
+                <label className="text-xs font-extrabold text-slate-300 block">
                   Assigned Pastoral Leader
                 </label>
                 <Select
@@ -333,7 +341,7 @@ export function VisitorFormDialog({
                   <SelectTrigger className={inputStyle}>
                     <SelectValue placeholder="Select leader for follow-up" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white text-slate-900 border border-slate-200 shadow-xl">
+                  <SelectContent className="bg-slate-900 text-white border border-slate-800 shadow-xl">
                     <SelectItem value="none">None / Unassigned</SelectItem>
                     {DEMO_USERS.filter((u) => u.role !== 'member').map((u) => (
                       <SelectItem key={u.id} value={u.id}>
@@ -345,7 +353,7 @@ export function VisitorFormDialog({
               </div>
 
               <div className="space-y-1 sm:col-span-2">
-                <label className="text-xs font-extrabold text-slate-700 block dark:text-slate-800">
+                <label className="text-xs font-extrabold text-slate-300 block">
                   Prayer Request (From Guest Card)
                 </label>
                 <textarea
@@ -358,7 +366,7 @@ export function VisitorFormDialog({
               </div>
 
               <div className="space-y-1 sm:col-span-2">
-                <label className="text-xs font-extrabold text-slate-700 block dark:text-slate-800">
+                <label className="text-xs font-extrabold text-slate-300 block">
                   Staff Notes & Observations
                 </label>
                 <Input
@@ -372,20 +380,20 @@ export function VisitorFormDialog({
 
             {/* Automated Follow-up Trigger */}
             {mode === 'create' && (
-              <div className="rounded-2xl border border-sky-200 bg-sky-50/70 p-3.5 text-xs">
-                <label className="flex items-center gap-2 font-extrabold text-sky-950 cursor-pointer">
+              <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-3.5 text-xs text-white">
+                <label className="flex items-center gap-2 font-extrabold text-amber-400 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={formData.create_follow_up}
                     onChange={(e) => handleChange('create_follow_up', e.target.checked)}
-                    className="h-4 w-4 rounded border-sky-300 text-sky-600 focus:ring-sky-500"
+                    className="h-4 w-4 rounded border-slate-700 accent-amber-500"
                   />
                   <span>Automatically generate Follow-up Task for pastoral team</span>
                 </label>
                 {formData.create_follow_up && (
-                  <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2 pt-2 border-t border-sky-200/60">
+                  <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2 pt-2 border-t border-slate-800">
                     <div className="space-y-1">
-                      <span className="text-[10px] text-slate-500 font-semibold">Task Title</span>
+                      <span className="text-[10px] text-slate-400 font-semibold">Task Title</span>
                       <Input
                         value={formData.follow_up_title || `Welcome call with ${formData.first_name || 'Guest'}`}
                         onChange={(e) => handleChange('follow_up_title', e.target.value)}
@@ -393,7 +401,7 @@ export function VisitorFormDialog({
                       />
                     </div>
                     <div className="space-y-1">
-                      <span className="text-[10px] text-slate-500 font-semibold">Due Date</span>
+                      <span className="text-[10px] text-slate-400 font-semibold">Due Date</span>
                       <Input
                         type="date"
                         value={formData.follow_up_due_date || ''}
@@ -408,19 +416,19 @@ export function VisitorFormDialog({
           </div>
 
           {/* Footer Actions */}
-          <div className="bg-slate-50 border-t border-slate-200 p-4 flex items-center justify-end gap-2 shrink-0">
+          <div className="bg-slate-950 border-t border-slate-800 p-4 flex items-center justify-end gap-2 shrink-0">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-4 py-2 text-xs font-extrabold text-slate-600 hover:bg-slate-200 rounded-xl transition"
+              className="px-4 py-2 text-xs font-extrabold text-slate-300 hover:bg-slate-800 border border-slate-700 rounded-xl transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2 text-xs font-extrabold text-white bg-sky-600 hover:bg-sky-700 active:bg-sky-800 rounded-xl shadow transition"
+              className="px-5 py-2 text-xs font-extrabold text-slate-950 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 rounded-xl shadow-lg transition"
             >
               {isSubmitting ? 'Saving...' : mode === 'create' ? 'Save Guest Record' : 'Save Changes'}
             </button>

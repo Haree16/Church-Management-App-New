@@ -10,6 +10,7 @@ interface ExportImportModalProps {
   prayers?: PrayerRequest[];
   onClose: () => void;
   onResetData: () => void;
+  onOpenImport?: () => void;
 }
 
 export const ExportImportModal: React.FC<ExportImportModalProps> = ({
@@ -18,7 +19,8 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
   members = [],
   prayers = [],
   onClose,
-  onResetData
+  onResetData,
+  onOpenImport,
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -101,6 +103,27 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
           <p className="text-slate-600">
             Easily backup your church directory, export member contacts to Excel CSV, or print a physical membership sheet.
           </p>
+
+          {onOpenImport && (
+            <button
+              onClick={() => {
+                onClose();
+                onOpenImport();
+              }}
+              className="w-full p-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold border border-amber-600 rounded-2xl flex items-center justify-between transition shadow-sm group"
+            >
+              <div className="flex items-center space-x-3">
+                <FileSpreadsheet className="w-6 h-6 text-slate-950 group-hover:scale-110 transition shrink-0" />
+                <div className="text-left">
+                  <span className="font-extrabold block text-sm">Bulk Import Members (CSV / Excel)</span>
+                  <span className="text-xs text-slate-900/80 font-medium">Upload member list, validate records, detect duplicates & create accounts</span>
+                </div>
+              </div>
+              <span className="bg-slate-950 text-amber-400 px-3 py-1 rounded-xl text-xs font-bold shrink-0">
+                Import &rarr;
+              </span>
+            </button>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
             {/* Export CSV */}

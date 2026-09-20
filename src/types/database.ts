@@ -8,6 +8,7 @@ export type UserRole =
   | 'church_admin'
   | 'ministry_leader'
   | 'group_leader'
+  | 'cell_group_leader'
   | 'volunteer'
   | 'member';
 

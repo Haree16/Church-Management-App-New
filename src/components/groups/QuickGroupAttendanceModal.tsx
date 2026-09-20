@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Group, GroupMember, ChurchMember } from '@/types/database';
+import { Group, GroupMember, ChurchMember, GroupAttendanceRecord } from '@/types/database';
 import { groupService } from '@/services/groupService';
 import {
   Dialog,
@@ -20,6 +20,7 @@ interface QuickGroupAttendanceModalProps {
   group: Group;
   groupMembers: GroupMember[];
   onAttendanceSaved: () => void;
+  editingRecord?: GroupAttendanceRecord | null;
 }
 
 export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps> = ({
@@ -28,6 +29,7 @@ export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps>
   group,
   groupMembers,
   onAttendanceSaved,
+  editingRecord,
 }) => {
   const [sessionDate, setSessionDate] = useState(new Date().toISOString().split('T')[0]);
   const [topic, setTopic] = useState('');
@@ -38,15 +40,22 @@ export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps>
 
   useEffect(() => {
     if (isOpen) {
-      // By default pre-check all active group members for fast single-tap confirmation
-      const activeIds = groupMembers.map((gm) => gm.member_id || gm.user_id).filter(Boolean) as string[];
-      setSelectedMemberIds(activeIds);
-      setSessionDate(new Date().toISOString().split('T')[0]);
-      setTopic('');
-      setNotes('');
+      if (editingRecord) {
+        setSessionDate(editingRecord.session_date);
+        setTopic(editingRecord.topic || '');
+        setNotes(editingRecord.notes || '');
+        setSelectedMemberIds(editingRecord.attendee_ids || []);
+      } else {
+        // By default pre-check all active group members for fast single-tap confirmation
+        const activeIds = groupMembers.map((gm) => gm.member_id || gm.user_id).filter(Boolean) as string[];
+        setSelectedMemberIds(activeIds);
+        setSessionDate(new Date().toISOString().split('T')[0]);
+        setTopic('');
+        setNotes('');
+      }
       setSearchTerm('');
     }
-  }, [isOpen, groupMembers]);
+  }, [isOpen, groupMembers, editingRecord]);
 
   const toggleMemberSelection = (id: string) => {
     setSelectedMemberIds((prev) =>
@@ -67,19 +76,29 @@ export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps>
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await groupService.logGroupAttendance(
-        group.church_id,
-        group.id,
-        sessionDate,
-        selectedMemberIds,
-        topic.trim() || undefined,
-        notes.trim() || undefined
-      );
-      toast.success(`Recorded attendance: ${selectedMemberIds.length} present!`);
+      if (editingRecord) {
+        await groupService.updateGroupAttendance(group.church_id, editingRecord.id, {
+          sessionDate,
+          attendeeIds: selectedMemberIds,
+          topic: topic.trim() || undefined,
+          notes: notes.trim() || undefined,
+        });
+        toast.success('Attendance session updated!');
+      } else {
+        await groupService.logGroupAttendance(
+          group.church_id,
+          group.id,
+          sessionDate,
+          selectedMemberIds,
+          topic.trim() || undefined,
+          notes.trim() || undefined
+        );
+        toast.success(`Recorded attendance: ${selectedMemberIds.length} present!`);
+      }
       onAttendanceSaved();
       onClose();
     } catch (err) {
-      console.error('Failed to log group attendance:', err);
+      console.error('Failed to save group attendance:', err);
       toast.error('Failed to save group attendance record.');
     } finally {
       setIsSubmitting(false);
@@ -97,17 +116,17 @@ export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps>
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-xl max-h-[92vh] overflow-y-auto bg-slate-900 text-white border-slate-800 p-5 rounded-2xl shadow-2xl">
-        <DialogHeader className="border-b border-slate-800 pb-3">
+      <DialogContent className="max-w-xl max-h-[92vh] overflow-y-auto bg-slate-900 text-white border-2 border-emerald-500/40 p-5 rounded-2xl shadow-2xl">
+        <DialogHeader className="border-b border-slate-800 pb-3 bg-gradient-to-r from-slate-900 via-slate-900 to-emerald-950/40 p-4 -mx-5 -mt-5 rounded-t-2xl">
           <div className="flex items-center gap-2.5">
             <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400">
               <Zap className="w-5 h-5" />
             </div>
             <div>
               <DialogTitle className="text-base font-bold text-white flex items-center gap-2">
-                Quick 60-Second Meeting Attendance
+                {editingRecord ? 'Edit Group Attendance Session' : 'Quick 60-Second Meeting Attendance'}
                 <span className="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-800">
-                  Fast Check-in
+                  {editingRecord ? 'Edit Record' : 'Fast Check-in'}
                 </span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-400">
@@ -242,9 +261,8 @@ export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps>
           <DialogFooter className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
             <Button
               type="button"
-              variant="outline"
               onClick={onClose}
-              className="border-slate-700 text-slate-300 hover:bg-slate-800 text-xs"
+              className="bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold border border-slate-600 text-xs px-4 py-2 shadow-sm"
             >
               Cancel
             </Button>

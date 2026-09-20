@@ -1,19 +1,23 @@
 import React, { useState, useMemo } from 'react';
-import { Member, MembershipStatus, MinistryRole, ChurchMinistry } from '../types';
+import { Member, MembershipStatus, MinistryRole, ChurchMinistry, SaaSUser } from '../types';
 import { 
   Search, Phone, Mail, MapPin, Users, HeartHandshake, ShieldCheck, 
   ChevronRight, Sparkles, Filter, X, UserPlus, Heart, MessageSquare, Trash2,
-  ArrowUpDown, Crown, Edit3
+  ArrowUpDown, Crown, Edit3, Upload, FileSpreadsheet, KeyRound, UserCheck, ShieldAlert
 } from 'lucide-react';
 import { UserAvatar } from './common/UserAvatar';
+import { findLinkedUserForMember } from '../utils/notificationUtils';
 
 interface MemberListProps {
   members?: Member[];
   ministries?: ChurchMinistry[];
+  allUsers?: SaaSUser[];
   onSelectMember: (member: Member) => void;
   onEditMember: (member: Member) => void;
   onDeleteMember?: (id: string) => void;
   onAddNew: () => void;
+  onOpenImport?: () => void;
+  canManageMembers?: boolean;
   onSelectMemberPrayers?: (member: Member) => void;
 }
 
@@ -22,10 +26,13 @@ export type MemberSortOption = 'id-asc' | 'id-desc' | 'name-asc' | 'name-desc' |
 export const MemberList: React.FC<MemberListProps> = ({
   members = [],
   ministries = [],
+  allUsers = [],
   onSelectMember,
   onEditMember,
   onDeleteMember,
   onAddNew,
+  onOpenImport,
+  canManageMembers = true,
   onSelectMemberPrayers
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -132,23 +139,48 @@ export const MemberList: React.FC<MemberListProps> = ({
     <div className="space-y-4">
       {/* Search & Action Bar */}
       <div className="bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
-        <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-          <input
-            type="text"
-            placeholder="Search by name, phone, email, or skill..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+            <input
+              type="text"
+              placeholder="Search by name, phone, email, or skill..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            {canManageMembers && onOpenImport && (
+              <button
+                onClick={onOpenImport}
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center space-x-1.5 bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-2xs transition"
+                title="Bulk import members from CSV or Excel file"
+              >
+                <FileSpreadsheet className="w-4 h-4" />
+                <span>Import Members</span>
+              </button>
+            )}
+
+            {canManageMembers && (
+              <button
+                onClick={onAddNew}
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center space-x-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 px-3.5 py-2 rounded-xl text-xs font-bold shadow-2xs transition"
+              >
+                <UserPlus className="w-4 h-4" />
+                <span>Add Member</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Status Filter Chips */}
@@ -307,6 +339,36 @@ export const MemberList: React.FC<MemberListProps> = ({
                           >
                             {member.status}
                           </span>
+
+                          {/* Account Status Badge */}
+                          {(() => {
+                            const linkedUser = findLinkedUserForMember(member.id, allUsers, safeMembers);
+                            let accStatus: 'No Account' | 'Invitation Pending' | 'Active' | 'Disabled' = 'No Account';
+                            let badgeStyle = 'bg-slate-100 text-slate-500 border-slate-200';
+
+                            if (linkedUser) {
+                              if (linkedUser.status === 'Suspended') {
+                                accStatus = 'Disabled';
+                                badgeStyle = 'bg-rose-50 text-rose-800 border-rose-300 font-semibold';
+                              } else if (linkedUser.lastLogin) {
+                                accStatus = 'Active';
+                                badgeStyle = 'bg-emerald-50 text-emerald-800 border-emerald-300 font-semibold';
+                              } else {
+                                accStatus = 'Invitation Pending';
+                                badgeStyle = 'bg-amber-50 text-amber-800 border-amber-300 font-semibold';
+                              }
+                            }
+
+                            return (
+                              <span
+                                className={`text-[10px] px-2 py-0.5 rounded-full border flex items-center gap-1 ${badgeStyle}`}
+                                title={`App Login Account: ${accStatus}`}
+                              >
+                                <KeyRound className="w-2.5 h-2.5 opacity-70" />
+                                <span>{accStatus}</span>
+                              </span>
+                            );
+                          })()}
 
                           {member.familyMembers && member.familyMembers.length > 0 && (
                             <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">

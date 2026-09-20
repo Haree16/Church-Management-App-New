@@ -59,7 +59,7 @@ export function GroupsPage() {
   const churchId = activeChurch?.id || 'a0000000-0000-0000-0000-000000000001';
 
   // Check if current user is a group leader
-  const isGroupLeaderRole = currentRole === 'group_leader';
+  const isGroupLeaderRole = currentRole === 'cell_group_leader' || currentRole === 'group_leader';
 
 
   const loadData = async () => {

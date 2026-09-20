@@ -422,15 +422,6 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
                   </div>
                 </div>
 
-                {!isCurrent && isSuperAdmin && (
-                  <button
-                    onClick={() => onSwitchUser(usr)}
-                    className="w-full py-1.5 text-xs font-bold rounded-xl bg-slate-200 hover:bg-indigo-600 hover:text-white transition flex items-center justify-center gap-1"
-                  >
-                    <span>Switch to this user</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                )}
               </div>
             );
           })}

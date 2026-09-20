@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { UserAvatar } from '../common/UserAvatar';
 import { PastoralCareModule } from '../care/PastoralCareModule';
+import { MemberAbsenceTimelineWidget } from '../member/MemberAbsenceTimelineWidget';
 import { groupService } from '@/services/groupService';
 
 interface Member360ProfileProps {
@@ -626,34 +627,38 @@ export const Member360Profile: React.FC<Member360ProfileProps> = ({
         {/* TAB 3: ATTENDANCE */}
         {/* ========================================================================= */}
         {activeTab === 'attendance' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-xs text-slate-900 dark:text-slate-100 uppercase tracking-wider text-slate-400">
-                Service Attendance History & 12-Week Trend
-              </h3>
-              <span className="text-emerald-600 font-bold text-xs">
-                Trend: {attendanceMetrics.hasEnoughData ? attendanceMetrics.trendDirection.toUpperCase() : 'Need 3+ records'}
-              </span>
-            </div>
+          <div className="space-y-6">
+            <MemberAbsenceTimelineWidget member={member} attendance={attendance} />
 
-            {/* Recent Attendance Records */}
-            {memberAttendance.length > 0 ? (
-              <div className="space-y-2">
-                {memberAttendance.map((att) => (
-                  <div key={att.id} className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                    <div>
-                      <h4 className="font-bold text-slate-900 dark:text-slate-100">{att.serviceName}</h4>
-                      <p className="text-[11px] text-slate-500">{att.date} • {(att as any).time || 'Sunday Service'}</p>
-                    </div>
-                    <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300">
-                      Present
-                    </span>
-                  </div>
-                ))}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-xs text-slate-900 dark:text-slate-100 uppercase tracking-wider text-slate-400">
+                  Detailed Service Attendance Logs
+                </h3>
+                <span className="text-emerald-600 font-bold text-xs">
+                  Trend: {attendanceMetrics.hasEnoughData ? attendanceMetrics.trendDirection.toUpperCase() : 'Need 3+ records'}
+                </span>
               </div>
-            ) : (
-              <p className="text-slate-400 italic py-6 text-center">No individual attendance check-ins recorded for this member.</p>
-            )}
+
+              {/* Recent Attendance Records */}
+              {memberAttendance.length > 0 ? (
+                <div className="space-y-2">
+                  {memberAttendance.map((att) => (
+                    <div key={att.id} className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                      <div>
+                        <h4 className="font-bold text-slate-900 dark:text-slate-100">{att.serviceName}</h4>
+                        <p className="text-[11px] text-slate-500">{att.date} • {(att as any).time || 'Sunday Service'}</p>
+                      </div>
+                      <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300">
+                        Present
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-slate-400 italic py-6 text-center">No individual attendance check-ins recorded for this member.</p>
+              )}
+            </div>
           </div>
         )}
 

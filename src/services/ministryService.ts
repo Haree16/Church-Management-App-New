@@ -31,147 +31,9 @@ export interface CreateMinistryEventPayload {
 }
 
 
-const INITIAL_DEMO_MINISTRIES: Ministry[] = [
-  {
-    id: 'm0000000-0000-0000-0000-000000000001',
-    church_id: 'a0000000-0000-0000-0000-000000000001',
-    name: 'Worship & Creative Arts',
-    description: 'Leading the congregation in vibrant, Christ-centered worship, choir, band, sound & media production.',
-    leader_id: 'u0000000-0000-0000-0000-000000000004',
-    assistant_leader_id: 'u0000000-0000-0000-0000-000000000007',
-    status: 'active',
-    meeting_schedule: 'Thursday Rehearsal 6:30 PM & Sunday Call 7:45 AM',
-    email: 'worship@gracevalley.org',
-    phone: '+1 (555) 400-0004',
-    color: '#6366f1',
-    icon: 'Music',
-    is_active: true,
-    created_at: new Date('2022-01-01').toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'm0000000-0000-0000-0000-000000000002',
-    church_id: 'a0000000-0000-0000-0000-000000000001',
-    name: 'NextGen Youth & Kids',
-    description: 'Discipling students and young families from nursery childcare through high school ministry.',
-    leader_id: 'u0000000-0000-0000-0000-000000000005',
-    status: 'active',
-    meeting_schedule: 'Wednesday Evenings 7:00 PM & Sunday Classes',
-    email: 'nextgen@gracevalley.org',
-    phone: '+1 (555) 500-0005',
-    color: '#ec4899',
-    icon: 'Heart',
-    is_active: true,
-    created_at: new Date('2022-01-01').toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'm0000000-0000-0000-0000-000000000003',
-    church_id: 'a0000000-0000-0000-0000-000000000001',
-    name: 'Community Outreach & Missions',
-    description: 'Serving local food pantries, city relief programs, and international missionary partners.',
-    leader_id: 'u0000000-0000-0000-0000-000000000002',
-    status: 'active',
-    meeting_schedule: '1st Saturday of the Month 9:00 AM',
-    email: 'missions@gracevalley.org',
-    phone: '+1 (555) 200-0002',
-    color: '#10b981',
-    icon: 'Globe',
-    is_active: true,
-    created_at: new Date('2022-01-01').toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'm0000000-0000-0000-0000-000000000004',
-    church_id: 'a0000000-0000-0000-0000-000000000001',
-    name: 'Hospitality & Welcome Greeters',
-    description: 'First impressions, Sunday coffee station, ushering, and guest welcome desk.',
-    leader_id: 'u0000000-0000-0000-0000-000000000006',
-    status: 'active',
-    meeting_schedule: 'Sunday Morning Shift Rotations',
-    email: 'welcome@gracevalley.org',
-    phone: '+1 (555) 600-0006',
-    color: '#f59e0b',
-    icon: 'Coffee',
-    is_active: true,
-    created_at: new Date('2022-02-01').toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'm0000000-0000-0000-0000-000000000005',
-    church_id: 'a0000000-0000-0000-0000-000000000001',
-    name: 'Media & Audio/Visual Production',
-    description: 'Live streaming, camera operation, broadcast mixing, and lighting production.',
-    leader_id: 'u0000000-0000-0000-0000-000000000004',
-    status: 'active',
-    meeting_schedule: 'Sunday Call 7:30 AM',
-    email: 'media@gracevalley.org',
-    phone: '+1 (555) 400-0004',
-    color: '#3b82f6',
-    icon: 'Video',
-    is_active: true,
-    created_at: new Date('2022-03-01').toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'm0000000-0000-0000-0000-000000000006',
-    church_id: 'a0000000-0000-0000-0000-000000000001',
-    name: 'Intercessory Prayer Ministry',
-    description: 'Covering church services in prayer, pastoral care intercession, and prayer chains.',
-    leader_id: 'u0000000-0000-0000-0000-000000000002',
-    status: 'active',
-    meeting_schedule: 'Tuesday & Friday Mornings 6:30 AM',
-    email: 'prayer@gracevalley.org',
-    phone: '+1 (555) 200-0002',
-    color: '#8b5cf6',
-    icon: 'Flame',
-    is_active: true,
-    created_at: new Date('2022-04-01').toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
+const INITIAL_DEMO_MINISTRIES: Ministry[] = [];
 
-const INITIAL_DEMO_MINISTRY_MEMBERS: MinistryMember[] = [
-  {
-    id: 'mm-01',
-    church_id: 'a0000000-0000-0000-0000-000000000001',
-    ministry_id: 'm0000000-0000-0000-0000-000000000001',
-    user_id: 'u0000000-0000-0000-0000-000000000004',
-    member_id: 'cm-004',
-    role: 'Worship Director',
-    status: 'active',
-    joined_date: '2022-03-10',
-    notes: 'Directs worship sets and acoustic arrangements.',
-    created_at: new Date('2022-03-10').toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'mm-02',
-    church_id: 'a0000000-0000-0000-0000-000000000001',
-    ministry_id: 'm0000000-0000-0000-0000-000000000001',
-    user_id: 'u0000000-0000-0000-0000-000000000007',
-    member_id: 'cm-001',
-    role: 'Vocalist (Alto)',
-    status: 'active',
-    joined_date: '2023-05-20',
-    notes: 'Sunday morning vocal team.',
-    created_at: new Date('2023-05-20').toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'mm-03',
-    church_id: 'a0000000-0000-0000-0000-000000000001',
-    ministry_id: 'm0000000-0000-0000-0000-000000000004',
-    user_id: 'u0000000-0000-0000-0000-000000000006',
-    member_id: 'cm-006',
-    role: 'Welcome Lead & Greeter',
-    status: 'active',
-    joined_date: '2023-01-12',
-    notes: 'Organizes Sunday morning greeter stations.',
-    created_at: new Date('2023-01-12').toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
+const INITIAL_DEMO_MINISTRY_MEMBERS: MinistryMember[] = [];
 
 function getLocalMinistries(churchId: string): Ministry[] {
   try {
@@ -286,6 +148,23 @@ export const ministryService = {
         volunteer_count: Math.max(minMembers.length + 2, 4),
       };
     });
+  },
+
+  async getMinistryMembers(churchId: string, ministryId?: string): Promise<MinistryMember[]> {
+    let members: MinistryMember[] = [];
+    if (isSupabaseConfigured()) {
+      let q = supabase
+        .from('ministry_members')
+        .select('*, profile:profiles(*), church_member:church_members(*)');
+      if (ministryId) q = q.eq('ministry_id', ministryId);
+      const { data } = await q;
+      if (data) members = data as MinistryMember[];
+    }
+    if (members.length === 0) {
+      const localMembers = getLocalMinistryMembers(churchId);
+      members = ministryId ? localMembers.filter((mm) => mm.ministry_id === ministryId) : localMembers;
+    }
+    return members;
   },
 
   async getMinistryById(churchId: string, ministryId: string): Promise<{

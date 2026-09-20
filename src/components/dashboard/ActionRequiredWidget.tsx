@@ -155,16 +155,16 @@ export const ActionRequiredWidget: React.FC<ActionRequiredWidgetProps> = ({
 
   if (actionItems.length === 0) {
     return (
-      <div className="bg-emerald-950/40 border border-emerald-500/40 rounded-3xl p-5 flex items-center justify-between text-white shadow-md">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0 border border-emerald-500/30">
+      <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 border border-emerald-500/80 rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex items-center justify-between text-white shadow-lg shadow-emerald-900/15 animate-fadeIn">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-2xl bg-white/20 text-white flex items-center justify-center shrink-0 border border-white/30 backdrop-blur-md shadow-inner">
             <CheckSquare className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="font-bold text-xs sm:text-sm text-emerald-200">
+            <h4 className="font-bold text-sm sm:text-base text-white tracking-wide">
               All Clear! No Pending Actions Required
             </h4>
-            <p className="text-xs text-emerald-300/80">
+            <p className="text-xs text-emerald-100 font-medium mt-0.5 leading-relaxed">
               Visitor follow-ups, prayer care, and upcoming service rosters are up to date.
             </p>
           </div>

@@ -107,7 +107,10 @@ import {
   deleteMinistryActivityFromFirestore,
   subscribeMinistryAnnouncements,
   saveMinistryAnnouncementToFirestore,
-  deleteMinistryAnnouncementFromFirestore
+  deleteMinistryAnnouncementFromFirestore,
+  subscribeVisitors,
+  saveVisitorToFirestore,
+  deleteVisitorFromFirestore
 } from './services/firestoreService';
 import { isTabAllowed, getDefaultTabForRole, getRoleConfig } from './utils/rbac';
 
@@ -132,6 +135,7 @@ import { EventCalendar } from './components/EventCalendar';
 import { NotificationCenter } from './components/NotificationCenter';
 import { PastorAnnouncements } from './components/PastorAnnouncements';
 import { ExportImportModal } from './components/ExportImportModal';
+import { ImportMembersModal } from './components/ImportMembersModal';
 import { MobileFrame } from './components/MobileFrame';
 import { SaaSConsole } from './components/SaaSConsole';
 import { SundaySchoolManager } from './components/SundaySchoolManager';
@@ -139,15 +143,26 @@ import { WhatsAppHub } from './components/WhatsAppHub';
 import { ChurchSettingsModule } from './components/settings/ChurchSettingsModule';
 import { MinistriesModule } from './components/ministries/MinistriesModule';
 import { ChurchDashboard } from './components/dashboard/ChurchDashboard';
+import { AiPastorAssistantModal } from './components/ai/AiPastorAssistantModal';
+import { AiMinistryAssistantModal } from './components/ai/AiMinistryAssistantModal';
+import { ChurchAiModal } from './components/ai/ChurchAiModal';
 import { ReportsModule, ReportCategory } from './components/reports/ReportsModule';
 import { VisitorsPage } from './pages/people/VisitorsPage';
 import { PastoralCareModule } from './components/care/PastoralCareModule';
 import { SmallGroupsModule } from './components/groups/SmallGroupsModule';
+import { MyMinistryView } from './components/member/MyMinistryView';
+import { MyAssignmentsView } from './components/member/MyAssignmentsView';
+import { MyAttendanceView } from './components/member/MyAttendanceView';
+import { MyProfileModal } from './components/member/MyProfileModal';
 import { initMobileNotifications, sendMobilePanelNotification } from './services/mobileNotificationService';
+import { authSecurityService } from './services/authSecurityService';
+import { auditService } from './services/auditService';
 
 export default function App() {
   // Authentication & Session Persistence
   const [authSession, setAuthSession] = useState<AuthSession | null>(() => getStoredAuthSession());
+  const [loginScreenMode, setLoginScreenMode] = useState<'login' | 'forgot' | 'reset'>('login');
+  const [loginResetToken, setLoginResetToken] = useState<string>('');
 
   // SaaS Tenants & Users
   const [churches, setChurches] = useState<ChurchTenant[]>(() => getStoredChurches());
@@ -209,6 +224,11 @@ export default function App() {
   const [prayerToEdit, setPrayerToEdit] = useState<PrayerRequest | null>(null);
   const [initialPrayerMember, setInitialPrayerMember] = useState<Member | null>(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isMyProfileOpen, setIsMyProfileOpen] = useState(false);
+  const [isAiPastorOpen, setIsAiPastorOpen] = useState(false);
+  const [isAiMinistryOpen, setIsAiMinistryOpen] = useState(false);
+  const [isChurchAiOpen, setIsChurchAiOpen] = useState(false);
 
   // Initialize data on mount and subscribe to Firestore live sync
   useEffect(() => {
@@ -262,7 +282,7 @@ export default function App() {
         if (!notifiedIdsRef.current.has(notif.id)) {
           notifiedIdsRef.current.add(notif.id);
           const isReadByMe = currentUserId ? Boolean(notif.readByUserIds?.includes(currentUserId)) : notif.read;
-          // If notification was created by another user and not yet read by current user, notify on this device:
+          // If notification is created by another member and not yet read by current user, notify on this device:
           if (!isReadByMe && notif.createdByUserId && notif.createdByUserId !== currentUserId) {
             sendMobilePanelNotification({
               id: notif.id,
@@ -282,6 +302,7 @@ export default function App() {
     const unsubscribeSSAttendance = subscribeSundaySchoolAttendance((cloud) => setRawSundaySchoolAttendance(cloud));
     const unsubscribeWATemplates = subscribeWhatsAppTemplates((cloud) => setRawWhatsappTemplates(cloud));
     const unsubscribeWAGroups = subscribeWhatsAppGroups((cloud) => setRawWhatsappGroups(cloud));
+    const unsubscribeVisitors = subscribeVisitors(() => {});
 
     return () => {
       unsubscribeChurches();
@@ -305,14 +326,39 @@ export default function App() {
       unsubscribeSSAttendance();
       unsubscribeWATemplates();
       unsubscribeWAGroups();
+      unsubscribeVisitors();
     };
   }, []);
 
-  // Initialize Mobile Notification Channels and Panel Tap Navigation
+  // Initialize Mobile Notification Channels, Deep Links, and Session Security
   useEffect(() => {
     initMobileNotifications((targetTab) => {
       handleNavigateTab(targetTab as AppTab);
     });
+
+    // Check and refresh active authentication session
+    authSecurityService.checkAndRefreshSession().then((res) => {
+      if (res.expired) {
+        setAuthSession(null);
+      } else if (res.session) {
+        setAuthSession(res.session);
+      }
+    });
+
+    // Listen to Android Deep Links / App Links
+    if (Capacitor.isNativePlatform()) {
+      CapApp.addListener('appUrlOpen', (event) => {
+        const url = event.url;
+        if (url && (url.includes('token=') || url.includes('reset-password'))) {
+          const match = url.match(/token=([^&]+)/);
+          if (match && match[1]) {
+            setLoginResetToken(match[1]);
+            setLoginScreenMode('reset');
+            setAuthSession(null);
+          }
+        }
+      }).catch(console.warn);
+    }
   }, []);
 
   // Track references for back button listener
@@ -454,10 +500,12 @@ export default function App() {
     setActiveTab(defaultTab);
   };
 
-  // Logout handler: clears session from local storage and returns to login screen
-  const handleLogout = () => {
-    clearStoredAuthSession();
+  // Logout handler: clears session from local storage, performs security cleanup and returns to login screen
+  const handleLogout = async () => {
+    await authSecurityService.performLogout(authSession?.user, currentChurch.id);
     setAuthSession(null);
+    setLoginScreenMode('login');
+    setLoginResetToken('');
   };
 
   // Switch church tenant
@@ -1143,6 +1191,41 @@ export default function App() {
     deleteMemberFromFirestore(id);
     if (selectedMemberDetail?.id === id) {
       setSelectedMemberDetail(null);
+    }
+  };
+
+  const handleImportComplete = (newMembers: Member[], updatedMembers: Member[], createdUsers?: SaaSUser[]) => {
+    let nextMembers = [...rawMembers];
+
+    if (updatedMembers.length > 0) {
+      const updatedMap = new Map(updatedMembers.map(m => [m.id, m]));
+      nextMembers = nextMembers.map(m => updatedMap.get(m.id) || m);
+      updatedMembers.forEach(m => {
+        saveMemberToFirestore(m).catch(console.warn);
+      });
+    }
+
+    if (newMembers.length > 0) {
+      nextMembers = [...newMembers, ...nextMembers];
+      newMembers.forEach(m => {
+        saveMemberToFirestore(m).catch(console.warn);
+      });
+    }
+
+    if (newMembers.length > 0 || updatedMembers.length > 0) {
+      handleSaveMembers(nextMembers);
+    }
+
+    if (createdUsers && createdUsers.length > 0) {
+      const nextUsers = [...allUsers];
+      createdUsers.forEach(u => {
+        if (!nextUsers.some(ex => ex.id === u.id || (ex.email && ex.email.toLowerCase() === u.email?.toLowerCase()))) {
+          nextUsers.unshift(u);
+          saveUserToFirestore(u).catch(console.warn);
+        }
+      });
+      setAllUsers(nextUsers);
+      saveStoredUsers(nextUsers);
     }
   };
 
@@ -1938,6 +2021,8 @@ export default function App() {
         onLoginSuccess={handleLoginSuccess}
         churches={churches}
         users={allUsers}
+        initialMode={loginScreenMode}
+        initialResetToken={loginResetToken}
       />
     );
   }
@@ -1952,7 +2037,7 @@ export default function App() {
 
   return (
     <MobileFrame isMobileFrame={isMobileFrame} onToggleFrame={() => setIsMobileFrame(!isMobileFrame)}>
-      <div className="flex flex-col flex-1 min-h-full bg-slate-100 text-slate-900 font-sans">
+      <div className="flex flex-col flex-1 min-h-screen bg-slate-950 text-slate-100 font-sans w-full max-w-full overflow-x-hidden">
         {/* Top Header */}
         <Header
           memberCount={members.length}
@@ -1970,6 +2055,9 @@ export default function App() {
             setIsAddPrayerOpen(true);
           }}
           onOpenExportModal={() => setIsExportModalOpen(true)}
+          onOpenChurchAi={() => setIsChurchAiOpen(true)}
+          onOpenAiPastor={() => setIsAiPastorOpen(true)}
+          onOpenAiMinistry={() => setIsAiMinistryOpen(true)}
           activeTab={activeTab}
           currentChurch={currentChurch}
           currentUser={currentUser}
@@ -2006,7 +2094,7 @@ export default function App() {
         </div>
 
         {/* Main Content Area */}
-        <main className="flex-1 p-3 sm:p-5 max-w-6xl w-full mx-auto pb-3 sm:pb-4">
+        <main className="flex-1 p-2 sm:p-5 max-w-6xl w-full min-w-0 mx-auto pb-24 sm:pb-28 overflow-x-hidden">
           {activeTab === 'dashboard' && isTabAllowed(userRole, 'dashboard', activeModuleToggles) && (
             <ChurchDashboard
               currentChurch={currentChurch}
@@ -2047,6 +2135,9 @@ export default function App() {
               onOpenAddEvent={() => handleNavigateTab('calendar')}
               onOpenRecordAttendance={() => handleNavigateTab('attendance')}
               onOpenCreateMinistry={() => handleNavigateTab('ministries')}
+              onOpenChurchAi={() => setIsChurchAiOpen(true)}
+              onOpenAiPastor={() => setIsAiPastorOpen(true)}
+              onOpenAiMinistry={() => setIsAiMinistryOpen(true)}
               onToggleRosterConfirm={handleToggleRosterConfirm}
             />
           )}
@@ -2084,6 +2175,9 @@ export default function App() {
             <MemberList
               members={members}
               ministries={ministries}
+              allUsers={allUsers}
+              canManageMembers={roleConfig.canManageMembers}
+              onOpenImport={() => setIsImportModalOpen(true)}
               onSelectMember={(m) => setSelectedMemberDetail(m)}
               onEditMember={(m) => {
                 if (roleConfig.canManageMembers) {
@@ -2101,7 +2195,7 @@ export default function App() {
             />
           )}
 
-          {activeTab === 'visitors' && (
+          {activeTab === 'visitors' && isTabAllowed(userRole, 'visitors', activeModuleToggles) && (
             <VisitorsPage currentChurch={currentChurch} currentUser={currentUser} />
           )}
 
@@ -2136,11 +2230,60 @@ export default function App() {
               onDeleteRosterAssignment={handleRemoveRosterAssignment}
               onNavigateTab={(tab) => handleNavigateTab(tab as AppTab)}
               initialSelectedMinistryId={selectedMinistryNavId}
+              onOpenAiMinistry={() => setIsAiMinistryOpen(true)}
+            />
+          )}
+
+          {activeTab === 'my-ministry' && (
+            <MyMinistryView
+              currentChurch={currentChurch}
+              currentUser={currentUser}
+              members={members}
+              ministries={ministries}
+              ministryMembers={ministryMembers}
+              ministryTeams={ministryTeams}
+              ministryActivities={ministryActivities}
+              ministryAnnouncements={ministryAnnouncements}
+              events={events}
+              roster={roster}
+              onNavigateTab={(tab, deepLinkId) => {
+                if (deepLinkId) setSelectedMinistryNavId(deepLinkId);
+                handleNavigateTab(tab as AppTab);
+              }}
+              onSaveMinistryAnnouncement={handleSaveMinistryAnnouncement}
+              onDeleteMinistryAnnouncement={handleDeleteMinistryAnnouncement}
+              onSaveMinistryMember={handleSaveMinistryMember}
+              onDeleteMinistryMember={handleDeleteMinistryMember}
+              onToggleRosterConfirm={handleToggleRosterConfirm}
+              onOpenAiMinistry={() => setIsAiMinistryOpen(true)}
+            />
+          )}
+
+          {activeTab === 'my-assignments' && (
+            <MyAssignmentsView
+              currentUser={currentUser}
+              members={members}
+              roster={roster}
+              ministryActivities={ministryActivities}
+              ministries={ministries}
+              onToggleRosterConfirm={handleToggleRosterConfirm}
+              onNavigateTab={(tab) => handleNavigateTab(tab as AppTab)}
+            />
+          )}
+
+          {activeTab === 'my-attendance' && (
+            <MyAttendanceView
+              currentUser={currentUser}
+              members={members}
+              attendance={attendance}
+              ministryActivities={ministryActivities}
+              sundaySchoolAttendance={rawSundaySchoolAttendance}
+              onNavigateTab={(tab) => handleNavigateTab(tab as AppTab)}
             />
           )}
 
           {activeTab === 'groups' && isTabAllowed(userRole, 'groups', activeModuleToggles) && (
-            <SmallGroupsModule members={members} />
+            <SmallGroupsModule members={members} currentUser={currentUser} currentRole={userRole} currentChurch={currentChurch} churchId={currentChurch.id} />
           )}
 
           {activeTab === 'attendance' && isTabAllowed(userRole, 'attendance', activeModuleToggles) && (
@@ -2188,6 +2331,7 @@ export default function App() {
               events={events}
               members={members}
               currentChurch={currentChurch}
+              currentUser={currentUser}
               canManageEvents={roleConfig.canManageEvents}
               onSaveEvent={handleSaveEvent}
               onToggleRsvp={handleToggleRsvp}
@@ -2332,6 +2476,57 @@ export default function App() {
           unreadNotifCount={unreadNotifCount}
           userRole={userRole}
           moduleToggles={activeModuleToggles}
+          currentUser={currentUser}
+          members={members}
+          ministries={ministries}
+          ministryMembers={ministryMembers}
+          onOpenMyProfile={() => setIsMyProfileOpen(true)}
+        />
+
+        {/* My Member Profile Modal */}
+        <MyProfileModal
+          isOpen={isMyProfileOpen}
+          onClose={() => setIsMyProfileOpen(false)}
+          currentUser={currentUser}
+          members={members}
+        />
+
+        {/* Central Church AI Modal */}
+        <ChurchAiModal
+          isOpen={isChurchAiOpen}
+          onClose={() => setIsChurchAiOpen(false)}
+          churchId={currentChurch.id}
+          userRole={userRole}
+          userName={currentUser.name}
+          userEmail={currentUser.email}
+          memberId={currentUser.id}
+          activeTabOrScreen={activeTab}
+        />
+
+        {/* AI Pastor Assistant Modal */}
+        <AiPastorAssistantModal
+          isOpen={isAiPastorOpen}
+          onClose={() => setIsAiPastorOpen(false)}
+          churchId={currentChurch.id}
+          userRole={userRole}
+          userName={currentUser.name}
+        />
+
+        {/* AI Ministry Assistant Modal */}
+        <AiMinistryAssistantModal
+          isOpen={isAiMinistryOpen}
+          onClose={() => setIsAiMinistryOpen(false)}
+          currentChurchId={currentChurch.id}
+          currentUser={currentUser}
+          members={members}
+          ministries={ministries}
+          ministryMembers={ministryMembers}
+          roster={roster}
+          activities={ministryActivities}
+          announcements={ministryAnnouncements}
+          events={events}
+          attendance={attendance}
+          onSaveMinistryAnnouncement={handleSaveMinistryAnnouncement}
         />
 
         {/* Modals */}
@@ -2378,6 +2573,7 @@ export default function App() {
           members={members}
           initialMember={initialPrayerMember}
           currentChurchId={activeChurchId}
+          currentUser={currentUser}
           onClose={() => {
             setIsAddPrayerOpen(false);
             setPrayerToEdit(null);
@@ -2393,6 +2589,17 @@ export default function App() {
           prayers={prayers}
           onClose={() => setIsExportModalOpen(false)}
           onResetData={handleResetData}
+          onOpenImport={() => setIsImportModalOpen(true)}
+        />
+
+        <ImportMembersModal
+          isOpen={isImportModalOpen}
+          currentChurchId={activeChurchId}
+          currentChurchName={currentChurch?.name}
+          existingMembers={rawMembers}
+          ministries={ministries}
+          onClose={() => setIsImportModalOpen(false)}
+          onImportComplete={handleImportComplete}
         />
 
         {/* Floating Double-Back Exit Toast */}

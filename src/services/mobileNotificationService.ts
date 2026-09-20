@@ -157,7 +157,8 @@ export async function sendMobilePanelNotification(payload: MobileNotificationPay
               category,
             },
             schedule: { at: new Date(Date.now() + 100) }, // Trigger immediately
-            smallIcon: 'ic_launcher',
+            smallIcon: 'ic_stat_cross',
+            iconColor: '#D97706',
             actionTypeId: 'OPEN_MODULE',
           },
         ],
