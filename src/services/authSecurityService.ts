@@ -1,9 +1,10 @@
 import { SaaSUser, AuthSession, ChurchTenant } from '../types';
-import { getStoredUsers, saveStoredUsers, getStoredAuthSession, saveStoredAuthSession, clearStoredAuthSession } from '../utils/storage';
+import { getStoredUsers, saveStoredUsers, getStoredMembers, getStoredAuthSession, saveStoredAuthSession, clearStoredAuthSession } from '../utils/storage';
 import { INITIAL_SAAS_USERS, INITIAL_CHURCHES } from '../data/initialData';
 import { auditService } from './auditService';
 import { emailService } from './emailService';
 import { saveUserToFirestore } from './firestoreService';
+import { sendMobilePanelNotification } from './mobileNotificationService';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 export interface PasswordResetTokenRecord {
@@ -17,8 +18,22 @@ export interface PasswordResetTokenRecord {
   createdAt: string;
 }
 
+export interface MobileOtpRecord {
+  id: string;
+  userId: string;
+  phone: string;
+  otpHash: string;
+  expiresAt: number; // unix timestamp in ms
+  attempts: number;
+  verified: boolean;
+  usedAt: string | null;
+  resetToken?: string;
+  createdAt: string;
+}
+
 const STORAGE_KEYS = {
   RESET_TOKENS: 'nca_church_reset_tokens_v4',
+  MOBILE_OTPS: 'nca_church_mobile_otps_v4',
   SECURE_SESSION: 'nca_church_secure_session_v4',
 };
 
@@ -74,10 +89,349 @@ function saveStoredTokens(tokens: PasswordResetTokenRecord[]): void {
   }
 }
 
+export function normalizePhone(phone: string): string {
+  if (!phone) return '';
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length >= 10) {
+    return digits.slice(-10);
+  }
+  return digits;
+}
+
+export function maskPhoneNumber(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length >= 10) {
+    const last4 = digits.slice(-4);
+    const prefix = digits.slice(0, Math.max(0, digits.length - 7));
+    return `${prefix ? '+' + prefix + ' ' : ''}******${last4}`;
+  }
+  if (digits.length > 4) {
+    return '***' + digits.slice(-4);
+  }
+  return phone;
+}
+
+function getStoredMobileOtps(): MobileOtpRecord[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.MOBILE_OTPS);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveStoredMobileOtps(otps: MobileOtpRecord[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.MOBILE_OTPS, JSON.stringify(otps));
+  } catch (e) {
+    console.warn('Failed to save mobile OTPs to local storage:', e);
+  }
+}
+
 // Active single-flight promise for deduplicating concurrent session refreshes
 let activeRefreshPromise: Promise<AuthSession | null> | null = null;
 
 export const authSecurityService = {
+  /**
+   * Request password reset OTP to mobile phone number.
+   */
+  async requestMobileOtp(phoneInput: string): Promise<{
+    success: boolean;
+    message: string;
+    otpId?: string;
+    phoneMasked?: string;
+    devOtpCode?: string;
+    userId?: string;
+  }> {
+    const normPhone = normalizePhone(phoneInput);
+    if (!normPhone || normPhone.length < 7) {
+      return {
+        success: false,
+        message: 'Please enter a valid mobile phone number.',
+      };
+    }
+
+    try {
+      // 1. Find user matching phone number
+      const storedUsers = getStoredUsers();
+      const allUsers = [...storedUsers];
+      INITIAL_SAAS_USERS.forEach((u) => {
+        if (!allUsers.some((existing) => existing.id === u.id)) {
+          allUsers.push(u);
+        }
+      });
+
+      // Search by SaaSUser.phone or Member.phone
+      const storedMembers = getStoredMembers();
+      let matchedUser = allUsers.find((u) => normalizePhone(u.phone) === normPhone);
+
+      if (!matchedUser) {
+        // Search in member directory
+        const matchedMember = storedMembers.find((m) => normalizePhone(m.phone) === normPhone);
+        if (matchedMember) {
+          matchedUser = allUsers.find(
+            (u) => u.member_id === matchedMember.id || u.memberId === matchedMember.id || u.email.toLowerCase() === matchedMember.email.toLowerCase()
+          );
+        }
+      }
+
+      if (!matchedUser) {
+        return {
+          success: false,
+          message: 'No registered user account found associated with this mobile number. Please check the number or contact your church admin.',
+        };
+      }
+
+      // 2. Generate 6-digit numeric OTP code
+      const rawOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      const otpHash = await hashString(rawOtp);
+      const expiresAt = Date.now() + 10 * 60 * 1000; // Expire in 10 minutes
+
+      const otpRecord: MobileOtpRecord = {
+        id: `otp-${Date.now()}-${generateRandomToken(4)}`,
+        userId: matchedUser.id,
+        phone: normPhone,
+        otpHash,
+        expiresAt,
+        attempts: 0,
+        verified: false,
+        usedAt: null,
+        createdAt: new Date().toISOString(),
+      };
+
+      // 3. Store OTP record (revoking older un-used OTPs for this user)
+      const existingOtps = getStoredMobileOtps();
+      const updatedOtps = existingOtps.filter((o) => o.userId !== matchedUser.id || o.verified || o.usedAt);
+      updatedOtps.push(otpRecord);
+      saveStoredMobileOtps(updatedOtps);
+
+      // 4. Send native mobile notification & audit log
+      const phoneMasked = maskPhoneNumber(matchedUser.phone || phoneInput);
+      await sendMobilePanelNotification({
+        id: `notif-otp-${Date.now()}`,
+        title: '🔑 Password Reset OTP',
+        message: `Your 6-digit security code is: ${rawOtp}. Valid for 10 minutes.`,
+        category: 'Emergency',
+        churchName: 'Church Security',
+      }).catch(console.warn);
+
+      const churchId = matchedUser.church_id || matchedUser.churchId || INITIAL_CHURCHES[0].id;
+      await auditService.logAction(churchId, {
+        action: 'auth.mobile_otp_requested',
+        resource_type: 'auth',
+        resource_id: matchedUser.id,
+        actor_id: matchedUser.id,
+        actor_name: matchedUser.name,
+        actor_role: matchedUser.role,
+        details: { phoneMasked },
+      }).catch(() => {});
+
+      return {
+        success: true,
+        message: `6-digit OTP code sent to ${phoneMasked}. Check your mobile device.`,
+        otpId: otpRecord.id,
+        phoneMasked,
+        devOtpCode: rawOtp,
+        userId: matchedUser.id,
+      };
+    } catch (err: any) {
+      console.error('Error in requestMobileOtp:', err);
+      return {
+        success: false,
+        message: 'Failed to dispatch mobile OTP. Please try again.',
+      };
+    }
+  },
+
+  /**
+   * Verify mobile OTP code entered by user.
+   */
+  async verifyMobileOtp(phoneInput: string, otpCode: string): Promise<{
+    success: boolean;
+    message?: string;
+    error?: string;
+    resetToken?: string;
+    userId?: string;
+  }> {
+    const normPhone = normalizePhone(phoneInput);
+    const cleanedCode = (otpCode || '').trim();
+
+    if (!normPhone) {
+      return { success: false, error: 'Please enter your mobile phone number.' };
+    }
+    if (!cleanedCode || cleanedCode.length !== 6) {
+      return { success: false, error: 'Please enter a valid 6-digit OTP code.' };
+    }
+
+    try {
+      const otps = getStoredMobileOtps();
+      const recordIndex = otps.findIndex(
+        (o) => o.phone === normPhone && !o.usedAt && !o.verified && Date.now() <= o.expiresAt
+      );
+
+      if (recordIndex === -1) {
+        return {
+          success: false,
+          error: 'No active OTP found for this mobile number or code has expired. Please request a new OTP.',
+        };
+      }
+
+      const record = otps[recordIndex];
+
+      if (record.attempts >= 5) {
+        return {
+          success: false,
+          error: 'Maximum verification attempts (5) exceeded. Please request a new OTP.',
+        };
+      }
+
+      const hashInput = await hashString(cleanedCode);
+      if (hashInput !== record.otpHash) {
+        // Increment attempt count
+        record.attempts += 1;
+        otps[recordIndex] = record;
+        saveStoredMobileOtps(otps);
+        const remaining = 5 - record.attempts;
+        return {
+          success: false,
+          error: `Incorrect 6-digit OTP code. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`,
+        };
+      }
+
+      // OTP verified successfully! Generate single-use resetToken
+      const resetToken = `mobtok_${generateRandomToken(32)}`;
+      record.verified = true;
+      record.resetToken = resetToken;
+      otps[recordIndex] = record;
+      saveStoredMobileOtps(otps);
+
+      const storedUsers = getStoredUsers();
+      const allUsers = [...storedUsers, ...INITIAL_SAAS_USERS];
+      const matchedUser = allUsers.find((u) => u.id === record.userId);
+
+      if (matchedUser) {
+        const churchId = matchedUser.church_id || matchedUser.churchId || INITIAL_CHURCHES[0].id;
+        await auditService.logAction(churchId, {
+          action: 'auth.mobile_otp_verified',
+          resource_type: 'auth',
+          resource_id: matchedUser.id,
+          actor_id: matchedUser.id,
+        }).catch(() => {});
+      }
+
+      return {
+        success: true,
+        message: 'OTP verified successfully! Please enter your new password.',
+        resetToken,
+        userId: record.userId,
+      };
+    } catch (err: any) {
+      console.error('Error in verifyMobileOtp:', err);
+      return { success: false, error: 'Failed to verify OTP code. Please try again.' };
+    }
+  },
+
+  /**
+   * Reset password in database using verified mobile OTP token.
+   */
+  async resetPasswordWithMobileOtp(resetToken: string, newPassword: string): Promise<{
+    success: boolean;
+    error?: string;
+    message?: string;
+  }> {
+    if (!resetToken || !resetToken.trim()) {
+      return { success: false, error: 'Missing reset verification token.' };
+    }
+    if (!newPassword || newPassword.length < 6) {
+      return { success: false, error: 'Password must be at least 6 characters long.' };
+    }
+
+    try {
+      const otps = getStoredMobileOtps();
+      const recordIndex = otps.findIndex((o) => o.resetToken === resetToken && o.verified && !o.usedAt);
+
+      if (recordIndex === -1) {
+        return { success: false, error: 'Invalid or expired reset session. Please verify your OTP again.' };
+      }
+
+      const record = otps[recordIndex];
+
+      if (Date.now() > record.expiresAt) {
+        return { success: false, error: 'Reset session has expired. Please request a new OTP.' };
+      }
+
+      // Find user
+      const storedUsers = getStoredUsers();
+      const allUsers = [...storedUsers];
+      INITIAL_SAAS_USERS.forEach((u) => {
+        if (!allUsers.some((existing) => existing.id === u.id)) {
+          allUsers.push(u);
+        }
+      });
+
+      const user = allUsers.find((u) => u.id === record.userId);
+      if (!user) {
+        return { success: false, error: 'User account not found.' };
+      }
+
+      // 1. Update user password object
+      const updatedUser: SaaSUser = {
+        ...user,
+        password: newPassword,
+      };
+
+      // 2. Persist to Local Storage User Cache
+      const userExistsInStored = storedUsers.some((u) => u.id === user.id);
+      let nextStoredUsers: SaaSUser[];
+      if (userExistsInStored) {
+        nextStoredUsers = storedUsers.map((u) => (u.id === user.id ? updatedUser : u));
+      } else {
+        nextStoredUsers = [...storedUsers, updatedUser];
+      }
+      saveStoredUsers(nextStoredUsers);
+
+      // 3. Persist to Firestore DB (users collection)
+      await saveUserToFirestore(updatedUser).catch((err) => {
+        console.warn('Failed to update user password in Firestore:', err);
+      });
+
+      // 4. Update Supabase Auth if configured
+      if (isSupabaseConfigured()) {
+        await supabase.auth.updateUser({ password: newPassword }).catch(() => {});
+      }
+
+      // 5. Mark OTP record as used
+      record.usedAt = new Date().toISOString();
+      otps[recordIndex] = record;
+      saveStoredMobileOtps(otps);
+
+      // 6. Invalidate active session if logged in
+      const currentSession = getStoredAuthSession();
+      if (currentSession?.user?.id === user.id) {
+        clearStoredAuthSession();
+      }
+
+      // 7. Log Security Audit
+      const churchId = user.church_id || user.churchId || INITIAL_CHURCHES[0].id;
+      await auditService.logAction(churchId, {
+        action: 'auth.password_changed_via_mobile_otp',
+        resource_type: 'auth',
+        resource_id: user.id,
+        actor_id: user.id,
+        actor_name: user.name,
+        actor_role: user.role,
+        details: { status: 'success_db_updated', method: 'mobile_otp' },
+      }).catch(() => {});
+
+      return {
+        success: true,
+        message: 'Password successfully changed and updated in database!',
+      };
+    } catch (err: any) {
+      console.error('Error in resetPasswordWithMobileOtp:', err);
+      return { success: false, error: err.message || 'Failed to update password in database.' };
+    }
+  },
   /**
    * Request password reset for email address.
    * ABSOLUTELY PREVENTS ACCOUNT ENUMERATION:

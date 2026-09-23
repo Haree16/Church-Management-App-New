@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Mail, ArrowLeft, CheckCircle2, AlertCircle, Send, ExternalLink, Copy, Key, Settings } from 'lucide-react';
+import { Mail, ArrowLeft, CheckCircle2, AlertCircle, Send, ExternalLink, Copy, Key, Settings, Smartphone } from 'lucide-react';
 import { authSecurityService } from '@/services/authSecurityService';
 import { emailService } from '@/services/emailService';
+import { MobileOtpPasswordResetForm } from './MobileOtpPasswordResetForm';
 
 interface ForgotPasswordFormProps {
   onBackToLogin: () => void;
 }
 
 export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackToLogin }) => {
+  const [resetMethod, setResetMethod] = useState<'email' | 'mobile'>('email');
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -69,8 +71,54 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
     }
   };
 
+  if (resetMethod === 'mobile') {
+    return (
+      <div className="w-full max-w-md">
+        <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800 mb-3">
+          <button
+            type="button"
+            onClick={() => setResetMethod('email')}
+            className="flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-1.5"
+          >
+            <Mail className="w-3.5 h-3.5" />
+            <span>Email Link</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setResetMethod('mobile')}
+            className="flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 shadow transition-colors flex items-center justify-center gap-1.5"
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span>Mobile OTP</span>
+          </button>
+        </div>
+        <MobileOtpPasswordResetForm onBackToLogin={onBackToLogin} />
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-md bg-slate-800/90 border border-slate-700/80 rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden text-slate-100 p-6 sm:p-8">
+      {/* Reset Method Tab Switcher */}
+      <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 mb-5">
+        <button
+          type="button"
+          onClick={() => setResetMethod('email')}
+          className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 shadow transition-colors flex items-center justify-center gap-1.5"
+        >
+          <Mail className="w-3.5 h-3.5" />
+          <span>Email Link</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setResetMethod('mobile')}
+          className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-1.5"
+        >
+          <Smartphone className="w-3.5 h-3.5" />
+          <span>Mobile OTP</span>
+        </button>
+      </div>
+
       <div className="flex items-center justify-between mb-4">
         <div className="flex-1 text-center">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">Forgot your password?</h2>

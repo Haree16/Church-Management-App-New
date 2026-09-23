@@ -145,6 +145,32 @@ export async function runAuthSecurityTests() {
   assert(valB.valid === true, '13. Newest reset token remains valid');
 
   // --------------------------------------------------
+  // 1B. MOBILE OTP PASSWORD RESET TESTS
+  // --------------------------------------------------
+  console.log('\n--- GROUP 1B: MOBILE OTP PASSWORD RESET TESTS ---');
+
+  // Test 14: Mobile OTP request with valid registered phone
+  const otpRes = await authSecurityService.requestMobileOtp('555-0199');
+  assert(otpRes.success === true && !!otpRes.devOtpCode, '14. Request mobile OTP returns success and generates dev OTP code');
+
+  // Test 15: Verification with invalid 6-digit code
+  const wrongOtpVal = await authSecurityService.verifyMobileOtp('555-0199', '000000');
+  assert(wrongOtpVal.success === false && wrongOtpVal.error!.includes('Incorrect'), '15. Invalid OTP code is correctly rejected with attempt count penalty');
+
+  // Test 16: Verification with valid generated OTP code
+  const validOtpVal = await authSecurityService.verifyMobileOtp('555-0199', otpRes.devOtpCode!);
+  assert(validOtpVal.success === true && !!validOtpVal.resetToken, '16. Valid OTP code verification returns single-use mobile reset token');
+
+  // Test 17: Password reset in DB using verified mobile OTP reset token
+  const dbResetRes = await authSecurityService.resetPasswordWithMobileOtp(validOtpVal.resetToken!, 'MobileOtpUpdatedPassword2026!');
+  assert(dbResetRes.success === true, '17. Password successfully updated in DB using verified mobile OTP token');
+
+  // Test 18: Verify user password in DB store
+  const storedUsersOtpCheck = getStoredUsers();
+  const updatedUserOtp = storedUsersOtpCheck.find((u) => u.id === testUser.id);
+  assert(updatedUserOtp?.password === 'MobileOtpUpdatedPassword2026!', '18. User password in DB store matches new Mobile OTP password');
+
+  // --------------------------------------------------
   // 2. SESSION & AUTHORIZATION TESTS
   // --------------------------------------------------
   console.log('\n--- GROUP 2: SESSION & MULTI-TENANT SECURITY TESTS ---');

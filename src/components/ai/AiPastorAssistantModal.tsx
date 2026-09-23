@@ -88,7 +88,7 @@ Feel free to ask a question or select one of the suggested topics below!`,
     setIsLoading(true);
 
     try {
-      const responseText = await aiPastorService.askAiPastor({
+      const result = await aiPastorService.askAiPastor({
         prompt,
         churchId,
         userRole,
@@ -100,7 +100,7 @@ Feel free to ask a question or select one of the suggested topics below!`,
       const assistantMessage: ChatMessage = {
         id: `msg-ai-${Date.now()}`,
         sender: 'assistant',
-        text: responseText,
+        text: result.responseText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 

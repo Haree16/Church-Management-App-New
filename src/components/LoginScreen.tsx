@@ -276,9 +276,19 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
               </div>
 
               <div>
-                <label htmlFor="input-login-password" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Password
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label htmlFor="input-login-password" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                    Password
+                  </label>
+                  <button
+                    id="btn-forgot-password-link"
+                    type="button"
+                    onClick={() => setMode('forgot')}
+                    className="text-xs font-medium text-amber-400 hover:text-amber-300 hover:underline cursor-pointer transition-colors"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
                 <div className="relative">
                   <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
