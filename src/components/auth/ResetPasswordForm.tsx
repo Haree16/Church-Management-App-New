@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle, ShieldCheck, ArrowLeft } from 'lucide-react';
-import { authSecurityService, PasswordResetTokenRecord } from '@/services/authSecurityService';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle, ShieldCheck, ArrowLeft, Check, X } from 'lucide-react';
+import { authSecurityService } from '@/services/authSecurityService';
+import { validatePasswordPolicy } from '@/utils/passwordPolicy';
 import { SaaSUser } from '@/types';
 
 interface ResetPasswordFormProps {
@@ -18,6 +19,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isValidating, setIsValidating] = useState(true);
   const [tokenValid, setTokenValid] = useState(false);
   const [tokenError, setTokenError] = useState<string | null>(null);
@@ -26,6 +28,10 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Real-time password policy validation
+  const policy = useMemo(() => validatePasswordPolicy(newPassword), [newPassword]);
+  const passwordsMatch = newPassword.length > 0 && newPassword === confirmPassword;
 
   // Extract token from URL hash or query params if missing
   useEffect(() => {
@@ -78,8 +84,8 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
     e.preventDefault();
     setErrorMessage(null);
 
-    if (newPassword.length < 6) {
-      setErrorMessage('Password must be at least 6 characters long.');
+    if (!policy.isValid) {
+      setErrorMessage(`Password must meet all complexity requirements: ${policy.errors.join(', ')}.`);
       return;
     }
 
@@ -98,7 +104,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
         setIsSuccess(true);
         setTimeout(() => {
           onSuccessRedirect();
-        }, 2500);
+        }, 2200);
       } else {
         setErrorMessage(result.error || 'Failed to update password. Please try again.');
       }
@@ -112,7 +118,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
     return (
       <div className="w-full max-w-md bg-slate-800/90 border border-slate-700/80 rounded-2xl shadow-2xl backdrop-blur-md p-8 text-center text-slate-100">
         <div className="w-8 h-8 border-3 border-amber-400 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-xs text-slate-300 font-medium">Validating password reset security token...</p>
+        <p className="text-xs text-slate-300 font-medium">Validating password reset security session...</p>
       </div>
     );
   }
@@ -142,6 +148,22 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
     );
   }
 
+  // Calculate strength bar color and width
+  const getStrengthConfig = () => {
+    switch (policy.strength) {
+      case 'strong':
+        return { label: 'Strong', color: 'bg-emerald-500', textColor: 'text-emerald-400', width: 'w-full' };
+      case 'good':
+        return { label: 'Good', color: 'bg-amber-400', textColor: 'text-amber-400', width: 'w-3/4' };
+      case 'fair':
+        return { label: 'Fair', color: 'bg-orange-500', textColor: 'text-orange-400', width: 'w-1/2' };
+      default:
+        return { label: 'Weak', color: 'bg-rose-500', textColor: 'text-rose-400', width: 'w-1/4' };
+    }
+  };
+
+  const strengthConfig = getStrengthConfig();
+
   return (
     <div className="w-full max-w-md bg-slate-800/90 border border-slate-700/80 rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden text-slate-100 p-6 sm:p-8">
       <div className="text-center mb-6">
@@ -150,7 +172,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
         </div>
         <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">Create New Password</h2>
         <p className="text-xs text-slate-300 mt-1">
-          {userAccount ? `Setting new password for account (${userAccount.email})` : 'Enter your new password below'}
+          {userAccount ? `Setting new password for account (${userAccount.name || userAccount.email})` : 'Enter your new password below'}
         </p>
       </div>
 
@@ -160,7 +182,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
             <CheckCircle2 className="w-10 h-10 mx-auto text-emerald-400" />
             <h3 className="text-sm font-semibold text-white">Password Updated Successfully!</h3>
             <p className="text-xs text-emerald-300/90 leading-relaxed">
-              Your password has been changed. Previous active sessions have been invalidated. Redirecting to login...
+              Your password has been changed and successfully updated in the database. Redirecting to login...
             </p>
           </div>
 
@@ -177,10 +199,11 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
           {errorMessage && (
             <div className="p-3.5 bg-rose-950/70 border border-rose-700 text-rose-200 rounded-xl text-xs flex items-start gap-2.5 animate-fadeIn">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
-              <div>{errorMessage}</div>
+              <div className="leading-relaxed">{errorMessage}</div>
             </div>
           )}
 
+          {/* New Password Input */}
           <div>
             <label htmlFor="input-new-password" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
               New Password
@@ -191,22 +214,69 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
                 id="input-new-password"
                 type={showPassword ? 'text' : 'password'}
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter new password (min 6 chars)"
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  if (errorMessage) setErrorMessage(null);
+                }}
+                placeholder="Enter new password"
                 className="w-full bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 rounded-xl pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                 required
-                minLength={6}
+                autoFocus
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+
+            {/* Password Strength Meter */}
+            {newPassword.length > 0 && (
+              <div className="mt-2 space-y-1.5">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-slate-400">Strength:</span>
+                  <span className={`font-semibold ${strengthConfig.textColor}`}>{strengthConfig.label}</span>
+                </div>
+                <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden">
+                  <div className={`h-full ${strengthConfig.color} ${strengthConfig.width} transition-all duration-300`} />
+                </div>
+              </div>
+            )}
+
+            {/* Password Requirements Checklist */}
+            <div className="mt-3 p-3 bg-slate-900/80 rounded-xl border border-slate-800 space-y-1.5 text-[11px]">
+              <div className="text-slate-400 font-medium mb-1">Password must contain:</div>
+              
+              <div className={`flex items-center gap-1.5 transition-colors ${policy.rules.minLength ? 'text-emerald-400' : 'text-slate-400'}`}>
+                {policy.rules.minLength ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <span className="w-3.5 h-3.5 flex items-center justify-center text-slate-500">•</span>}
+                <span>At least 8 characters</span>
+              </div>
+
+              <div className={`flex items-center gap-1.5 transition-colors ${policy.rules.hasUppercase ? 'text-emerald-400' : 'text-slate-400'}`}>
+                {policy.rules.hasUppercase ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <span className="w-3.5 h-3.5 flex items-center justify-center text-slate-500">•</span>}
+                <span>At least one uppercase letter (A-Z)</span>
+              </div>
+
+              <div className={`flex items-center gap-1.5 transition-colors ${policy.rules.hasLowercase ? 'text-emerald-400' : 'text-slate-400'}`}>
+                {policy.rules.hasLowercase ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <span className="w-3.5 h-3.5 flex items-center justify-center text-slate-500">•</span>}
+                <span>At least one lowercase letter (a-z)</span>
+              </div>
+
+              <div className={`flex items-center gap-1.5 transition-colors ${policy.rules.hasNumber ? 'text-emerald-400' : 'text-slate-400'}`}>
+                {policy.rules.hasNumber ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <span className="w-3.5 h-3.5 flex items-center justify-center text-slate-500">•</span>}
+                <span>At least one number (0-9)</span>
+              </div>
+
+              <div className={`flex items-center gap-1.5 transition-colors ${policy.rules.hasSpecial ? 'text-emerald-400' : 'text-slate-400'}`}>
+                {policy.rules.hasSpecial ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <span className="w-3.5 h-3.5 flex items-center justify-center text-slate-500">•</span>}
+                <span>At least one special character (!@#$%^&*)</span>
+              </div>
+            </div>
           </div>
 
+          {/* Confirm Password Input */}
           <div>
             <label htmlFor="input-confirm-password" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
               Confirm New Password
@@ -215,29 +285,65 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 id="input-confirm-password"
-                type={showPassword ? 'text' : 'password'}
+                type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm new password"
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (errorMessage) setErrorMessage(null);
+                }}
+                placeholder="Re-enter new password"
                 className="w-full bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 rounded-xl pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                 required
-                minLength={6}
               />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+              >
+                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
+            {confirmPassword.length > 0 && (
+              <div className="mt-1.5 flex items-center gap-1.5 text-[11px]">
+                {passwordsMatch ? (
+                  <span className="text-emerald-400 flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" /> Passwords match
+                  </span>
+                ) : (
+                  <span className="text-rose-400 flex items-center gap-1">
+                    <X className="w-3.5 h-3.5" /> Passwords do not match
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           <button
             id="btn-submit-reset-password"
             type="submit"
-            disabled={isSubmitting}
-            className="w-full mt-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 active:scale-[0.99]"
+            disabled={isSubmitting || !policy.isValid || !passwordsMatch}
+            className="w-full mt-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 active:scale-[0.99]"
           >
             {isSubmitting ? (
-              <div className="w-5 h-5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+              <>
+                <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                <span>Updating Password in Database...</span>
+              </>
             ) : (
-              <span>Reset Password</span>
+              <span>Reset Password in Database</span>
             )}
           </button>
+
+          <div className="pt-2 text-center">
+            <button
+              type="button"
+              onClick={onBackToLogin}
+              className="inline-flex items-center text-xs text-slate-400 hover:text-slate-200 transition-colors font-medium"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
+              <span>Back to Login</span>
+            </button>
+          </div>
         </form>
       )}
     </div>

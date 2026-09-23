@@ -1,264 +1,236 @@
 import React, { useState } from 'react';
-import { Mail, ArrowLeft, CheckCircle2, AlertCircle, Send, ExternalLink, Copy, Key, Settings, Smartphone } from 'lucide-react';
+import { Mail, ArrowLeft, CheckCircle2, AlertCircle, ArrowRight, Smartphone, ShieldCheck, KeyRound } from 'lucide-react';
 import { authSecurityService } from '@/services/authSecurityService';
-import { emailService } from '@/services/emailService';
-import { MobileOtpPasswordResetForm } from './MobileOtpPasswordResetForm';
+import { SaaSUser } from '@/types';
 
 interface ForgotPasswordFormProps {
   onBackToLogin: () => void;
+  onNavigateToReset?: (token: string, user?: SaaSUser) => void;
 }
 
-export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackToLogin }) => {
+export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ 
+  onBackToLogin,
+  onNavigateToReset,
+}) => {
   const [resetMethod, setResetMethod] = useState<'email' | 'mobile'>('email');
-  const [email, setEmail] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [phoneInput, setPhoneInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [devResetLink, setDevResetLink] = useState<string | undefined>(undefined);
-  const [copiedLink, setCopiedLink] = useState(false);
-
-  const [showKeyConfig, setShowKeyConfig] = useState(false);
-  const [resendApiKey, setResendApiKey] = useState('');
-  const [apiKeySaved, setApiKeySaved] = useState(false);
-
-  const handleSaveApiKey = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (resendApiKey.trim()) {
-      emailService.setApiKey(resendApiKey.trim());
-      setApiKeySaved(true);
-      setTimeout(() => setApiKeySaved(false), 2500);
-      setShowKeyConfig(false);
-    }
-  };
+  const [successInfo, setSuccessInfo] = useState<{ message: string; token: string; user?: SaaSUser } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    const trimmedEmail = email.trim();
+    setSuccessInfo(null);
 
-    if (!trimmedEmail) {
-      setErrorMessage('Please enter your email address');
+    const targetValue = resetMethod === 'email' ? emailInput.trim() : phoneInput.trim();
+
+    if (!targetValue) {
+      setErrorMessage(
+        resetMethod === 'email' 
+          ? 'Please enter your registered email address.' 
+          : 'Please enter your registered mobile number.'
+      );
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const res = await authSecurityService.requestPasswordReset(trimmedEmail);
+      // Validate against the database (Firestore + Local Store)
+      const res = await authSecurityService.validateAndInitiateReset(targetValue);
       setIsSubmitting(false);
 
-      if (res.success) {
-        setIsSuccess(true);
-        setFeedbackMessage(res.message);
-        if (res.resetLinkForDev) {
-          setDevResetLink(res.resetLinkForDev);
+      if (res.success && res.resetToken) {
+        setSuccessInfo({
+          message: res.message || 'Account verified! Navigating to reset password...',
+          token: res.resetToken,
+          user: res.user,
+        });
+
+        // Navigate directly to the reset password page/form
+        if (onNavigateToReset) {
+          setTimeout(() => {
+            onNavigateToReset(res.resetToken!, res.user);
+          }, 600);
         }
       } else {
-        setErrorMessage(res.message || 'Failed to request password reset.');
+        setErrorMessage(
+          res.error || 
+          (resetMethod === 'email' 
+            ? 'No account found with this email in the database.' 
+            : 'No account found with this mobile number in the database.')
+        );
       }
     } catch (err: any) {
       setIsSubmitting(false);
-      setErrorMessage('An unexpected error occurred. Please try again.');
+      setErrorMessage('An unexpected error occurred while verifying with the database. Please try again.');
     }
   };
-
-  const handleCopyLink = () => {
-    if (devResetLink) {
-      navigator.clipboard.writeText(devResetLink);
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2000);
-    }
-  };
-
-  if (resetMethod === 'mobile') {
-    return (
-      <div className="w-full max-w-md">
-        <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800 mb-3">
-          <button
-            type="button"
-            onClick={() => setResetMethod('email')}
-            className="flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-1.5"
-          >
-            <Mail className="w-3.5 h-3.5" />
-            <span>Email Link</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setResetMethod('mobile')}
-            className="flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 shadow transition-colors flex items-center justify-center gap-1.5"
-          >
-            <Smartphone className="w-3.5 h-3.5" />
-            <span>Mobile OTP</span>
-          </button>
-        </div>
-        <MobileOtpPasswordResetForm onBackToLogin={onBackToLogin} />
-      </div>
-    );
-  }
 
   return (
     <div className="w-full max-w-md bg-slate-800/90 border border-slate-700/80 rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden text-slate-100 p-6 sm:p-8">
-      {/* Reset Method Tab Switcher */}
+      {/* Header */}
+      <div className="text-center mb-6">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 mb-3 text-amber-400">
+          <KeyRound className="w-6 h-6" />
+        </div>
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">Forgot Password</h2>
+        <p className="text-xs text-slate-300 mt-1">
+          Validate your registered email or mobile number in the database to reset your password.
+        </p>
+      </div>
+
+      {/* Method Switcher Tabs */}
       <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 mb-5">
         <button
           type="button"
-          onClick={() => setResetMethod('email')}
-          className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 shadow transition-colors flex items-center justify-center gap-1.5"
+          onClick={() => {
+            setResetMethod('email');
+            setErrorMessage(null);
+          }}
+          className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+            resetMethod === 'email'
+              ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
         >
           <Mail className="w-3.5 h-3.5" />
-          <span>Email Link</span>
+          <span>Email Address</span>
         </button>
         <button
           type="button"
-          onClick={() => setResetMethod('mobile')}
-          className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-1.5"
+          onClick={() => {
+            setResetMethod('mobile');
+            setErrorMessage(null);
+          }}
+          className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+            resetMethod === 'mobile'
+              ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
         >
           <Smartphone className="w-3.5 h-3.5" />
-          <span>Mobile OTP</span>
+          <span>Mobile Number</span>
         </button>
       </div>
 
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex-1 text-center">
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">Forgot your password?</h2>
-        </div>
-        <button
-          type="button"
-          onClick={() => setShowKeyConfig(!showKeyConfig)}
-          title="Configure Resend API Key for Real Outbound Emails"
-          className="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg hover:bg-slate-700/50 transition-colors"
-        >
-          <Settings className="w-4 h-4" />
-        </button>
-      </div>
-
-      <p className="text-xs text-slate-300 text-center mb-6 leading-relaxed">
-        Enter your registered email address below and we'll send you instructions to reset your password.
-      </p>
-
-      {/* Resend API Key Drawer / Configuration */}
-      {showKeyConfig && (
-        <div className="mb-5 p-4 bg-slate-900/90 border border-amber-500/40 rounded-xl space-y-3 animate-fadeIn text-xs">
-          <div className="flex items-center justify-between text-amber-400 font-semibold">
-            <div className="flex items-center gap-1.5">
-              <Key className="w-4 h-4" />
-              <span>Resend Outbound Email API Key</span>
-            </div>
-            <span className="text-[10px] text-slate-400">Official Mailer</span>
-          </div>
-          <p className="text-slate-300 text-[11px] leading-relaxed">
-            Enter your Resend API Key (<code className="text-amber-300 font-mono">re_...</code>) below to dispatch real emails directly to inbox addresses:
-          </p>
-          <form onSubmit={handleSaveApiKey} className="space-y-2">
-            <input
-              type="password"
-              placeholder="re_123456789..."
-              value={resendApiKey}
-              onChange={(e) => setResendApiKey(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 text-slate-100 placeholder-slate-500 rounded-lg px-3 py-2 font-mono text-xs focus:outline-none focus:border-amber-500"
-            />
-            <div className="flex items-center justify-between">
-              <button
-                type="submit"
-                className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg transition-colors text-xs"
-              >
-                Save Resend Key
-              </button>
-              {apiKeySaved && <span className="text-emerald-400 text-xs font-semibold">Saved!</span>}
-            </div>
-          </form>
-        </div>
-      )}
-
+      {/* Error Alert */}
       {errorMessage && (
-        <div className="mb-4 p-3.5 bg-rose-950/70 border border-rose-700 text-rose-200 rounded-xl text-xs flex items-start gap-2.5 animate-fadeIn">
+        <div className="mb-4 p-3.5 bg-rose-950/80 border border-rose-700/90 text-rose-200 rounded-xl text-xs flex items-start gap-2.5 animate-fadeIn">
           <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
-          <div>{errorMessage}</div>
+          <div className="leading-relaxed">{errorMessage}</div>
         </div>
       )}
 
-      {isSuccess ? (
+      {/* Success / Navigating State */}
+      {successInfo ? (
         <div className="space-y-4 text-center">
-          <div className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-700/80 text-emerald-200 space-y-2">
+          <div className="p-4 rounded-xl bg-emerald-950/70 border border-emerald-700/80 text-emerald-200 space-y-2 animate-fadeIn">
             <CheckCircle2 className="w-10 h-10 mx-auto text-emerald-400" />
-            <h3 className="text-sm font-semibold text-white">Check Your Inbox</h3>
-            <p className="text-xs text-emerald-300/90 leading-relaxed">{feedbackMessage}</p>
+            <h3 className="text-sm font-semibold text-white">Database Verification Successful!</h3>
+            <p className="text-xs text-emerald-300/90 leading-relaxed">
+              {successInfo.user ? `Account matched: ${successInfo.user.name}` : successInfo.message}
+            </p>
+            <p className="text-[11px] text-emerald-400/80">
+              Navigating to Reset Password page...
+            </p>
           </div>
 
-          {/* Development / Direct Reset Link Simulation */}
-          {devResetLink && (
-            <div className="p-3.5 bg-slate-900/90 border border-sky-600/50 rounded-xl text-left text-xs space-y-2">
-              <div className="flex items-center justify-between text-sky-400 font-semibold text-[11px] uppercase tracking-wider">
-                <span>Direct Reset Link (Testing Simulation)</span>
-                <span className="text-[10px] bg-sky-950 text-sky-300 px-2 py-0.5 rounded border border-sky-800">Dev Environment</span>
-              </div>
-              <p className="text-[11px] text-slate-300">
-                Click below or copy the link to set a new password:
-              </p>
-              <div className="flex items-center gap-2">
-                <a
-                  href={devResetLink}
-                  className="flex-1 bg-sky-600 hover:bg-sky-500 text-white font-medium px-3 py-2 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-colors truncate"
-                >
-                  <ExternalLink className="w-3.5 h-3.5 shrink-0" />
-                  <span>Open Reset Password Page</span>
-                </a>
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-1 shrink-0"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>{copiedLink ? 'Copied!' : 'Copy'}</span>
-                </button>
-              </div>
-            </div>
+          {onNavigateToReset && (
+            <button
+              type="button"
+              onClick={() => onNavigateToReset(successInfo.token, successInfo.user)}
+              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold py-2.5 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-xs"
+            >
+              <span>Continue to Set New Password</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           )}
 
           <div className="pt-2">
             <button
               type="button"
               onClick={onBackToLogin}
-              className="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-colors"
+              className="inline-flex items-center text-xs text-slate-400 hover:text-slate-200 transition-colors font-medium"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
               <span>Back to Login</span>
             </button>
           </div>
         </div>
       ) : (
+        /* Input Form */
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="input-forgot-email" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-              Email Address
-            </label>
-            <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                id="input-forgot-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@church.org"
-                className="w-full bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                required
-              />
+          {resetMethod === 'email' ? (
+            <div>
+              <label htmlFor="input-forgot-email" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                Registered Email Address
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  id="input-forgot-email"
+                  type="email"
+                  value={emailInput}
+                  onChange={(e) => {
+                    setEmailInput(e.target.value);
+                    if (errorMessage) setErrorMessage(null);
+                  }}
+                  placeholder="name@church.org"
+                  className="w-full bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                  required
+                  autoFocus
+                />
+              </div>
+              <p className="text-[11px] text-slate-400 mt-1">
+                Enter the email address registered with your account.
+              </p>
             </div>
-          </div>
+          ) : (
+            <div>
+              <label htmlFor="input-forgot-mobile" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                Registered Mobile Number
+              </label>
+              <div className="relative">
+                <Smartphone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  id="input-forgot-mobile"
+                  type="tel"
+                  value={phoneInput}
+                  onChange={(e) => {
+                    setPhoneInput(e.target.value);
+                    if (errorMessage) setErrorMessage(null);
+                  }}
+                  placeholder="e.g. 9876543210 or +91 98765 43210"
+                  className="w-full bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                  required
+                  autoFocus
+                />
+              </div>
+              <p className="text-[11px] text-slate-400 mt-1">
+                Enter the phone number associated with your church profile or login.
+              </p>
+            </div>
+          )}
 
           <button
-            id="btn-send-reset-link"
+            id="btn-validate-user"
             type="submit"
             disabled={isSubmitting}
-            className="w-full mt-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 active:scale-[0.99]"
+            className="w-full mt-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 active:scale-[0.99]"
           >
             {isSubmitting ? (
-              <div className="w-5 h-5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+              <>
+                <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                <span>Checking Database...</span>
+              </>
             ) : (
               <>
-                <Send className="w-4 h-4" />
-                <span>Send Reset Link</span>
+                <ShieldCheck className="w-4 h-4" />
+                <span>Validate & Reset Password</span>
+                <ArrowRight className="w-4 h-4" />
               </>
             )}
           </button>

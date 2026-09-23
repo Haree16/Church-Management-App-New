@@ -7,7 +7,7 @@ import { SaaSUser, ChurchTenant, AuthSession } from '../types';
 import { INITIAL_SAAS_USERS, INITIAL_CHURCHES } from '../data/initialData';
 import { ForgotPasswordForm } from './auth/ForgotPasswordForm';
 import { ResetPasswordForm } from './auth/ResetPasswordForm';
-import { authSecurityService, generateRandomToken } from '@/services/authSecurityService';
+import { authSecurityService, generateRandomToken, normalizePhone } from '@/services/authSecurityService';
 import { auditService } from '@/services/auditService';
 
 interface LoginScreenProps {
@@ -84,9 +84,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         }
       });
 
-      // Find matching user
+      // Find matching user (by username, email, or mobile phone)
+      const normInputPhone = normalizePhone(trimmedUser);
       let foundUser = allCandidateUsers.find(
-        (u) => u.username.toLowerCase() === trimmedUser || u.email.toLowerCase() === trimmedUser
+        (u) => u.username.toLowerCase() === trimmedUser ||
+               u.email.toLowerCase() === trimmedUser ||
+               (normInputPhone.length >= 7 && u.phone && normalizePhone(u.phone) === normInputPhone)
       );
 
       // SuperAdmin alias fallback
@@ -162,7 +165,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-amber-600/15 rounded-full blur-3xl pointer-events-none" />
         <div className="w-full max-w-md z-10">
-          <ForgotPasswordForm onBackToLogin={() => setMode('login')} />
+          <ForgotPasswordForm 
+            onBackToLogin={() => setMode('login')} 
+            onNavigateToReset={(token) => {
+              setResetToken(token);
+              setMode('reset');
+            }}
+          />
         </div>
       </div>
     );

@@ -4,6 +4,7 @@ import {
   ArrowLeft, Send, Smartphone, Sparkles, RefreshCw, Lock, Database 
 } from 'lucide-react';
 import { authSecurityService, maskPhoneNumber } from '@/services/authSecurityService';
+import { validatePasswordPolicy } from '@/utils/passwordPolicy';
 
 interface MobileOtpPasswordResetFormProps {
   onBackToLogin: () => void;
@@ -158,8 +159,9 @@ export const MobileOtpPasswordResetForm: React.FC<MobileOtpPasswordResetFormProp
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!newPassword || newPassword.length < 6) {
-      setErrorMessage('Password must be at least 6 characters long.');
+    const policy = validatePasswordPolicy(newPassword);
+    if (!policy.isValid) {
+      setErrorMessage(`Password must meet all complexity requirements: ${policy.errors.join(', ')}.`);
       return;
     }
 

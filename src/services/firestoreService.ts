@@ -48,10 +48,10 @@ import {
   saveStoredMinistryTeamMembers, saveStoredMinistryActivities, saveStoredMinistryAnnouncements
 } from '../utils/storage';
 
-const CHURCHES_COL = 'churches';
-const USERS_COL = 'users';
-const CHURCH_SETTINGS_COL = 'church_settings';
-const MEMBERS_COL = 'members';
+export const CHURCHES_COL = 'churches';
+export const USERS_COL = 'users';
+export const CHURCH_SETTINGS_COL = 'church_settings';
+export const MEMBERS_COL = 'members';
 const MINISTRIES_COL = 'ministries';
 const MINISTRY_MEMBERS_COL = 'ministry_members';
 const MINISTRY_TEAMS_COL = 'ministry_teams';

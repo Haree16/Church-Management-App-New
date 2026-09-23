@@ -1,11 +1,14 @@
-import { SaaSUser, AuthSession, ChurchTenant } from '../types';
+import { SaaSUser, AuthSession, ChurchTenant, Member } from '../types';
 import { getStoredUsers, saveStoredUsers, getStoredMembers, getStoredAuthSession, saveStoredAuthSession, clearStoredAuthSession } from '../utils/storage';
 import { INITIAL_SAAS_USERS, INITIAL_CHURCHES } from '../data/initialData';
 import { auditService } from './auditService';
 import { emailService } from './emailService';
-import { saveUserToFirestore } from './firestoreService';
+import { saveUserToFirestore, USERS_COL, MEMBERS_COL } from './firestoreService';
 import { sendMobilePanelNotification } from './mobileNotificationService';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
+import { validatePasswordPolicy } from '@/utils/passwordPolicy';
 
 export interface PasswordResetTokenRecord {
   id: string;
@@ -132,6 +135,188 @@ function saveStoredMobileOtps(otps: MobileOtpRecord[]): void {
 let activeRefreshPromise: Promise<AuthSession | null> | null = null;
 
 export const authSecurityService = {
+  /**
+   * Validate email or mobile number against the database (Firestore + Local Store).
+   * If matched: generates a valid reset token and returns { success: true, resetToken, user }.
+   * If not matched: returns { success: false, error: '...' }.
+   */
+  async validateAndInitiateReset(emailOrPhone: string): Promise<{
+    success: boolean;
+    error?: string;
+    message?: string;
+    resetToken?: string;
+    user?: SaaSUser;
+  }> {
+    const trimmed = (emailOrPhone || '').trim();
+    if (!trimmed) {
+      return {
+        success: false,
+        error: 'Please enter your registered email address or mobile number.',
+      };
+    }
+
+    const isEmail = trimmed.includes('@');
+    const cleanEmail = trimmed.toLowerCase();
+    const digitsOnly = trimmed.replace(/\D/g, '');
+    const normInputPhone = normalizePhone(trimmed);
+
+    // 1. Gather all users from Firestore DB + Local Storage Cache + Seed Data
+    let allUsers: SaaSUser[] = [];
+    try {
+      const usersSnap = await getDocs(collection(db, USERS_COL));
+      usersSnap.forEach((d) => {
+        const u = d.data() as SaaSUser;
+        if (u && (u.id || u.email || u.phone)) {
+          allUsers.push(u);
+        }
+      });
+    } catch (err) {
+      console.warn('Firestore users query fallback to local cache:', err);
+    }
+
+    // Merge with local storage
+    const storedUsers = getStoredUsers();
+    storedUsers.forEach((su) => {
+      if (!allUsers.some((u) => u.id === su.id)) {
+        allUsers.push(su);
+      }
+    });
+
+    // Merge with INITIAL_SAAS_USERS
+    INITIAL_SAAS_USERS.forEach((iu) => {
+      if (!allUsers.some((u) => u.id === iu.id)) {
+        allUsers.push(iu);
+      }
+    });
+
+    // 2. Find matching user
+    let matchedUser: SaaSUser | undefined;
+
+    if (isEmail) {
+      matchedUser = allUsers.find(
+        (u) => (u.email && u.email.trim().toLowerCase() === cleanEmail) ||
+               (u.username && u.username.trim().toLowerCase() === cleanEmail)
+      );
+    } else if (digitsOnly.length >= 7) {
+      matchedUser = allUsers.find(
+        (u) => u.phone && normalizePhone(u.phone) === normInputPhone
+      );
+    } else {
+      // General match: could be username, phone or partial
+      matchedUser = allUsers.find(
+        (u) => (u.email && u.email.trim().toLowerCase() === cleanEmail) ||
+               (u.username && u.username.trim().toLowerCase() === cleanEmail) ||
+               (u.phone && normalizePhone(u.phone) === normInputPhone)
+      );
+    }
+
+    // 3. If not found in users, check members collection in Firestore DB & local storage
+    if (!matchedUser) {
+      let allMembers: Member[] = [];
+      try {
+        const memSnap = await getDocs(collection(db, MEMBERS_COL));
+        memSnap.forEach((d) => {
+          allMembers.push(d.data() as Member);
+        });
+      } catch (err) {
+        console.warn('Firestore members query fallback to local cache:', err);
+      }
+
+      const storedMembers = getStoredMembers();
+      storedMembers.forEach((sm) => {
+        if (!allMembers.some((m) => m.id === sm.id)) {
+          allMembers.push(sm);
+        }
+      });
+
+      let matchedMember: Member | undefined;
+      if (isEmail) {
+        matchedMember = allMembers.find((m) => m.email && m.email.trim().toLowerCase() === cleanEmail);
+      } else if (digitsOnly.length >= 7) {
+        matchedMember = allMembers.find((m) => m.phone && normalizePhone(m.phone) === normInputPhone);
+      }
+
+      if (matchedMember) {
+        // Link to existing SaaSUser or create a member login
+        matchedUser = allUsers.find(
+          (u) => u.member_id === matchedMember!.id ||
+                 u.memberId === matchedMember!.id ||
+                 (u.email && u.email.trim().toLowerCase() === matchedMember!.email.trim().toLowerCase())
+        );
+
+        if (!matchedUser) {
+          // Provision SaaSUser for this valid church member
+          matchedUser = {
+            id: `usr_${matchedMember.id}`,
+            church_id: matchedMember.church_id || matchedMember.churchId || INITIAL_CHURCHES[0].id,
+            churchId: matchedMember.church_id || matchedMember.churchId || INITIAL_CHURCHES[0].id,
+            member_id: matchedMember.id,
+            memberId: matchedMember.id,
+            username: matchedMember.email ? matchedMember.email.split('@')[0] : `user_${matchedMember.phone.slice(-4)}`,
+            name: `${matchedMember.firstName} ${matchedMember.lastName}`.trim(),
+            email: matchedMember.email || `${matchedMember.phone}@church.org`,
+            phone: matchedMember.phone,
+            role: 'Member',
+            status: 'Active',
+            createdAt: new Date().toISOString(),
+          };
+          await saveUserToFirestore(matchedUser).catch(console.warn);
+          saveStoredUsers([...getStoredUsers(), matchedUser]);
+        }
+      }
+    }
+
+    // 4. If still not matched, return clean failure
+    if (!matchedUser) {
+      return {
+        success: false,
+        error: isEmail
+          ? `No registered account found with email "${trimmed}" in the database.`
+          : `No registered account found with mobile number "${trimmed}" in the database.`,
+      };
+    }
+
+    // 5. Generate secure reset token
+    const rawToken = generateRandomToken(32);
+    const tokenHash = await hashString(rawToken);
+    const expiresAt = Date.now() + 45 * 60 * 1000; // 45 minutes
+
+    const tokenRecord: PasswordResetTokenRecord = {
+      id: `rst-${Date.now()}-${generateRandomToken(4)}`,
+      userId: matchedUser.id,
+      userEmail: matchedUser.email,
+      tokenHash,
+      expiresAt,
+      usedAt: null,
+      revoked: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    const tokens = getStoredTokens();
+    const updatedTokens = tokens.map((t) => (t.userId === matchedUser.id && !t.usedAt ? { ...t, revoked: true } : t));
+    updatedTokens.push(tokenRecord);
+    saveStoredTokens(updatedTokens);
+
+    // Audit log
+    const churchId = matchedUser.church_id || matchedUser.churchId || INITIAL_CHURCHES[0].id;
+    await auditService.logAction(churchId, {
+      action: 'auth.password_reset_validated',
+      resource_type: 'auth',
+      resource_id: matchedUser.id,
+      actor_id: matchedUser.id,
+      actor_name: matchedUser.name,
+      actor_role: matchedUser.role,
+      details: { identifier: trimmed, matchType: isEmail ? 'email' : 'phone' },
+    }).catch(() => {});
+
+    return {
+      success: true,
+      message: `Account verified for ${matchedUser.name}! Navigating to password reset...`,
+      resetToken: rawToken,
+      user: matchedUser,
+    };
+  },
+
   /**
    * Request password reset OTP to mobile phone number.
    */
@@ -342,8 +527,12 @@ export const authSecurityService = {
     if (!resetToken || !resetToken.trim()) {
       return { success: false, error: 'Missing reset verification token.' };
     }
-    if (!newPassword || newPassword.length < 6) {
-      return { success: false, error: 'Password must be at least 6 characters long.' };
+    const policyCheck = validatePasswordPolicy(newPassword);
+    if (!policyCheck.isValid) {
+      return { 
+        success: false, 
+        error: `Password does not meet requirements: ${policyCheck.errors.join(', ')}.` 
+      };
     }
 
     try {
@@ -581,7 +770,18 @@ export const authSecurityService = {
         }
       });
 
-      const user = allUsers.find((u) => u.id === record.userId);
+      let user = allUsers.find((u) => u.id === record.userId);
+      if (!user) {
+        try {
+          const userDoc = await getDoc(doc(db, USERS_COL, record.userId));
+          if (userDoc.exists()) {
+            user = userDoc.data() as SaaSUser;
+          }
+        } catch (e) {
+          console.warn('Firestore fallback user read failed:', e);
+        }
+      }
+
       if (!user) {
         return { valid: false, error: 'Associated user account no longer exists.' };
       }
@@ -605,8 +805,12 @@ export const authSecurityService = {
       return { success: false, error: validation.error || 'Invalid reset token.' };
     }
 
-    if (!newPassword || newPassword.length < 6) {
-      return { success: false, error: 'Password must be at least 6 characters long.' };
+    const policyCheck = validatePasswordPolicy(newPassword);
+    if (!policyCheck.isValid) {
+      return { 
+        success: false, 
+        error: `Password does not meet requirements: ${policyCheck.errors.join(', ')}.` 
+      };
     }
 
     try {
@@ -629,7 +833,17 @@ export const authSecurityService = {
       }
 
       saveStoredUsers(nextStoredUsers);
-      saveUserToFirestore(updatedUser).catch(() => {});
+
+      // In-memory update of INITIAL_SAAS_USERS if applicable
+      const initMatch = INITIAL_SAAS_USERS.find(
+        (u) => u.id === user.id || u.username.toLowerCase() === user.username.toLowerCase() || (u.email && u.email.toLowerCase() === user.email.toLowerCase())
+      );
+      if (initMatch) {
+        initMatch.password = newPassword;
+      }
+
+      // Persist to Firestore DB (users collection)
+      await saveUserToFirestore(updatedUser);
 
       // 2. Also update Supabase user password if configured
       if (isSupabaseConfigured()) {
