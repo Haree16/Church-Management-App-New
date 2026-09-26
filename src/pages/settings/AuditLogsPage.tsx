@@ -149,7 +149,7 @@ export function AuditLogsPage() {
         </div>
 
         <span className="text-[11px] text-slate-400 font-mono">
-          Showing {filteredLogs.length} audit event{filteredLogs.length === 1 ? '' : 's'}
+          Showing <strong className="text-white font-bold">{filteredLogs.length}</strong> audit event{filteredLogs.length === 1 ? '' : 's'}
         </span>
       </div>
 

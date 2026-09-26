@@ -260,11 +260,11 @@ export const AutomatedAbsenceFollowUpDashboard: React.FC<AutomatedAbsenceFollowU
       )}
 
       {/* 2. Mandatory Non-Judgmental Disclaimer Banner */}
-      <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3">
-        <Info className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+      <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl p-4 flex items-start gap-3">
+        <Info className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
         <div>
-          <h4 className="text-sm font-semibold text-amber-300">Non-Judgmental Data Standard</h4>
-          <p className="text-xs text-amber-300/90 leading-relaxed mt-0.5">
+          <h4 className="text-sm font-semibold text-amber-900 dark:text-amber-300">Non-Judgmental Data Standard</h4>
+          <p className="text-xs text-amber-800 dark:text-amber-300/90 leading-relaxed mt-0.5 font-medium">
             These insights are based only on activities recorded in the Church Management App. They do not indicate a person's spiritual commitment or personal circumstances.
           </p>
         </div>

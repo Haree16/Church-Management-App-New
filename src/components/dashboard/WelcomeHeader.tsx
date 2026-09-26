@@ -80,7 +80,10 @@ export const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({
   }, [churchTimezone, currentUser, userRole]);
 
   return (
-    <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-slate-800 relative overflow-hidden">
+    <div 
+      data-theme-surface="dark"
+      className="dark-hero-panel bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-slate-800/80 relative overflow-hidden"
+    >
       {/* Decorative ambient glowing lights */}
       <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -93,8 +96,8 @@ export const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
               {churchSettings?.profile?.name || currentChurch.name}
             </span>
-            <span className="text-xs text-slate-400 font-medium flex items-center gap-1 bg-white/5 px-2.5 py-1 rounded-full border border-white/10">
-              <Clock className="w-3.5 h-3.5 text-slate-400" />
+            <span className="text-xs text-slate-300 font-medium flex items-center gap-1 bg-white/10 px-2.5 py-1 rounded-full border border-white/15">
+              <Clock className="w-3.5 h-3.5 text-slate-300" />
               {nowFormatted}
             </span>
             <span className="text-xs font-semibold text-indigo-300 bg-indigo-500/20 px-2.5 py-1 rounded-full border border-indigo-500/30">
@@ -105,7 +108,7 @@ export const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             {greeting} 👋
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300/90 leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
             Here is your church overview for today. Track attendance, monitor congregation growth, respond to care requests, and manage ministry operations.
           </p>
         </div>

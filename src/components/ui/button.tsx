@@ -14,11 +14,11 @@ const buttonVariants = cva(
         destructive:
           "bg-red-600 text-white shadow-sm hover:bg-red-700 active:bg-red-800",
         outline:
-          "border border-slate-200 bg-white text-slate-900 shadow-sm hover:bg-slate-50 hover:text-slate-900",
+          "border border-slate-700 bg-slate-800 text-slate-200 shadow-sm hover:bg-slate-700 hover:text-white",
         secondary:
-          "bg-slate-100 text-slate-900 shadow-sm hover:bg-slate-200",
+          "bg-slate-800 text-slate-200 shadow-sm hover:bg-slate-700 hover:text-white",
         ghost:
-          "hover:bg-slate-100 hover:text-slate-900 text-slate-700",
+          "text-slate-300 hover:bg-slate-800 hover:text-white",
         link: "text-sky-600 underline-offset-4 hover:underline",
         church: "bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow hover:from-sky-700 hover:to-indigo-700 active:scale-[0.98]",
       },

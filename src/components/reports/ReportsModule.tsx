@@ -254,6 +254,57 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
     return counts;
   }, [members]);
 
+  const getMemberStatusCardStyle = (status: string) => {
+    const s = status.toLowerCase();
+    if (s.includes('pastor') && !s.includes('assistant')) {
+      return {
+        container: 'bg-amber-50/90 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/60',
+        label: 'text-amber-900 dark:text-amber-200',
+        badge: 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-700',
+      };
+    }
+    if (s.includes('assistant') || s.includes('associate')) {
+      return {
+        container: 'bg-indigo-50/90 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800/60',
+        label: 'text-indigo-900 dark:text-indigo-200',
+        badge: 'bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-200 border-indigo-300 dark:border-indigo-700',
+      };
+    }
+    if (s.includes('member') || s.includes('regular')) {
+      return {
+        container: 'bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/60',
+        label: 'text-emerald-900 dark:text-emerald-200',
+        badge: 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700',
+      };
+    }
+    if (s.includes('leader') || s.includes('elder') || s.includes('deacon')) {
+      return {
+        container: 'bg-purple-50/90 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800/60',
+        label: 'text-purple-900 dark:text-purple-200',
+        badge: 'bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200 border-purple-300 dark:border-purple-700',
+      };
+    }
+    if (s.includes('visitor') || s.includes('guest')) {
+      return {
+        container: 'bg-sky-50/90 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800/60',
+        label: 'text-sky-900 dark:text-sky-200',
+        badge: 'bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-200 border-sky-300 dark:border-sky-700',
+      };
+    }
+    if (s.includes('volunteer')) {
+      return {
+        container: 'bg-teal-50/90 dark:bg-teal-950/40 border-teal-200 dark:border-teal-800/60',
+        label: 'text-teal-900 dark:text-teal-200',
+        badge: 'bg-teal-100 dark:bg-teal-900/60 text-teal-800 dark:text-teal-200 border-teal-300 dark:border-teal-700',
+      };
+    }
+    return {
+      container: 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700',
+      label: 'text-slate-800 dark:text-slate-200',
+      badge: 'bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600',
+    };
+  };
+
   // 2. Families Report Data
   const familyData = useMemo(() => {
     const families: Array<{
@@ -572,7 +623,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
       {/* ========================================================================= */}
       {/* 2. UNIVERSAL & CONTEXTUAL REPORT FILTERS */}
       {/* ========================================================================= */}
-      <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-3 print:hidden">
+      <div className="bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-800 shadow-sm space-y-3 print:hidden text-white">
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Search Input */}
           <div className="relative flex-1 min-w-[240px]">
@@ -582,7 +633,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
               placeholder={`Search ${activeCategory} report records...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9.5 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-medium text-slate-800 placeholder-slate-400 outline-none focus:border-amber-500 focus:bg-white transition"
+              className="w-full pl-9.5 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-2xl text-xs font-medium text-white placeholder-slate-400 outline-none focus:border-amber-500 transition"
             />
             {searchTerm && (
               <button
@@ -603,7 +654,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
             <select
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value as ReportDateFilter)}
-              className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none"
+              className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-semibold text-white outline-none"
             >
               <option value="today">Today</option>
               <option value="this_week">This Week</option>
@@ -622,7 +673,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
               <select
                 value={serviceFilter}
                 onChange={(e) => setServiceFilter(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none"
+                className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-semibold text-white outline-none"
               >
                 <option value="ALL">All Services</option>
                 {availableServices.map(srv => (
@@ -638,7 +689,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none"
+                className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-semibold text-white outline-none"
               >
                 <option value="ALL">All Statuses</option>
                 <option value="Member">Member</option>
@@ -657,7 +708,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
               <select
                 value={ministryFilter}
                 onChange={(e) => setMinistryFilter(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none"
+                className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-semibold text-white outline-none"
               >
                 <option value="ALL">All Ministries</option>
                 {ministries.map(m => (
@@ -673,7 +724,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
               <select
                 value={ssClassFilter}
                 onChange={(e) => setSSClassFilter(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none"
+                className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-semibold text-white outline-none"
               >
                 <option value="ALL">All Classes</option>
                 {sundaySchoolClasses.map(c => (
@@ -689,7 +740,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
               <select
                 value={eventCategoryFilter}
                 onChange={(e) => setEventCategoryFilter(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none"
+                className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-semibold text-white outline-none"
               >
                 <option value="ALL">All Event Categories</option>
                 <option value="Service">Service</option>
@@ -705,14 +756,14 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
 
         {/* Custom Date Range Picker Row */}
         {dateRange === 'custom_range' && (
-          <div className="flex items-center gap-3 pt-2 border-t border-slate-100 flex-wrap">
+          <div className="flex items-center gap-3 pt-2 border-t border-slate-800 flex-wrap">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-slate-600">From:</span>
               <input
                 type="date"
                 value={customStartDate}
                 onChange={(e) => setCustomStartDate(e.target.value)}
-                className="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"
+                className="px-2.5 py-1 bg-slate-950 border border-slate-800 rounded-xl text-xs font-semibold text-white"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -721,7 +772,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                 type="date"
                 value={customEndDate}
                 onChange={(e) => setCustomEndDate(e.target.value)}
-                className="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"
+                className="px-2.5 py-1 bg-slate-950 border border-slate-800 rounded-xl text-xs font-semibold text-white"
               />
             </div>
           </div>
@@ -739,54 +790,57 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
         <div className="space-y-5">
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-slate-900">{members.length}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-white">{members.length}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Total Members</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
               <div className="text-2xl font-black text-emerald-600">{memberStatusCounts['Member'] || 0}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Active Full Members</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
               <div className="text-2xl font-black text-indigo-600">{memberStatusCounts['Visitor'] || 0}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Visitors / Guests</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
               <div className="text-2xl font-black text-amber-600">{filteredMembers.length}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Filtered Records</div>
             </div>
           </div>
 
           {/* Status Breakdown Bar */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+            <h3 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
               <Users className="w-4 h-4 text-amber-500" />
               <span>Membership Status Distribution</span>
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-              {Object.entries(memberStatusCounts).map(([st, cnt]) => (
-                <div key={st} className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-700">{st}</span>
-                  <span className="text-xs font-bold px-2 py-0.5 bg-white text-slate-900 rounded-lg border border-slate-200 shadow-xs">
-                    {cnt} ({Math.round((cnt / (members.length || 1)) * 100)}%)
-                  </span>
-                </div>
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 pt-1">
+              {Object.entries(memberStatusCounts).map(([st, cnt]) => {
+                const style = getMemberStatusCardStyle(st);
+                return (
+                  <div key={st} className={`p-3 rounded-2xl border flex items-center justify-between transition-colors shadow-2xs ${style.container}`}>
+                    <span className={`text-xs font-bold ${style.label}`}>{st}</span>
+                    <span className={`text-xs font-extrabold px-2.5 py-0.5 rounded-lg border shadow-xs ${style.badge}`}>
+                      {cnt} ({Math.round((cnt / (members.length || 1)) * 100)}%)
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
           {/* Detailed Members Table */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
+          <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-sm overflow-hidden text-white">
+            <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-slate-900 text-sm">Member Directory Report</h3>
+                <h3 className="font-bold text-white text-sm">Member Directory Report</h3>
                 <p className="text-xs text-slate-400">Showing {filteredMembers.length} member profiles.</p>
               </div>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-800">
                   <tr>
                     <th className="py-3 px-4">Member Name</th>
                     <th className="py-3 px-4">Status</th>
@@ -796,27 +850,27 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                     <th className="py-3 px-4">Joined Date</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
+                <tbody className="divide-y divide-slate-800/80 text-slate-300 font-medium">
                   {filteredMembers.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((m) => (
-                    <tr key={m.id} className="hover:bg-slate-50/80 transition">
-                      <td className="py-3 px-4 font-bold text-slate-900">{m.firstName} {m.lastName}</td>
+                    <tr key={m.id} className="hover:bg-slate-800/50 transition">
+                      <td className="py-3 px-4 font-bold text-white">{m.firstName} {m.lastName}</td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-800">
                           {m.status}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-slate-600">{m.phone || '—'}</td>
-                      <td className="py-3 px-4 text-slate-600">{m.email || '—'}</td>
+                      <td className="py-3 px-4 text-slate-300">{m.phone || '—'}</td>
+                      <td className="py-3 px-4 text-slate-300">{m.email || '—'}</td>
                       <td className="py-3 px-4">
                         <div className="flex flex-wrap gap-1">
                           {(m.ministryTeams || []).map(t => (
-                            <span key={t} className="text-[10px] font-semibold px-1.5 py-0.5 bg-slate-100 rounded text-slate-700">
+                            <span key={t} className="text-[10px] font-semibold px-2 py-0.5 bg-slate-800 border border-slate-700 rounded-md text-slate-200">
                               {t}
                             </span>
                           ))}
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-slate-500">{m.joinedDate || '—'}</td>
+                      <td className="py-3 px-4 text-slate-400">{m.joinedDate || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -825,20 +879,20 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
 
             {/* Pagination */}
             {filteredMembers.length > pageSize && (
-              <div className="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <div className="p-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-500">
                 <span>Page {currentPage} of {Math.ceil(filteredMembers.length / pageSize)}</span>
                 <div className="flex items-center gap-2">
                   <button
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage(p => p - 1)}
-                    className="px-3 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-40 transition font-bold"
+                    className="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 disabled:opacity-40 transition font-bold"
                   >
                     Previous
                   </button>
                   <button
                     disabled={currentPage >= Math.ceil(filteredMembers.length / pageSize)}
                     onClick={() => setCurrentPage(p => p + 1)}
-                    className="px-3 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-40 transition font-bold"
+                    className="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 disabled:opacity-40 transition font-bold"
                   >
                     Next
                   </button>
@@ -856,23 +910,23 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
         <div className="space-y-5">
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-slate-900">{familyData.length}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-white">{familyData.length}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Total Families</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
               <div className="text-2xl font-black text-indigo-600">
                 {familyData.reduce((acc, f) => acc + f.totalMembers, 0)}
               </div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Family Members</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
               <div className="text-2xl font-black text-emerald-600">
                 {familyData.reduce((acc, f) => acc + f.childrenCount, 0)}
               </div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Children in Families</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
               <div className="text-2xl font-black text-amber-600">
                 {familyData.length > 0 ? (familyData.reduce((acc, f) => acc + f.totalMembers, 0) / familyData.length).toFixed(1) : 0}
               </div>
@@ -881,15 +935,15 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
           </div>
 
           {/* Families Table */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-sm overflow-hidden text-white">
             <div className="p-4 sm:p-5 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-sm">Church Family Directory Report</h3>
+              <h3 className="font-bold text-white text-sm">Church Family Directory Report</h3>
               <p className="text-xs text-slate-400">Household units, primary contacts & dependents.</p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-800">
                   <tr>
                     <th className="py-3 px-4">Family Name</th>
                     <th className="py-3 px-4">Primary Contact</th>
@@ -900,20 +954,20 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                     <th className="py-3 px-4">Contact Phone</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
+                <tbody className="divide-y divide-slate-800/80 text-slate-300 font-medium">
                   {familyData.map((f) => (
-                    <tr key={f.id} className="hover:bg-slate-50/80 transition">
-                      <td className="py-3 px-4 font-bold text-slate-900">{f.familyName}</td>
-                      <td className="py-3 px-4 font-semibold text-slate-800">{f.primaryContact.firstName} {f.primaryContact.lastName}</td>
-                      <td className="py-3 px-4 text-slate-600">{f.spouseName || '—'}</td>
+                    <tr key={f.id} className="hover:bg-slate-800/50 transition">
+                      <td className="py-3 px-4 font-bold text-white">{f.familyName}</td>
+                      <td className="py-3 px-4 font-semibold text-white">{f.primaryContact.firstName} {f.primaryContact.lastName}</td>
+                      <td className="py-3 px-4 text-slate-300">{f.spouseName || '—'}</td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 font-bold rounded-lg">
+                        <span className="px-2 py-0.5 bg-indigo-950/80 text-indigo-300 border border-indigo-800 font-bold rounded-lg">
                           {f.childrenCount} {f.childrenCount === 1 ? 'Child' : 'Children'}
                         </span>
                       </td>
-                      <td className="py-3 px-4 font-bold text-slate-900">{f.totalMembers}</td>
-                      <td className="py-3 px-4 text-slate-500">{f.city}</td>
-                      <td className="py-3 px-4 text-slate-600">{f.phone}</td>
+                      <td className="py-3 px-4 font-bold text-white">{f.totalMembers}</td>
+                      <td className="py-3 px-4 text-slate-400">{f.city}</td>
+                      <td className="py-3 px-4 text-slate-300">{f.phone}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -930,24 +984,24 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
         <div className="space-y-5">
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-slate-900">{visitorData.length}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-white">{visitorData.length}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Total Visitors Logged</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-indigo-600">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-indigo-400">
                 {visitorData.filter(v => isDateInRange(v.joinedDate)).length}
               </div>
               <div className="text-[11px] font-bold uppercase text-slate-400">New in Period</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-amber-600">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-amber-400">
                 {visitorData.filter(v => !v.pastoralNotes || v.pastoralNotes.toLowerCase().includes('follow up')).length}
               </div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Follow-Up Required</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-emerald-600">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-emerald-400">
                 {members.filter(m => m.status === 'Regular Attender').length}
               </div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Converted to Regular</div>
@@ -955,15 +1009,15 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
           </div>
 
           {/* Visitors Table */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-4 sm:p-5 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-sm">Guest & Visitor Follow-Up Report</h3>
+          <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-sm overflow-hidden text-white">
+            <div className="p-4 sm:p-5 border-b border-slate-800">
+              <h3 className="font-bold text-white text-sm">Guest & Visitor Follow-Up Report</h3>
               <p className="text-xs text-slate-400">First-time attendees, pastoral connection & notes.</p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-800">
                   <tr>
                     <th className="py-3 px-4">Visitor Name</th>
                     <th className="py-3 px-4">Visit Date</th>
@@ -973,15 +1027,15 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                     <th className="py-3 px-4">Pastoral Notes</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
+                <tbody className="divide-y divide-slate-800/80 text-slate-300 font-medium">
                   {visitorData.map((v) => (
-                    <tr key={v.id} className="hover:bg-slate-50/80 transition">
-                      <td className="py-3 px-4 font-bold text-slate-900">{v.firstName} {v.lastName}</td>
-                      <td className="py-3 px-4 text-slate-500">{v.joinedDate || v.createdAt}</td>
-                      <td className="py-3 px-4 text-slate-600">{v.phone || '—'}</td>
-                      <td className="py-3 px-4 text-slate-600">{v.email || '—'}</td>
-                      <td className="py-3 px-4 text-slate-500">{v.city || '—'}</td>
-                      <td className="py-3 px-4 text-slate-600 italic">{v.pastoralNotes || 'First time visitor'}</td>
+                    <tr key={v.id} className="hover:bg-slate-800/50 transition">
+                      <td className="py-3 px-4 font-bold text-white">{v.firstName} {v.lastName}</td>
+                      <td className="py-3 px-4 text-slate-400">{v.joinedDate || v.createdAt}</td>
+                      <td className="py-3 px-4 text-slate-300">{v.phone || '—'}</td>
+                      <td className="py-3 px-4 text-slate-300">{v.email || '—'}</td>
+                      <td className="py-3 px-4 text-slate-400">{v.city || '—'}</td>
+                      <td className="py-3 px-4 text-slate-300 italic">{v.pastoralNotes || 'First time visitor'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1063,27 +1117,27 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
       {activeCategory === 'attendance' && (
         <div className="space-y-5">
           {/* Sub-tab toggle */}
-          <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl w-fit border border-slate-200">
+          <div className="flex items-center gap-2 bg-slate-900 p-1.5 rounded-2xl w-fit border border-slate-800">
             <button
               onClick={() => setAttendanceSubTab('insights')}
               className={`px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
                 attendanceSubTab === 'insights'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-amber-500 text-slate-950 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
-              <BarChart3 className="w-3.5 h-3.5 text-emerald-600" />
+              <BarChart3 className="w-3.5 h-3.5 text-slate-950" />
               <span>Insights & Analytics</span>
             </button>
             <button
               onClick={() => setAttendanceSubTab('logs')}
               className={`px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
                 attendanceSubTab === 'logs'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-amber-500 text-slate-950 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
-              <UserCheck className="w-3.5 h-3.5 text-indigo-600" />
+              <UserCheck className="w-3.5 h-3.5 text-slate-950" />
               <span>Service Logs Table</span>
             </button>
           </div>
@@ -1107,29 +1161,29 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
             <>
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-slate-900">{attendanceAggregates.totalSessions}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-white">{attendanceAggregates.totalSessions}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Services Logged</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
               <div className="text-2xl font-black text-emerald-600">{attendanceAggregates.totalHeadcount}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Total Headcount</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
               <div className="text-2xl font-black text-amber-600">{attendanceAggregates.avgHeadcount}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Avg Attendance / Service</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
               <div className="text-2xl font-black text-indigo-600">{attendanceAggregates.avgRate}%</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Congregation Turnout</div>
             </div>
           </div>
 
           {/* Member Attendance Lookup Tool */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-4">
+          <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-4 text-white">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <h3 className="font-bold text-white text-sm flex items-center gap-2">
                   <UserCheck className="w-4 h-4 text-emerald-600" />
                   <span>Individual Member Attendance Analysis</span>
                 </h3>
@@ -1149,23 +1203,23 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
             </div>
 
             {memberAttendanceAnalysis && (
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3 animate-in fade-in">
+              <div className="p-4 bg-slate-950/60 rounded-2xl border border-slate-800 space-y-3 animate-in fade-in">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h4 className="font-bold text-slate-900 text-sm">{memberAttendanceAnalysis.member.firstName} {memberAttendanceAnalysis.member.lastName}</h4>
+                    <h4 className="font-bold text-white text-sm">{memberAttendanceAnalysis.member.firstName} {memberAttendanceAnalysis.member.lastName}</h4>
                     <p className="text-xs text-slate-500">{memberAttendanceAnalysis.member.status} • {memberAttendanceAnalysis.member.phone}</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="text-center px-3 py-1.5 bg-white rounded-xl border border-slate-200 shadow-xs">
-                      <div className="text-sm font-black text-emerald-600">{memberAttendanceAnalysis.attendedCount}</div>
+                    <div className="text-center px-3 py-1.5 bg-slate-900 rounded-xl border border-slate-800 shadow-xs">
+                      <div className="text-sm font-black text-emerald-400">{memberAttendanceAnalysis.attendedCount}</div>
                       <div className="text-[10px] text-slate-400 uppercase font-bold">Services Attended</div>
                     </div>
-                    <div className="text-center px-3 py-1.5 bg-white rounded-xl border border-slate-200 shadow-xs">
-                      <div className="text-sm font-black text-rose-600">{memberAttendanceAnalysis.absentCount}</div>
+                    <div className="text-center px-3 py-1.5 bg-slate-900 rounded-xl border border-slate-800 shadow-xs">
+                      <div className="text-sm font-black text-rose-400">{memberAttendanceAnalysis.absentCount}</div>
                       <div className="text-[10px] text-slate-400 uppercase font-bold">Absent</div>
                     </div>
-                    <div className="text-center px-3 py-1.5 bg-white rounded-xl border border-slate-200 shadow-xs">
-                      <div className="text-sm font-black text-indigo-600">{memberAttendanceAnalysis.rate}%</div>
+                    <div className="text-center px-3 py-1.5 bg-slate-900 rounded-xl border border-slate-800 shadow-xs">
+                      <div className="text-sm font-black text-indigo-400">{memberAttendanceAnalysis.rate}%</div>
                       <div className="text-[10px] text-slate-400 uppercase font-bold">Turnout Rate</div>
                     </div>
                   </div>
@@ -1175,15 +1229,15 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
           </div>
 
           {/* Service Attendance Log Table */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-4 sm:p-5 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-sm">Service Attendance Detailed Log</h3>
+          <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-sm overflow-hidden text-white">
+            <div className="p-4 sm:p-5 border-b border-slate-800">
+              <h3 className="font-bold text-white text-sm">Service Attendance Detailed Log</h3>
               <p className="text-xs text-slate-400">Headcount, present members, guests, and percentages per service.</p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-800">
                   <tr>
                     <th className="py-3 px-4">Service Date</th>
                     <th className="py-3 px-4">Service Name</th>
@@ -1195,7 +1249,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                     {onDeleteAttendance && <th className="py-3 px-4 text-right">Actions</th>}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
+                <tbody className="divide-y divide-slate-800/80 text-slate-300 font-medium">
                   {filteredAttendance.map((a) => {
                     const present = a.presentMemberIds?.length || 0;
                     const guests = a.guestCount || 0;
@@ -1203,18 +1257,18 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                     const rate = members.length > 0 ? Math.min(100, Math.round((total / members.length) * 100)) : 100;
 
                     return (
-                      <tr key={a.id} className="hover:bg-slate-50/80 transition">
-                        <td className="py-3 px-4 font-bold text-slate-900">{a.date}</td>
-                        <td className="py-3 px-4 font-semibold text-slate-800">{a.serviceName}</td>
-                        <td className="py-3 px-4 text-emerald-700 font-bold">{present}</td>
-                        <td className="py-3 px-4 text-indigo-700 font-bold">{guests}</td>
-                        <td className="py-3 px-4 font-black text-slate-900">{total}</td>
+                      <tr key={a.id} className="hover:bg-slate-800/50 transition">
+                        <td className="py-3 px-4 font-bold text-white">{a.date}</td>
+                        <td className="py-3 px-4 font-semibold text-slate-200">{a.serviceName}</td>
+                        <td className="py-3 px-4 text-emerald-400 font-bold">{present}</td>
+                        <td className="py-3 px-4 text-indigo-400 font-bold">{guests}</td>
+                        <td className="py-3 px-4 font-black text-white">{total}</td>
                         <td className="py-3 px-4">
-                          <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 font-bold rounded-lg">
+                          <span className="px-2 py-0.5 bg-emerald-950/80 text-emerald-300 border border-emerald-800 font-bold rounded-lg">
                             {rate}%
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-slate-500">{a.recordedBy}</td>
+                        <td className="py-3 px-4 text-slate-400">{a.recordedBy}</td>
                         {onDeleteAttendance && (
                           <td className="py-3 px-4 text-right">
                             <button
@@ -1250,34 +1304,34 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
         <div className="space-y-5">
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-slate-900">{ministries.length}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-white">{ministries.length}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Total Ministries</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
               <div className="text-2xl font-black text-indigo-600">{ministryMembers.length}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Assigned Members</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
               <div className="text-2xl font-black text-emerald-600">{ministryActivities.length}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Activities Logged</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
               <div className="text-2xl font-black text-amber-600">{ministryTeams.length}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Sub-Squads</div>
             </div>
           </div>
 
           {/* Ministry Performance Table */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-sm overflow-hidden text-white">
             <div className="p-4 sm:p-5 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-sm">Ministries Performance & Participation</h3>
+              <h3 className="font-bold text-white text-sm">Ministries Performance & Participation</h3>
               <p className="text-xs text-slate-400">Department leaders, squads, activity counts, and attendance rates.</p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-800">
                   <tr>
                     <th className="py-3 px-4">Ministry Name</th>
                     <th className="py-3 px-4">Leader</th>
@@ -1287,19 +1341,19 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                     <th className="py-3 px-4">Avg Attendance %</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
+                <tbody className="divide-y divide-slate-800/80 text-slate-300 font-medium">
                   {ministryReportData.map((m) => (
-                    <tr key={m.ministry.id} className="hover:bg-slate-50/80 transition">
-                      <td className="py-3 px-4 font-bold text-slate-900 flex items-center gap-2">
+                    <tr key={m.ministry.id} className="hover:bg-slate-800/50 transition">
+                      <td className="py-3 px-4 font-bold text-white flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: m.ministry.color || '#f59e0b' }} />
                         <span>{m.ministry.name}</span>
                       </td>
-                      <td className="py-3 px-4 font-semibold text-slate-800">{m.ministry.leaderName}</td>
-                      <td className="py-3 px-4 font-bold text-slate-900">{m.membersCount}</td>
-                      <td className="py-3 px-4 text-slate-600">{m.teamsCount}</td>
-                      <td className="py-3 px-4 text-slate-600">{m.activitiesCount}</td>
+                      <td className="py-3 px-4 font-semibold text-white">{m.ministry.leaderName}</td>
+                      <td className="py-3 px-4 font-bold text-white">{m.membersCount}</td>
+                      <td className="py-3 px-4 text-slate-300">{m.teamsCount}</td>
+                      <td className="py-3 px-4 text-slate-300">{m.activitiesCount}</td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 bg-indigo-50 text-indigo-800 font-bold rounded-lg">
+                        <span className="px-2 py-0.5 bg-indigo-950/80 text-indigo-300 border border-indigo-800 font-bold rounded-lg">
                           {m.avgAttendanceRate}%
                         </span>
                       </td>
@@ -1319,36 +1373,36 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
         <div className="space-y-5">
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-slate-900">{sundaySchoolClasses.length}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-white">{sundaySchoolClasses.length}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Total Classes</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-indigo-600">{sundaySchoolStudents.length}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-indigo-400">{sundaySchoolStudents.length}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Enrolled Children</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-emerald-600">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-emerald-400">
                 {Array.from(new Set(sundaySchoolClasses.map(c => c.teacherName))).length}
               </div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Active Teachers</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-amber-600">92%</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-amber-400">92%</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Avg Class Attendance</div>
             </div>
           </div>
 
           {/* Classes Table */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-4 sm:p-5 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-sm">Sunday School Classes & Teachers</h3>
+          <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-sm overflow-hidden text-white">
+            <div className="p-4 sm:p-5 border-b border-slate-800">
+              <h3 className="font-bold text-white text-sm">Sunday School Classes & Teachers</h3>
               <p className="text-xs text-slate-400">Class breakdown, age ranges, enrolled students & memory verses.</p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-800">
                   <tr>
                     <th className="py-3 px-4">Class Name</th>
                     <th className="py-3 px-4">Age Group</th>
@@ -1358,15 +1412,15 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                     <th className="py-3 px-4">Current Lesson</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
+                <tbody className="divide-y divide-slate-800/80 text-slate-300 font-medium">
                   {sundaySchoolReportData.map((c) => (
-                    <tr key={c.cls.id} className="hover:bg-slate-50/80 transition">
-                      <td className="py-3 px-4 font-bold text-slate-900">{c.cls.className}</td>
-                      <td className="py-3 px-4 font-semibold text-slate-700">{c.cls.ageGroup}</td>
-                      <td className="py-3 px-4 font-semibold text-slate-800">{c.cls.teacherName}</td>
-                      <td className="py-3 px-4 text-slate-600">{c.cls.teacherPhone}</td>
-                      <td className="py-3 px-4 font-bold text-indigo-700">{c.enrolledCount} Students</td>
-                      <td className="py-3 px-4 text-slate-600 italic">{c.cls.currentLesson}</td>
+                    <tr key={c.cls.id} className="hover:bg-slate-800/50 transition">
+                      <td className="py-3 px-4 font-bold text-white">{c.cls.className}</td>
+                      <td className="py-3 px-4 font-semibold text-slate-300">{c.cls.ageGroup}</td>
+                      <td className="py-3 px-4 font-semibold text-white">{c.cls.teacherName}</td>
+                      <td className="py-3 px-4 text-slate-300">{c.cls.teacherPhone}</td>
+                      <td className="py-3 px-4 font-bold text-indigo-400">{c.enrolledCount} Students</td>
+                      <td className="py-3 px-4 text-slate-300 italic">{c.cls.currentLesson}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1383,34 +1437,34 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
         <div className="space-y-5">
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-slate-900">{volunteerReportData.activeVolunteersCount}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-white">{volunteerReportData.activeVolunteersCount}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Active Volunteers</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-indigo-600">{volunteerReportData.totalDuties}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-indigo-400">{volunteerReportData.totalDuties}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Total Duty Slots</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-emerald-600">{volunteerReportData.confirmedCount}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-emerald-400">{volunteerReportData.confirmedCount}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Confirmed Duties</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-amber-600">{volunteerReportData.coverageRate}%</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-amber-400">{volunteerReportData.coverageRate}%</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Roster Coverage Rate</div>
             </div>
           </div>
 
           {/* Roster Coverage Table */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-4 sm:p-5 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-sm">Sunday Service Duty Roster Coverage</h3>
+          <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-sm overflow-hidden text-white">
+            <div className="p-4 sm:p-5 border-b border-slate-800">
+              <h3 className="font-bold text-white text-sm">Sunday Service Duty Roster Coverage</h3>
               <p className="text-xs text-slate-400">Service duties, assigned personnel & confirmation status.</p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-800">
                   <tr>
                     <th className="py-3 px-4">Service Date</th>
                     <th className="py-3 px-4">Service Name</th>
@@ -1420,19 +1474,19 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                     <th className="py-3 px-4">Confirmation</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
+                <tbody className="divide-y divide-slate-800/80 text-slate-300 font-medium">
                   {volunteerReportData.duties.map((d) => (
-                    <tr key={d.id} className="hover:bg-slate-50/80 transition">
-                      <td className="py-3 px-4 font-bold text-slate-900">{d.serviceDate}</td>
-                      <td className="py-3 px-4 font-semibold text-slate-800">{d.serviceName}</td>
-                      <td className="py-3 px-4 font-bold text-amber-900">{d.roleName}</td>
-                      <td className="py-3 px-4 font-semibold text-slate-800">{d.memberName}</td>
-                      <td className="py-3 px-4 text-slate-600">{d.team}</td>
+                    <tr key={d.id} className="hover:bg-slate-800/50 transition">
+                      <td className="py-3 px-4 font-bold text-white">{d.serviceDate}</td>
+                      <td className="py-3 px-4 font-semibold text-white">{d.serviceName}</td>
+                      <td className="py-3 px-4 font-bold text-amber-400">{d.roleName}</td>
+                      <td className="py-3 px-4 font-semibold text-white">{d.memberName}</td>
+                      <td className="py-3 px-4 text-slate-300">{d.team}</td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           d.confirmed
-                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                            : 'bg-amber-50 text-amber-800 border border-amber-200'
+                            ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800'
+                            : 'bg-amber-950/80 text-amber-300 border border-amber-800'
                         }`}>
                           {d.confirmed ? 'Confirmed' : 'Pending'}
                         </span>
@@ -1453,22 +1507,22 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
         <div className="space-y-5">
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-slate-900">{events.length}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-white">{events.length}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Total Church Events</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-indigo-600">{eventReportData.length}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-indigo-400">{eventReportData.length}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">In Selected Period</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-emerald-600">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-emerald-400">
                 {eventReportData.reduce((acc, e) => acc + (e.rsvpMemberIds?.length || 0), 0)}
               </div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Total RSVPs Logged</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-amber-600">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-amber-400">
                 {events.filter(e => e.date >= todayIsoString).length}
               </div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Upcoming Gatherings</div>
@@ -1476,15 +1530,15 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
           </div>
 
           {/* Events Table */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-4 sm:p-5 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-sm">Church Events & Registrations</h3>
+          <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-sm overflow-hidden text-white">
+            <div className="p-4 sm:p-5 border-b border-slate-800">
+              <h3 className="font-bold text-white text-sm">Church Events & Registrations</h3>
               <p className="text-xs text-slate-400">Scheduled gatherings, locations, categories & RSVP totals.</p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-800">
                   <tr>
                     <th className="py-3 px-4">Event Title</th>
                     <th className="py-3 px-4">Category</th>
@@ -1494,19 +1548,19 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                     <th className="py-3 px-4">RSVP Count</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
+                <tbody className="divide-y divide-slate-800/80 text-slate-300 font-medium">
                   {eventReportData.map((e) => (
-                    <tr key={e.id} className="hover:bg-slate-50/80 transition">
-                      <td className="py-3 px-4 font-bold text-slate-900">{e.title}</td>
+                    <tr key={e.id} className="hover:bg-slate-800/50 transition">
+                      <td className="py-3 px-4 font-bold text-white">{e.title}</td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-950/80 text-indigo-300 border border-indigo-800">
                           {e.category}
                         </span>
                       </td>
-                      <td className="py-3 px-4 font-semibold text-slate-800">{e.date}</td>
-                      <td className="py-3 px-4 text-slate-600">{e.time}</td>
-                      <td className="py-3 px-4 text-slate-600">{e.location}</td>
-                      <td className="py-3 px-4 font-black text-indigo-700">{e.rsvpMemberIds?.length || 0}</td>
+                      <td className="py-3 px-4 font-semibold text-white">{e.date}</td>
+                      <td className="py-3 px-4 text-slate-300">{e.time}</td>
+                      <td className="py-3 px-4 text-slate-300">{e.location}</td>
+                      <td className="py-3 px-4 font-bold text-indigo-400">{e.rsvpMemberIds?.length || 0}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1523,35 +1577,35 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
         <div className="space-y-5">
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-slate-900">{prayerAggregateData.total}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-white">{prayerAggregateData.total}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Total Prayer Items</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-amber-600">{prayerAggregateData.open}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-amber-400">{prayerAggregateData.open}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Active Intercessions</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-rose-600">{prayerAggregateData.urgent}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-rose-400">{prayerAggregateData.urgent}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Urgent Crises Logged</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-emerald-600">{prayerAggregateData.answered}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-emerald-400">{prayerAggregateData.answered}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Praise Testimonies</div>
             </div>
           </div>
 
           {/* Category Distribution Breakdown */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+          <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-3 text-white">
+            <h3 className="font-bold text-white text-sm flex items-center gap-2">
               <Heart className="w-4 h-4 text-rose-500" />
               <span>Intercession Request Categories Breakdown</span>
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
               {Object.entries(prayerAggregateData.byCategory).map(([cat, count]) => (
-                <div key={cat} className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-700">{cat}</span>
-                  <span className="text-xs font-bold px-2 py-0.5 bg-white text-slate-900 rounded-lg border border-slate-200 shadow-xs">
+                <div key={cat} className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-200">{cat}</span>
+                  <span className="text-xs font-bold px-2 py-0.5 bg-slate-800 text-white rounded-lg border border-slate-700 shadow-xs">
                     {count} ({Math.round((count / (prayerAggregateData.total || 1)) * 100)}%)
                   </span>
                 </div>
@@ -1568,24 +1622,24 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
         <div className="space-y-5">
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-slate-900">{members.length}</div>
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-white">{members.length}</div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Congregation Size</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-emerald-600">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-emerald-400">
                 +{growthMatrixData.reduce((acc, g) => acc + g.newMembers, 0)}
               </div>
               <div className="text-[11px] font-bold uppercase text-slate-400">6-Month New Joiners</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-indigo-600">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-indigo-400">
                 {attendanceAggregates.avgHeadcount}
               </div>
               <div className="text-[11px] font-bold uppercase text-slate-400">Avg Service Turnout</div>
             </div>
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-              <div className="text-2xl font-black text-amber-600">
+            <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm text-white">
+              <div className="text-2xl font-black text-amber-400">
                 {growthMatrixData.reduce((acc, g) => acc + g.visitors, 0)}
               </div>
               <div className="text-[11px] font-bold uppercase text-slate-400">6-Month Total Guests</div>
@@ -1593,15 +1647,15 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
           </div>
 
           {/* 6-Month Cross-Module Matrix Table */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-4 sm:p-5 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-sm">6-Month Comprehensive Church Growth Matrix</h3>
+          <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-sm overflow-hidden text-white">
+            <div className="p-4 sm:p-5 border-b border-slate-800">
+              <h3 className="font-bold text-white text-sm">6-Month Comprehensive Church Growth Matrix</h3>
               <p className="text-xs text-slate-400">Cross-module monthly progression of members, attendance, visitors & events.</p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-800">
                   <tr>
                     <th className="py-3 px-4">Month</th>
                     <th className="py-3 px-4">Estimated Total Members</th>
@@ -1611,15 +1665,15 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                     <th className="py-3 px-4">Events Held</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
+                <tbody className="divide-y divide-slate-800/80 text-slate-300 font-medium">
                   {growthMatrixData.map((g) => (
-                    <tr key={g.month} className="hover:bg-slate-50/80 transition">
-                      <td className="py-3 px-4 font-bold text-slate-900">{g.month}</td>
-                      <td className="py-3 px-4 font-bold text-slate-900">{g.estimatedTotalMembers}</td>
-                      <td className="py-3 px-4 font-bold text-emerald-600">+{g.newMembers}</td>
-                      <td className="py-3 px-4 font-black text-indigo-700">{g.avgAttendance}</td>
-                      <td className="py-3 px-4 text-amber-700 font-semibold">{g.visitors}</td>
-                      <td className="py-3 px-4 text-slate-600">{g.eventsCount}</td>
+                    <tr key={g.month} className="hover:bg-slate-800/50 transition">
+                      <td className="py-3 px-4 font-bold text-white">{g.month}</td>
+                      <td className="py-3 px-4 font-bold text-white">{g.estimatedTotalMembers}</td>
+                      <td className="py-3 px-4 font-bold text-emerald-400">+{g.newMembers}</td>
+                      <td className="py-3 px-4 font-bold text-indigo-400">{g.avgAttendance}</td>
+                      <td className="py-3 px-4 text-amber-400 font-semibold">{g.visitors}</td>
+                      <td className="py-3 px-4 text-slate-300">{g.eventsCount}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1634,21 +1688,21 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
       {/* ----------------------------------------------------------------------- */}
       {activeCategory === 'custom' && (
         <div className="space-y-5">
-          <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+          <div className="bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-800 shadow-sm space-y-4 text-white">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
                 <SlidersHorizontal className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-900 text-sm">Custom Reporting Query Engine</h3>
-                <p className="text-xs text-slate-500">Run cross-table analytical queries and prepare multi-module aggregations.</p>
+                <h3 className="font-bold text-white text-sm">Custom Reporting Query Engine</h3>
+                <p className="text-xs text-slate-400">Run cross-table analytical queries and prepare multi-module aggregations.</p>
               </div>
             </div>
 
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-600 space-y-2">
-              <p className="font-bold text-slate-800">📊 Database Aggregation Engine Ready:</p>
-              <ul className="list-disc list-inside space-y-1 text-slate-600">
-                <li>Strict multi-tenant scoping to Church: <strong>{currentChurch.name} ({activeChurchId})</strong></li>
+            <div className="p-4 bg-slate-950/60 rounded-2xl border border-slate-800 text-xs text-slate-300 space-y-2">
+              <p className="font-bold text-white flex items-center gap-1.5">📊 Database Aggregation Engine Ready:</p>
+              <ul className="list-disc list-inside space-y-1 text-slate-300">
+                <li>Strict multi-tenant scoping to Church: <strong className="text-white">{currentChurch.name} ({activeChurchId})</strong></li>
                 <li>Live Firestore real-time subscriptions & LocalStorage offline cache enabled</li>
                 <li>Prepared for Phase 5 Finance & Contribution modules (Income, Expenses, Giving statements)</li>
               </ul>

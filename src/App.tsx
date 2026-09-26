@@ -157,6 +157,7 @@ import { MyProfileModal } from './components/member/MyProfileModal';
 import { initMobileNotifications, sendMobilePanelNotification } from './services/mobileNotificationService';
 import { authSecurityService } from './services/authSecurityService';
 import { auditService } from './services/auditService';
+import { applyChurchAccentTheme, applyThemeMode, getStoredThemeMode, getStoredThemePreference, toggleThemeMode, getResolvedTheme, ThemeMode } from './utils/themeUtils';
 
 export default function App() {
   // Authentication & Session Persistence
@@ -654,6 +655,49 @@ export default function App() {
   const activeChurchSettings = useMemo(() => {
     return allChurchSettings[activeChurchId] || getStoredChurchSettings(activeChurchId);
   }, [allChurchSettings, activeChurchId]);
+
+  // Apply Church Accent Color dynamically to root theme
+  useEffect(() => {
+    const accentColor = activeChurchSettings?.appearance?.accentColor || '#f59e0b';
+    applyChurchAccentTheme(accentColor);
+  }, [activeChurchSettings?.appearance?.accentColor]);
+
+  // Theme Mode (Light / Dark / System) State
+  // Priority: User's explicitly saved device choice in localStorage always takes precedence.
+  // If no preference was ever saved on this device, fall back to church appearance setting or 'dark'.
+  const [currentThemeMode, setCurrentThemeMode] = useState<ThemeMode>(() => {
+    return getStoredThemePreference() || activeChurchSettings?.appearance?.themeMode || 'dark';
+  });
+
+  useEffect(() => {
+    // When church settings change or component mounts:
+    // If the device has an explicit preference in localStorage, respect it.
+    // If not, adopt the church's appearance setting.
+    const explicitDevicePref = getStoredThemePreference();
+    const mode = explicitDevicePref || activeChurchSettings?.appearance?.themeMode || 'dark';
+    setCurrentThemeMode(mode);
+    applyThemeMode(mode);
+  }, [activeChurchSettings?.appearance?.themeMode]);
+
+  const handleToggleThemeMode = () => {
+    const next = toggleThemeMode();
+    setCurrentThemeMode(next);
+    // Also sync to activeChurchSettings and localStorage so both stay consistent
+    if (activeChurchSettings) {
+      const updatedSettings: CompleteChurchSettings = {
+        ...activeChurchSettings,
+        appearance: {
+          ...activeChurchSettings.appearance,
+          themeMode: next,
+        },
+      };
+      const nextMap = { ...allChurchSettings, [activeChurchId]: updatedSettings };
+      setAllChurchSettings(nextMap);
+      saveStoredChurchSettings(activeChurchId, updatedSettings);
+    }
+  };
+
+  const isDarkMode = getResolvedTheme(currentThemeMode) === 'dark';
 
   const activeModuleToggles = activeChurchSettings?.preferences?.moduleToggles;
 
@@ -2037,7 +2081,7 @@ export default function App() {
 
   return (
     <MobileFrame isMobileFrame={isMobileFrame} onToggleFrame={() => setIsMobileFrame(!isMobileFrame)}>
-      <div className="flex flex-col flex-1 min-h-screen bg-slate-950 text-slate-100 font-sans w-full max-w-full overflow-x-hidden">
+      <div className="flex flex-col flex-1 min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans w-full max-w-full overflow-x-hidden transition-colors duration-150">
         {/* Top Header */}
         <Header
           memberCount={members.length}
@@ -2072,6 +2116,8 @@ export default function App() {
           onSelectChurch={handleSelectChurch}
           onLogout={handleLogout}
           onUpdateUserProfile={handleUpdateUserProfile}
+          isDarkMode={isDarkMode}
+          onToggleThemeMode={handleToggleThemeMode}
           onNavigateTab={(tab) => {
             if (isTabAllowed(userRole, tab, activeModuleToggles)) {
               handleNavigateTab(tab);
@@ -2080,15 +2126,15 @@ export default function App() {
         />
 
         {/* Role Banner */}
-        <div className="bg-slate-900/90 text-slate-300 border-b border-slate-800 px-4 py-1.5 text-xs flex items-center justify-between">
+        <div className="bg-slate-100/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 px-4 py-1.5 text-xs flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span className="font-medium text-slate-200">
-              Active Church: <strong className="text-amber-400">{activeChurchSettings?.profile?.name || currentChurch.name}</strong> ({activeChurchSettings?.profile?.city || currentChurch.city})
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span className="font-medium text-slate-800 dark:text-slate-200">
+              Active Church: <strong className="text-amber-600 dark:text-amber-400">{activeChurchSettings?.profile?.name || currentChurch.name}</strong> ({activeChurchSettings?.profile?.city || currentChurch.city})
             </span>
-            <span className="text-slate-500 hidden sm:inline">•</span>
-            <span className="text-slate-400 hidden sm:inline">
-              User: <strong className="text-white">{currentUser.name}</strong> (<span className="text-amber-300">{roleConfig.label}</span>)
+            <span className="text-slate-400 dark:text-slate-500 hidden sm:inline">•</span>
+            <span className="text-slate-600 dark:text-slate-400 hidden sm:inline">
+              User: <strong className="text-slate-900 dark:text-white">{currentUser.name}</strong> (<span className="text-amber-600 dark:text-amber-300 font-semibold">{roleConfig.label}</span>)
             </span>
           </div>
         </div>
@@ -2196,7 +2242,13 @@ export default function App() {
           )}
 
           {activeTab === 'visitors' && isTabAllowed(userRole, 'visitors', activeModuleToggles) && (
-            <VisitorsPage currentChurch={currentChurch} currentUser={currentUser} />
+            <VisitorsPage
+              currentChurch={currentChurch}
+              currentUser={currentUser}
+              allUsers={allUsers}
+              members={rawMembers}
+              churchSettings={activeChurchSettings}
+            />
           )}
 
           {activeTab === 'ministries' && isTabAllowed(userRole, 'ministries', activeModuleToggles) && (

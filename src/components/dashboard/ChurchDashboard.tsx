@@ -342,43 +342,43 @@ export const ChurchDashboard: React.FC<ChurchDashboardProps> = ({
 
         {/* Ministry KPIs */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-2xl font-black text-slate-900">{leaderMinMembers.length}</div>
-              <div className="text-[11px] font-semibold uppercase text-slate-400">Team Members</div>
+              <div className="text-2xl font-black text-slate-900 dark:text-white">{leaderMinMembers.length}</div>
+              <div className="text-[11px] font-semibold uppercase text-slate-500 dark:text-slate-400">Team Members</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 flex items-center justify-center shrink-0">
               <Layers className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-2xl font-black text-slate-900">{leaderMinTeams.length}</div>
-              <div className="text-[11px] font-semibold uppercase text-slate-400">Sub-Squads</div>
+              <div className="text-2xl font-black text-slate-900 dark:text-white">{leaderMinTeams.length}</div>
+              <div className="text-[11px] font-semibold uppercase text-slate-500 dark:text-slate-400">Sub-Squads</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
               <UserCheck className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-2xl font-black text-slate-900">{leaderMinActs.length}</div>
-              <div className="text-[11px] font-semibold uppercase text-slate-400">Activities Logged</div>
+              <div className="text-2xl font-black text-slate-900 dark:text-white">{leaderMinActs.length}</div>
+              <div className="text-[11px] font-semibold uppercase text-slate-500 dark:text-slate-400">Activities Logged</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 flex items-center justify-center shrink-0">
               <Calendar className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-2xl font-black text-slate-900">{leaderMinRoster.length}</div>
-              <div className="text-[11px] font-semibold uppercase text-slate-400">Roster Duties</div>
+              <div className="text-2xl font-black text-slate-900 dark:text-white">{leaderMinRoster.length}</div>
+              <div className="text-[11px] font-semibold uppercase text-slate-500 dark:text-slate-400">Roster Duties</div>
             </div>
           </div>
         </div>
@@ -424,20 +424,20 @@ export const ChurchDashboard: React.FC<ChurchDashboardProps> = ({
 
         {/* My Ministry Widget (Section 3 - Only for Ministry Members) */}
         {myMinistries.length > 0 && (
-          <div className="bg-white rounded-3xl p-5 sm:p-6 border border-amber-200/80 shadow-md space-y-4 bg-gradient-to-r from-amber-50/70 via-white to-white relative overflow-hidden">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-100 pb-3">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-md space-y-4 relative overflow-hidden text-slate-900 dark:text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="p-1 rounded-md bg-amber-500/20 text-amber-700 font-bold text-[10px] uppercase tracking-wider">
+                  <span className="p-1 rounded-md bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-bold text-[10px] uppercase tracking-wider">
                     My Ministry
                   </span>
                   {myMinistries.length > 1 && (
-                    <span className="text-[10px] text-slate-500 font-semibold">
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">
                       (+{myMinistries.length - 1} more)
                     </span>
                   )}
                 </div>
-                <h2 className="text-lg font-black text-slate-900 mt-0.5">
+                <h2 className="text-lg font-black text-slate-900 dark:text-white mt-0.5">
                   {myMinistries[0].name}
                 </h2>
               </div>
@@ -452,25 +452,25 @@ export const ChurchDashboard: React.FC<ChurchDashboardProps> = ({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div className="p-3 bg-white rounded-2xl border border-slate-200/80 space-y-1">
-                <span className="text-[10px] font-bold uppercase text-slate-400">Ministry Leader</span>
-                <div className="font-bold text-slate-900 truncate">
+              <div className="p-3 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Ministry Leader</span>
+                <div className="font-bold text-slate-900 dark:text-white truncate">
                   {myMinistries[0].leaderName || 'Church Leadership'}
                 </div>
               </div>
 
-              <div className="p-3 bg-white rounded-2xl border border-slate-200/80 space-y-1">
-                <span className="text-[10px] font-bold uppercase text-slate-400">Next Assignment</span>
-                <div className="font-bold text-amber-700 truncate">
+              <div className="p-3 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Next Assignment</span>
+                <div className="font-bold text-amber-600 dark:text-amber-400 truncate">
                   {myAssignedRoster.length > 0
                     ? `${myAssignedRoster[0].roleName} (${myAssignedRoster[0].serviceName})`
                     : 'No shift assigned'}
                 </div>
               </div>
 
-              <div className="p-3 bg-white rounded-2xl border border-slate-200/80 space-y-1">
-                <span className="text-[10px] font-bold uppercase text-slate-400">Upcoming Event</span>
-                <div className="font-bold text-slate-800 truncate">
+              <div className="p-3 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Upcoming Event</span>
+                <div className="font-bold text-slate-800 dark:text-slate-200 truncate">
                   {myMinistries[0].meetingDay
                     ? `${myMinistries[0].meetingDay} ${myMinistries[0].meetingTime || ''}`
                     : 'Regular Worship Service'}
@@ -482,30 +482,30 @@ export const ChurchDashboard: React.FC<ChurchDashboardProps> = ({
 
         {/* Serving Duties Roster (If Volunteer) */}
         {myAssignedRoster.length > 0 && (
-          <div className="bg-white rounded-3xl p-5 border border-amber-200 shadow-sm space-y-3 bg-gradient-to-r from-amber-50/50 to-white">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 text-slate-900 dark:text-white">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <HeartHandshake className="w-4 h-4 text-amber-600" />
+              <h3 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                <HeartHandshake className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                 <span>My Serving Duties</span>
               </h3>
-              <span className="text-xs font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-500/20 border border-amber-500/30 px-2 py-0.5 rounded-full">
                 {myAssignedRoster.length} Upcoming
               </span>
             </div>
 
             <div className="space-y-2">
               {myAssignedRoster.map((r) => (
-                <div key={r.id} className="p-3 bg-white rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
+                <div key={r.id} className="p-3 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3">
                   <div>
-                    <h4 className="font-bold text-xs text-slate-900">{r.roleName} ({r.team})</h4>
-                    <p className="text-[11px] text-slate-500 mt-0.5">{r.serviceDate} • {r.serviceName}</p>
+                    <h4 className="font-bold text-xs text-slate-900 dark:text-white">{r.roleName} ({r.team})</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{r.serviceDate} • {r.serviceName}</p>
                   </div>
                   {onToggleRosterConfirm && (
                     <button
                       onClick={() => onToggleRosterConfirm(r.id)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${
                         r.confirmed
-                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          ? 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
                           : 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-sm'
                       }`}
                     >
@@ -526,14 +526,14 @@ export const ChurchDashboard: React.FC<ChurchDashboardProps> = ({
         </div>
 
         {/* Quick Prayer Wall Card */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-slate-900 dark:text-white">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/30 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0">
               <Heart className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-sm">Need Prayer or Praise Report?</h3>
-              <p className="text-xs text-slate-500">Our pastoral team and prayer warriors are standing with you in faith.</p>
+              <h3 className="font-bold text-slate-900 dark:text-white text-sm">Need Prayer or Praise Report?</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Our pastoral team and prayer warriors are standing with you in faith.</p>
             </div>
           </div>
 
@@ -548,7 +548,7 @@ export const ChurchDashboard: React.FC<ChurchDashboardProps> = ({
             )}
             <button
               onClick={() => onNavigateTab('prayers')}
-              className="flex-1 sm:flex-none px-3.5 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition"
+              className="flex-1 sm:flex-none px-3.5 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold text-xs transition"
             >
               Open Prayer Wall
             </button>

@@ -1826,7 +1826,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
           </div>
 
           {/* Search & Filter Bar */}
-          <div className="bg-white rounded-2xl p-3 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center gap-2.5">
+          <div className="bg-slate-900 rounded-2xl p-3 border border-slate-800 shadow-sm flex flex-col sm:flex-row items-center gap-2.5">
             <div className="relative flex-1 w-full">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
@@ -1834,12 +1834,12 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search ministries by name, leader, or description..."
-                className="w-full pl-9 pr-4 py-2 bg-slate-50 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 border border-slate-200 focus:bg-white focus:border-amber-500 outline-none transition"
+                className="w-full pl-9 pr-4 py-2 bg-slate-950 rounded-xl text-xs text-white placeholder:text-slate-400 border border-slate-800 focus:border-amber-500 outline-none transition"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -1853,8 +1853,8 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                   onClick={() => setStatusFilter(st)}
                   className={`flex-1 sm:flex-none px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
                     statusFilter === st
-                      ? 'bg-slate-900 text-white'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
+                      : 'bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700'
                   }`}
                 >
                   {st === 'ALL' ? 'All Status' : st}
@@ -1877,7 +1877,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                       setSelectedMinistryId(min.id);
                       setActiveMinistryTab('overview');
                     }}
-                    className="bg-white rounded-3xl p-5 border border-slate-200 hover:border-amber-400/80 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-4 group relative"
+                    className="bg-slate-900 rounded-3xl p-5 border border-slate-800 hover:border-amber-400/80 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-4 group relative text-white"
                   >
                     <div className="space-y-3">
                       {/* Card Header with Icon & Status */}
@@ -1890,7 +1890,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                         </div>
 
                         <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${min.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${min.status === 'Active' ? 'bg-emerald-950/80 text-emerald-300 border-emerald-800' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
                             {min.status}
                           </span>
                           {isSuperOrPastor && (
@@ -1902,7 +1902,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                                   setEditingMinistry(min);
                                   setIsMinistryModalOpen(true);
                                 }}
-                                className="p-1.5 rounded-lg bg-slate-100 hover:bg-amber-100 text-slate-600 hover:text-amber-800 transition"
+                                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-400 transition"
                                 title="Edit Ministry"
                               >
                                 <Edit3 className="w-3.5 h-3.5" />
@@ -1915,7 +1915,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                                     await onDeleteMinistry(min.id);
                                   }
                                 }}
-                                className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700 transition"
+                                className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-950/60 text-slate-300 hover:text-rose-400 transition"
                                 title="Delete Ministry"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1927,23 +1927,23 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
                       {/* Ministry Title & Description */}
                       <div>
-                        <h3 className="font-bold text-slate-900 text-base group-hover:text-amber-600 transition-colors">
+                        <h3 className="font-bold text-white text-base group-hover:text-amber-400 transition-colors">
                           {min.name}
                         </h3>
-                        <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
                           {min.description || 'Dedicated church ministry department.'}
                         </p>
                       </div>
 
                       {/* Leader and Meeting info */}
-                      <div className="space-y-1 text-xs text-slate-600 pt-1">
+                      <div className="space-y-1 text-xs text-slate-300 pt-1">
                         <div className="flex items-center gap-1.5 truncate">
-                          <Users className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                          <span>Leader: <strong className="text-slate-800">{min.leaderName || 'Unassigned'}</strong></span>
+                          <Users className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                          <span>Leader: <strong className="text-white">{min.leaderName || 'Unassigned'}</strong></span>
                         </div>
                         {min.meetingDay && (
-                          <div className="flex items-center gap-1.5 truncate text-[11px] text-slate-500">
-                            <Clock className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                          <div className="flex items-center gap-1.5 truncate text-[11px] text-slate-400">
+                            <Clock className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
                             <span>{min.meetingDay} {min.meetingTime || ''}</span>
                           </div>
                         )}
@@ -1951,13 +1951,13 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                     </div>
 
                     {/* Card Footer with Quick Stats & Open Button */}
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-3 text-xs font-semibold text-slate-600">
+                    <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-3 text-xs font-semibold text-slate-400">
                         <span title="Registered Members">👥 {minMembers.length}</span>
                         <span title="Sub-Teams">📂 {minTeams.length}</span>
                       </div>
 
-                      <span className="text-xs font-bold text-amber-600 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                      <span className="text-xs font-bold text-amber-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
                         <span>Manage</span>
                         <ChevronRight className="w-3.5 h-3.5" />
                       </span>
@@ -1967,12 +1967,12 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
               })}
             </div>
           ) : (
-            <div className="text-center py-16 bg-white rounded-3xl border border-dashed border-slate-300 p-8 space-y-3">
-              <Landmark className="w-12 h-12 text-slate-300 mx-auto" />
-              <h3 className="font-bold text-base text-slate-800">
+            <div className="text-center py-16 bg-slate-900 rounded-3xl border border-dashed border-slate-800 p-8 space-y-3">
+              <Landmark className="w-12 h-12 text-slate-500 mx-auto" />
+              <h3 className="font-bold text-base text-white">
                 {!hasGlobalMinistryAccess ? 'No Assigned Ministries' : 'No ministries found'}
               </h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <p className="text-xs text-slate-400 max-w-sm mx-auto">
                 {!hasGlobalMinistryAccess 
                   ? 'You are not assigned to any ministry department yet. Contact your Church Administrator or Ministry Leader to be assigned.'
                   : (searchQuery ? `No ministries match "${searchQuery}".` : 'Get started by creating your first church ministry department.')}
@@ -1996,15 +1996,15 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
       {/* ========================================================================= */}
       {isMinistryModalOpen && editingMinistry && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 overflow-hidden max-h-[90vh] flex flex-col my-auto animate-in zoom-in-95">
-            <div className="bg-slate-900 text-white p-5 flex items-center justify-between shrink-0">
+          <div className="bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl border border-slate-800 overflow-hidden max-h-[90vh] flex flex-col my-auto animate-in zoom-in-95 text-white">
+            <div className="bg-slate-950 text-white p-5 flex items-center justify-between shrink-0 border-b border-slate-800">
               <div className="flex items-center space-x-2">
                 <Landmark className="w-5 h-5 text-amber-400" />
                 <h3 className="font-bold text-base">{editingMinistry.name ? `Edit ${editingMinistry.name}` : 'New Ministry Department'}</h3>
               </div>
               <button
                 onClick={() => setIsMinistryModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800"
+                className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800 transition"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2012,31 +2012,31 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
             <form onSubmit={handleSaveMinistrySubmit} className="p-5 space-y-4 overflow-y-auto flex-1 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Ministry Name *</label>
+                <label className="font-semibold text-slate-300">Ministry Name *</label>
                 <input
                   type="text"
                   required
                   value={editingMinistry.name}
                   onChange={(e) => setEditingMinistry({ ...editingMinistry, name: e.target.value })}
                   placeholder="e.g. Worship & Music, Sunday School, Youth..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium focus:bg-white outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Description</label>
+                <label className="font-semibold text-slate-300">Description</label>
                 <textarea
                   rows={2}
                   value={editingMinistry.description}
                   onChange={(e) => setEditingMinistry({ ...editingMinistry, description: e.target.value })}
                   placeholder="What is the mission and purpose of this ministry?"
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium focus:bg-white outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Ministry Leader</label>
+                  <label className="font-semibold text-slate-300">Ministry Leader</label>
                   <select
                     value={editingMinistry.leaderMemberId || ''}
                     onChange={(e) => {
@@ -2049,17 +2049,17 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                         contactEmail: sel?.email || editingMinistry.contactEmail,
                       });
                     }}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-medium outline-none focus:ring-2 focus:ring-amber-500"
                   >
-                    <option value="">Select from Church Directory...</option>
+                    <option value="" className="bg-slate-900 text-white">Select from Church Directory...</option>
                     {churchMembers.map((m) => (
-                      <option key={m.id} value={m.id}>{m.firstName} {m.lastName} ({m.status})</option>
+                      <option key={m.id} value={m.id} className="bg-slate-900 text-white">{m.firstName} {m.lastName} ({m.status})</option>
                     ))}
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Assistant Leader</label>
+                  <label className="font-semibold text-slate-300">Assistant Leader</label>
                   <select
                     value={editingMinistry.assistantLeaderMemberId || ''}
                     onChange={(e) => {
@@ -2070,11 +2070,11 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                         assistantLeaderName: sel ? `${sel.firstName} ${sel.lastName}` : '',
                       });
                     }}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-medium outline-none focus:ring-2 focus:ring-amber-500"
                   >
-                    <option value="">Select Assistant Leader...</option>
+                    <option value="" className="bg-slate-900 text-white">Select Assistant Leader...</option>
                     {churchMembers.map((m) => (
-                      <option key={m.id} value={m.id}>{m.firstName} {m.lastName}</option>
+                      <option key={m.id} value={m.id} className="bg-slate-900 text-white">{m.firstName} {m.lastName}</option>
                     ))}
                   </select>
                 </div>
@@ -2082,87 +2082,87 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Meeting Day</label>
+                  <label className="font-semibold text-slate-300">Meeting Day</label>
                   <select
                     value={editingMinistry.meetingDay || 'Sunday'}
                     onChange={(e) => setEditingMinistry({ ...editingMinistry, meetingDay: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-medium outline-none focus:ring-2 focus:ring-amber-500"
                   >
                     {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Monthly'].map((d) => (
-                      <option key={d} value={d}>{d}</option>
+                      <option key={d} value={d} className="bg-slate-900 text-white">{d}</option>
                     ))}
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Meeting Time</label>
+                  <label className="font-semibold text-slate-300">Meeting Time</label>
                   <input
                     type="text"
                     value={editingMinistry.meetingTime || ''}
                     onChange={(e) => setEditingMinistry({ ...editingMinistry, meetingTime: e.target.value })}
                     placeholder="06:00 PM"
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Status</label>
+                  <label className="font-semibold text-slate-300">Status</label>
                   <select
                     value={editingMinistry.status}
                     onChange={(e) => setEditingMinistry({ ...editingMinistry, status: e.target.value as any })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-medium outline-none focus:ring-2 focus:ring-amber-500"
                   >
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
+                    <option value="Active" className="bg-slate-900 text-white">Active</option>
+                    <option value="Inactive" className="bg-slate-900 text-white">Inactive</option>
                   </select>
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Meeting Location</label>
+                <label className="font-semibold text-slate-300">Meeting Location</label>
                 <input
                   type="text"
                   value={editingMinistry.meetingLocation || ''}
                   onChange={(e) => setEditingMinistry({ ...editingMinistry, meetingLocation: e.target.value })}
                   placeholder="e.g. Main Sanctuary Stage, Fellowship Hall, Room 204"
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               {/* Color & Icon Palette */}
-              <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+              <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Theme Color</label>
+                  <label className="font-semibold text-slate-300">Theme Color</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
                       value={editingMinistry.color || '#f59e0b'}
                       onChange={(e) => setEditingMinistry({ ...editingMinistry, color: e.target.value })}
-                      className="w-8 h-8 rounded-lg cursor-pointer border-0"
+                      className="w-8 h-8 rounded-lg cursor-pointer border border-slate-700 bg-slate-800"
                     />
-                    <span className="font-mono text-[11px] text-slate-600">{editingMinistry.color}</span>
+                    <span className="font-mono text-[11px] text-slate-400">{editingMinistry.color}</span>
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Icon</label>
+                  <label className="font-semibold text-slate-300">Icon</label>
                   <select
                     value={editingMinistry.icon || 'Landmark'}
                     onChange={(e) => setEditingMinistry({ ...editingMinistry, icon: e.target.value })}
-                    className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                    className="w-full p-2 rounded-xl bg-slate-800 border border-slate-700 text-white font-medium outline-none focus:ring-2 focus:ring-amber-500"
                   >
                     {['Landmark', 'Music', 'GraduationCap', 'Sparkles', 'Heart', 'Coffee', 'Video', 'Globe', 'Shield', 'BookOpen', 'Award', 'Megaphone'].map((ic) => (
-                      <option key={ic} value={ic}>{ic}</option>
+                      <option key={ic} value={ic} className="bg-slate-900 text-white">{ic}</option>
                     ))}
                   </select>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
+              <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsMinistryModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold"
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-semibold transition"
                 >
                   Cancel
                 </button>
@@ -2183,15 +2183,15 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
       {/* ========================================================================= */}
       {isAddMemberModalOpen && activeMinistry && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in zoom-in-95">
-            <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
+          <div className="bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl border border-slate-800 overflow-hidden my-auto animate-in zoom-in-95 text-white">
+            <div className="bg-slate-950 text-white p-5 flex items-center justify-between border-b border-slate-800">
               <div className="flex items-center space-x-2">
                 <UserPlus className="w-5 h-5 text-amber-400" />
                 <h3 className="font-bold text-base">Assign Member to {activeMinistry.name}</h3>
               </div>
               <button
                 onClick={() => setIsAddMemberModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800"
+                className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800 transition"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2199,37 +2199,37 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
             <form onSubmit={handleAddMemberSubmit} className="p-5 space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Select Church Member *</label>
+                <label className="font-semibold text-slate-300">Select Church Member *</label>
                 <select
                   required
                   value={selectedMemberToAdd}
                   onChange={(e) => setSelectedMemberToAdd(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 >
-                  <option value="">Choose a member from church directory...</option>
+                  <option value="" className="bg-slate-900 text-white">Choose a member from church directory...</option>
                   {churchMembers.map((m) => (
-                    <option key={m.id} value={m.id}>{m.firstName} {m.lastName} — ({m.status})</option>
+                    <option key={m.id} value={m.id} className="bg-slate-900 text-white">{m.firstName} {m.lastName} — ({m.status})</option>
                   ))}
                 </select>
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Role within this Ministry *</label>
+                <label className="font-semibold text-slate-300">Role within this Ministry *</label>
                 <input
                   type="text"
                   required
                   value={memberRoleToAdd}
                   onChange={(e) => setMemberRoleToAdd(e.target.value)}
                   placeholder="e.g. Vocalist, Guitarist, Teacher, Coordinator, Usher..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsAddMemberModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold"
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-semibold transition"
                 >
                   Cancel
                 </button>
@@ -2250,15 +2250,15 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
       {/* ========================================================================= */}
       {isTeamModalOpen && activeMinistry && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in zoom-in-95">
-            <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
+          <div className="bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl border border-slate-800 overflow-hidden my-auto animate-in zoom-in-95 text-white">
+            <div className="bg-slate-950 text-white p-5 flex items-center justify-between border-b border-slate-800">
               <div className="flex items-center space-x-2">
                 <Layers className="w-5 h-5 text-amber-400" />
                 <h3 className="font-bold text-base">{editingTeam ? 'Edit Sub-Team' : `New Team in ${activeMinistry.name}`}</h3>
               </div>
               <button
                 onClick={() => setIsTeamModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800"
+                className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800 transition"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2266,44 +2266,44 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
             <form onSubmit={handleSaveTeamSubmit} className="p-5 space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Team / Squad Name *</label>
+                <label className="font-semibold text-slate-300">Team / Squad Name *</label>
                 <input
                   type="text"
                   required
                   value={teamFormName}
                   onChange={(e) => setTeamFormName(e.target.value)}
                   placeholder="e.g. Vocal Ensemble, Praise Band, Tech & Mics..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Description</label>
+                <label className="font-semibold text-slate-300">Description</label>
                 <textarea
                   rows={2}
                   value={teamFormDesc}
                   onChange={(e) => setTeamFormDesc(e.target.value)}
                   placeholder="Specific role and duties of this sub-team..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Team Leader</label>
+                <label className="font-semibold text-slate-300">Team Leader</label>
                 <input
                   type="text"
                   value={teamFormLeader}
                   onChange={(e) => setTeamFormLeader(e.target.value)}
                   placeholder="Leader name"
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsTeamModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold"
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-semibold transition"
                 >
                   Cancel
                 </button>
@@ -2324,8 +2324,8 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
       {/* ========================================================================= */}
       {isActivityModalOpen && activeMinistry && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in zoom-in-95 max-h-[92vh] overflow-y-auto">
-            <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
+          <div className="bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl border border-slate-800 overflow-hidden my-auto animate-in zoom-in-95 max-h-[92vh] overflow-y-auto text-white">
+            <div className="bg-slate-950 text-white p-5 flex items-center justify-between border-b border-slate-800">
               <div className="flex items-center space-x-2">
                 <Calendar className="w-5 h-5 text-amber-400" />
                 <h3 className="font-bold text-base">
@@ -2337,7 +2337,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                   setIsActivityModalOpen(false);
                   setEditingActivity(null);
                 }}
-                className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800"
+                className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800 transition"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2345,28 +2345,28 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
             <form onSubmit={handleSaveActivitySubmit} className="p-5 space-y-3.5 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Activity Name *</label>
+                <label className="font-semibold text-slate-300">Activity Name *</label>
                 <input
                   type="text"
                   required
                   value={activityFormName}
                   onChange={(e) => setActivityFormName(e.target.value)}
                   placeholder="e.g. Band Rehearsal, Bible Study, Training..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-bold outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               {currentMinTeams.length > 0 && (
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Assigned Sub-Team (Optional)</label>
+                  <label className="font-semibold text-slate-300">Assigned Sub-Team (Optional)</label>
                   <select
                     value={activityFormTeamId}
                     onChange={(e) => setActivityFormTeamId(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-semibold outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-semibold outline-none focus:ring-2 focus:ring-amber-500"
                   >
-                    <option value="">All Teams / Whole Ministry</option>
+                    <option value="" className="bg-slate-900 text-white">All Teams / Whole Ministry</option>
                     {currentMinTeams.map((t) => (
-                      <option key={t.id} value={t.id}>
+                      <option key={t.id} value={t.id} className="bg-slate-900 text-white">
                         {t.name}
                       </option>
                     ))}
@@ -2376,84 +2376,84 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Date *</label>
+                  <label className="font-semibold text-slate-300">Date *</label>
                   <input
                     type="date"
                     required
                     value={activityFormDate}
                     onChange={(e) => setActivityFormDate(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-bold outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Start Time</label>
+                  <label className="font-semibold text-slate-300">Start Time</label>
                   <input
                     type="text"
                     value={activityFormStartTime}
                     onChange={(e) => setActivityFormStartTime(e.target.value)}
                     placeholder="06:00 PM"
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-semibold outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-semibold outline-none focus:ring-2 focus:ring-amber-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">End Time (Optional)</label>
+                  <label className="font-semibold text-slate-300">End Time (Optional)</label>
                   <input
                     type="text"
                     value={activityFormEndTime}
                     onChange={(e) => setActivityFormEndTime(e.target.value)}
                     placeholder="07:30 PM"
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-semibold outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-semibold outline-none focus:ring-2 focus:ring-amber-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Status</label>
+                  <label className="font-semibold text-slate-300">Status</label>
                   <select
                     value={activityFormStatus}
                     onChange={(e) => setActivityFormStatus(e.target.value as any)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-semibold outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-semibold outline-none focus:ring-2 focus:ring-amber-500"
                   >
-                    <option value="Scheduled">Scheduled</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
+                    <option value="Scheduled" className="bg-slate-900 text-white">Scheduled</option>
+                    <option value="Completed" className="bg-slate-900 text-white">Completed</option>
+                    <option value="Cancelled" className="bg-slate-900 text-white">Cancelled</option>
                   </select>
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Location</label>
+                <label className="font-semibold text-slate-300">Location</label>
                 <input
                   type="text"
                   value={activityFormLocation}
                   onChange={(e) => setActivityFormLocation(e.target.value)}
                   placeholder="Main Sanctuary Stage"
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-semibold outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-semibold outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Description / Agenda</label>
+                <label className="font-semibold text-slate-300">Description / Agenda</label>
                 <textarea
                   rows={2}
                   value={activityFormDesc}
                   onChange={(e) => setActivityFormDesc(e.target.value)}
                   placeholder="Agenda, songs, or instructions for attendees..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => {
                     setIsActivityModalOpen(false);
                     setEditingActivity(null);
                   }}
-                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition"
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-semibold transition"
                 >
                   Cancel
                 </button>
@@ -2474,15 +2474,15 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
       {/* ========================================================================= */}
       {isAnnouncementModalOpen && activeMinistry && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in zoom-in-95">
-            <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
+          <div className="bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl border border-slate-800 overflow-hidden my-auto animate-in zoom-in-95 text-white">
+            <div className="bg-slate-950 text-white p-5 flex items-center justify-between border-b border-slate-800">
               <div className="flex items-center space-x-2">
                 <Megaphone className="w-5 h-5 text-rose-400" />
                 <h3 className="font-bold text-base">Post Ministry Announcement</h3>
               </div>
               <button
                 onClick={() => setIsAnnouncementModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800"
+                className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800 transition"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2490,47 +2490,47 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
             <form onSubmit={handleSaveAnnouncementSubmit} className="p-5 space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Announcement Title *</label>
+                <label className="font-semibold text-slate-300">Announcement Title *</label>
                 <input
                   type="text"
                   required
                   value={annTitle}
                   onChange={(e) => setAnnTitle(e.target.value)}
                   placeholder="e.g. New Song Setlist Uploaded..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Message Content *</label>
+                <label className="font-semibold text-slate-300">Message Content *</label>
                 <textarea
                   rows={3}
                   required
                   value={annMessage}
                   onChange={(e) => setAnnMessage(e.target.value)}
                   placeholder="Important message or instructions for ministry team members..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Priority Level</label>
+                <label className="font-semibold text-slate-300">Priority Level</label>
                 <select
                   value={annPriority}
                   onChange={(e) => setAnnPriority(e.target.value as any)}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 >
-                  <option value="Normal">Normal</option>
-                  <option value="High">High</option>
-                  <option value="Urgent">Urgent</option>
+                  <option value="Normal" className="bg-slate-900 text-white">Normal</option>
+                  <option value="High" className="bg-slate-900 text-white">High</option>
+                  <option value="Urgent" className="bg-slate-900 text-white">Urgent</option>
                 </select>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsAnnouncementModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold"
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-semibold transition"
                 >
                   Cancel
                 </button>
@@ -2551,15 +2551,15 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
       {/* ========================================================================= */}
       {isRosterModalOpen && activeMinistry && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in zoom-in-95">
-            <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
+          <div className="bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl border border-slate-800 overflow-hidden my-auto animate-in zoom-in-95 text-white">
+            <div className="bg-slate-950 text-white p-5 flex items-center justify-between border-b border-slate-800">
               <div className="flex items-center space-x-2">
                 <Clock className="w-5 h-5 text-amber-400" />
                 <h3 className="font-bold text-base">Assign Service Roster Duty</h3>
               </div>
               <button
                 onClick={() => setIsRosterModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800"
+                className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800 transition"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2567,7 +2567,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
             <form onSubmit={handleSaveRosterSubmit} className="p-5 space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Service Date *</label>
+                <label className="font-semibold text-slate-300">Service Date *</label>
                 <input
                   type="date"
                   required
@@ -2577,47 +2577,47 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                     setRosterDate(newDate);
                     setRosterServiceName(inferServiceNameForDate(newDate, activeMinistry.name, churchSettings));
                   }}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-bold outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Service / Gathering Name *</label>
+                <label className="font-semibold text-slate-300">Service / Gathering Name *</label>
                 <input
                   type="text"
                   required
                   value={rosterServiceName || inferServiceNameForDate(rosterDate, activeMinistry.name, churchSettings)}
                   onChange={(e) => setRosterServiceName(e.target.value)}
                   placeholder="e.g. Wednesday Word & Prayer, Cottage Prayer Gathering..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-bold outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Duty / Role Name *</label>
+                <label className="font-semibold text-slate-300">Duty / Role Name *</label>
                 <input
                   type="text"
                   required
                   value={rosterRoleName}
                   onChange={(e) => setRosterRoleName(e.target.value)}
                   placeholder="e.g. Lead Vocals, Acoustic Guitar, Stage Sound..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-bold outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Assign Member *</label>
+                <label className="font-semibold text-slate-300">Assign Member *</label>
                 <select
                   required
                   value={rosterMemberId}
                   onChange={(e) => setRosterMemberId(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 >
-                  <option value="">Select volunteer from this ministry...</option>
+                  <option value="" className="bg-slate-900 text-white">Select volunteer from this ministry...</option>
                   {currentMinMembers.map((mm) => {
                     const m = churchMembers.find((cm) => cm.id === mm.memberId);
                     return (
-                      <option key={mm.id} value={mm.memberId}>
+                      <option key={mm.id} value={mm.memberId} className="bg-slate-900 text-white">
                         {m ? `${m.firstName} ${m.lastName}` : 'Member'} — ({mm.ministryRole})
                       </option>
                     );
@@ -2625,11 +2625,11 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                 </select>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsRosterModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold"
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-semibold transition"
                 >
                   Cancel
                 </button>

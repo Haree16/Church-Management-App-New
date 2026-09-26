@@ -151,7 +151,7 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
   return (
     <div className="space-y-4">
       {/* Sub-Tab Navigation Bar */}
-      <div className="flex items-center justify-between gap-3 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex items-center justify-between gap-3 bg-white dark:bg-slate-900/90 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scrollbar-none py-0.5">
           {isSuperAdmin && (
             <button
@@ -159,13 +159,13 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
               onClick={() => setActiveSubTab('tenants')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-extrabold transition ${
                 activeSubTab === 'tenants'
-                  ? 'bg-slate-900 text-amber-400 shadow-md'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'bg-slate-900 text-amber-400 dark:bg-slate-800 dark:text-amber-400 dark:border dark:border-slate-700/60 shadow-md'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-800/60'
               }`}
             >
               <Building2 className="w-4 h-4" />
               <span>Church Tenants & Isolation</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300">
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 dark:bg-slate-950 dark:text-slate-300">
                 {safeChurches.length}
               </span>
             </button>
@@ -176,21 +176,21 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
             onClick={() => setActiveSubTab('users')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-extrabold transition ${
               activeSubTab === 'users'
-                ? 'bg-slate-900 text-amber-400 shadow-md'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                ? 'bg-slate-900 text-amber-400 dark:bg-slate-800 dark:text-amber-400 dark:border dark:border-slate-700/60 shadow-md'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-800/60'
             }`}
           >
             <ShieldCheck className="w-4 h-4 text-purple-400" />
             <span>{isSuperAdmin ? 'SuperAdmin User & Role Module' : 'Church User & Role Management'}</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30">
               {isSuperAdmin ? safeUsers.length : safeUsers.filter(u => (u.church_id === currentChurch.id || u.churchId === currentChurch.id)).length} Users
             </span>
           </button>
         </div>
 
-        <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-slate-500 pr-2">
+        <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 pr-2">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Logged in as: <strong className="text-slate-800">{currentUser.name}</strong> ({currentUser.role})</span>
+          <span>Logged in as: <strong className="text-slate-900 dark:text-slate-100">{currentUser.name}</strong> ({currentUser.role})</span>
         </div>
       </div>
 
@@ -228,10 +228,10 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
                 <button
                   id="btn-open-create-user"
                   onClick={() => setActiveSubTab('users')}
-                  className="flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-2xl border border-slate-700 shadow transition"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 font-extrabold text-xs rounded-2xl border border-slate-300 dark:border-slate-700 shadow transition"
                 >
-                  <Key className="w-4 h-4 text-amber-400" />
-                  <span>Manage Users & Roles ({safeUsers.length})</span>
+                  <Key className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span className="text-slate-900 dark:text-slate-100 font-extrabold">Manage Users & Roles ({safeUsers.length})</span>
                 </button>
                 {isSuperAdmin && (
                   <button
@@ -252,36 +252,36 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
       {/* Active Church & Active Session Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Active Tenant Box */}
-        <div className="bg-white p-6 rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50/50 to-white shadow-sm space-y-3">
+        <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-sm space-y-3 text-white">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase font-black tracking-wider text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full">
+            <span className="text-[10px] uppercase font-black tracking-wider text-amber-300 bg-amber-950/80 border border-amber-800/80 px-2.5 py-0.5 rounded-full">
               Active Church Tenant
             </span>
-            <span className="text-xs font-bold text-slate-500">{currentChurch.city}</span>
+            <span className="text-xs font-bold text-slate-400">{currentChurch.city}</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-slate-900 text-amber-400 flex items-center justify-center text-xl font-black shrink-0 shadow">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl font-black shrink-0 shadow">
               {currentChurch.name.charAt(0)}
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-900 leading-tight">{currentChurch.name}</h3>
-              <p className="text-xs text-slate-500">{currentChurch.city}, {currentChurch.state} • {currentChurch.denomination}</p>
+              <h3 className="text-lg font-bold text-white leading-tight">{currentChurch.name}</h3>
+              <p className="text-xs text-slate-400">{currentChurch.city}, {currentChurch.state} • {currentChurch.denomination}</p>
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
-            <span>Senior Pastor: <strong>{currentChurch.pastorName}</strong></span>
-            <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-full text-[10px]">
+          <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-slate-300">
+            <span>Senior Pastor: <strong className="text-white">{currentChurch.pastorName}</strong></span>
+            <span className="px-2 py-0.5 bg-emerald-950/80 border border-emerald-800 text-emerald-300 font-bold rounded-full text-[10px]">
               {currentChurch.subscriptionPlan}
             </span>
           </div>
         </div>
 
         {/* Active User Session Box */}
-        <div className="bg-white p-6 rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50/50 to-white shadow-sm space-y-3">
+        <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-sm space-y-3 text-white">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase font-black tracking-wider text-indigo-800 bg-indigo-100 px-2.5 py-0.5 rounded-full">
+            <span className="text-[10px] uppercase font-black tracking-wider text-indigo-300 bg-indigo-950/80 border border-indigo-800/80 px-2.5 py-0.5 rounded-full">
               Current Logged In User
             </span>
             <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${ROLE_CONFIGS[currentUser.role]?.badgeColor || ''}`}>
@@ -295,17 +295,17 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
               avatarUrl={currentUser.avatarUrl}
               size="lg"
               shape="rounded"
-              border="border border-indigo-200 shadow-sm"
+              border="border border-indigo-500/40 shadow-sm"
             />
             <div>
-              <h3 className="text-base font-bold text-slate-900">{currentUser.name}</h3>
-              <p className="text-xs text-slate-500">Username: <strong className="text-slate-800 font-mono">{currentUser.username}</strong> • {currentUser.email}</p>
+              <h3 className="text-base font-bold text-white">{currentUser.name}</h3>
+              <p className="text-xs text-slate-400">Username: <strong className="text-amber-400 font-mono">{currentUser.username}</strong> • {currentUser.email}</p>
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 text-xs text-slate-600 flex items-center justify-between">
+          <div className="pt-2 border-t border-slate-800 text-xs text-slate-300 flex items-center justify-between">
             <span>Role Permissions:</span>
-            <span className="font-semibold text-slate-800">
+            <span className="font-semibold text-slate-200">
               {ROLE_CONFIGS[currentUser.role]?.description || 'Church Access'}
             </span>
           </div>
@@ -313,11 +313,11 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
       </div>
 
       {/* Church Selector Grid */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-sm space-y-4 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">Registered Church Tenants ({safeChurches.length})</h3>
-            <p className="text-xs text-slate-500">Switch active church to filter records for that congregation.</p>
+            <h3 className="text-lg font-bold text-white">Registered Church Tenants ({safeChurches.length})</h3>
+            <p className="text-xs text-slate-400">Switch active church to filter records for that congregation.</p>
           </div>
         </div>
 
@@ -332,26 +332,26 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
                 className={`p-5 rounded-2xl border cursor-pointer transition flex flex-col justify-between space-y-3 ${
                   isSelected
                     ? 'bg-amber-500/10 border-amber-500 ring-2 ring-amber-500/30'
-                    : 'bg-slate-50 hover:bg-slate-100 border-slate-200'
+                    : 'bg-slate-950/60 hover:bg-slate-800/60 border-slate-800 text-slate-200'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-slate-500 font-medium">{ch.denomination || 'Congregation'}</span>
+                    <span className="text-[10px] text-slate-400 font-medium">{ch.denomination || 'Congregation'}</span>
                     {isSelected && (
-                      <span className="flex items-center gap-1 text-[10px] font-extrabold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
-                        <CheckCircle2 className="w-3 h-3 text-amber-600" /> Active
+                      <span className="flex items-center gap-1 text-[10px] font-extrabold text-amber-300 bg-amber-950/80 border border-amber-800 px-2 py-0.5 rounded-full">
+                        <CheckCircle2 className="w-3 h-3 text-amber-400" /> Active
                       </span>
                     )}
                   </div>
 
-                  <h4 className="text-sm font-extrabold text-slate-900 mt-2">{ch.name}</h4>
-                  <p className="text-xs text-slate-500 mt-0.5">{ch.city}, {ch.state}</p>
+                  <h4 className="text-sm font-extrabold text-white mt-2">{ch.name}</h4>
+                  <p className="text-xs text-slate-400 mt-0.5">{ch.city}, {ch.state}</p>
                 </div>
 
-                <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-600">
-                  <span>Pastor: {ch.pastorName?.split(' ')[0] || 'Pastor'}</span>
-                  <span className="font-bold text-slate-800">{ch.subscriptionPlan}</span>
+                <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>Pastor: <strong className="text-slate-200">{ch.pastorName?.split(' ')[0] || 'Pastor'}</strong></span>
+                  <span className="font-bold text-amber-400">{ch.subscriptionPlan}</span>
                 </div>
               </div>
             );
@@ -360,11 +360,11 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
       </div>
 
       {/* All User Accounts & Logins Grid */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-sm space-y-4 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">User Accounts & Role Credentials ({safeUsers.length})</h3>
-            <p className="text-xs text-slate-500">Each user has username & password credentials and a designated church affiliation:</p>
+            <h3 className="text-lg font-bold text-white">User Accounts & Role Credentials ({safeUsers.length})</h3>
+            <p className="text-xs text-slate-400">Each user has username & password credentials and a designated church affiliation:</p>
           </div>
         </div>
 
@@ -380,8 +380,8 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
                 id={`card-user-${usr.username}`}
                 className={`p-4 rounded-2xl border text-left transition flex flex-col justify-between space-y-3 ${
                   isCurrent
-                    ? 'bg-indigo-950 text-white border-indigo-700 shadow-md ring-2 ring-indigo-500/40'
-                    : 'bg-slate-50 hover:bg-slate-100/80 border-slate-200 text-slate-800'
+                    ? 'bg-indigo-50/90 dark:bg-indigo-950 text-slate-900 dark:text-white border-indigo-200 dark:border-indigo-700 shadow-md ring-2 ring-indigo-500/30'
+                    : 'bg-white dark:bg-slate-950/60 hover:bg-slate-50 dark:hover:bg-slate-800/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200'
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -390,11 +390,11 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
                     avatarUrl={usr.avatarUrl}
                     size="md"
                     shape="rounded"
-                    border="border border-slate-300"
+                    border="border border-slate-200 dark:border-slate-700"
                   />
                   <div className="overflow-hidden">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <p className="text-xs font-extrabold truncate">{usr.name}</p>
+                      <p className={`text-xs font-extrabold truncate ${isCurrent ? 'text-indigo-950 dark:text-white' : 'text-slate-900 dark:text-white'}`}>{usr.name}</p>
                       {isCurrent && (
                         <span className="text-[9px] font-bold bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded">
                           Current
@@ -407,18 +407,18 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
                   </div>
                 </div>
 
-                <div className={`pt-2 border-t text-[11px] space-y-1 ${isCurrent ? 'border-indigo-800 text-indigo-200' : 'border-slate-200 text-slate-600'}`}>
+                <div className={`pt-2 border-t text-[11px] space-y-1 ${isCurrent ? 'border-indigo-200 dark:border-indigo-800 text-indigo-950/70 dark:text-indigo-200' : 'border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400'}`}>
                   <div className="flex justify-between">
                     <span>Username:</span>
-                    <strong className={`font-mono ${isCurrent ? 'text-amber-300' : 'text-slate-900'}`}>{usr.username}</strong>
+                    <strong className={`font-mono ${isCurrent ? 'text-amber-700 dark:text-amber-300' : 'text-slate-900 dark:text-slate-100'}`}>{usr.username}</strong>
                   </div>
                   <div className="flex justify-between">
                     <span>Password:</span>
-                    <strong className="font-mono">{usr.password || 'admin123'}</strong>
+                    <strong className="font-mono text-slate-900 dark:text-slate-100">{usr.password || 'admin123'}</strong>
                   </div>
                   <div className="flex justify-between">
                     <span>Church:</span>
-                    <span className="truncate max-w-[120px]">{userChurch?.name || 'Main Church'}</span>
+                    <span className="truncate max-w-[120px] text-slate-700 dark:text-slate-300">{userChurch?.name || 'Main Church'}</span>
                   </div>
                 </div>
 
@@ -430,16 +430,16 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
 
       {/* Add User Modal */}
       {isAddUserOpen && (
-        <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 border border-slate-200 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 space-y-4 border border-slate-800 shadow-2xl text-white">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
               <div>
-                <h3 className="text-base font-extrabold text-slate-900">Create New SaaS User Account</h3>
-                <p className="text-xs text-slate-500">Configure role-based access & credentials</p>
+                <h3 className="text-base font-extrabold text-white">Create New SaaS User Account</h3>
+                <p className="text-xs text-slate-400">Configure role-based access & credentials</p>
               </div>
               <button
                 onClick={() => setIsAddUserOpen(false)}
-                className="text-slate-400 hover:text-slate-600 font-bold"
+                className="text-slate-400 hover:text-white font-bold p-1 rounded-lg hover:bg-slate-800 transition"
               >
                 ✕
               </button>
@@ -447,48 +447,48 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
 
             <form onSubmit={handleCreateUser} className="space-y-3 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Full Name *</label>
+                <label className="block font-semibold text-slate-300 mb-1">Full Name *</label>
                 <input
                   type="text"
                   required
                   value={newUserName}
                   onChange={(e) => setNewUserName(e.target.value)}
                   placeholder="e.g. Deacon Joshua Raj"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Username *</label>
+                  <label className="block font-semibold text-slate-300 mb-1">Username *</label>
                   <input
                     type="text"
                     required
                     value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value)}
                     placeholder="e.g. joshua.deacon"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Password *</label>
+                  <label className="block font-semibold text-slate-300 mb-1">Password *</label>
                   <input
                     type="text"
                     required
                     value={newUserPassword}
                     onChange={(e) => setNewUserPassword(e.target.value)}
                     placeholder="Password"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Assigned Church *</label>
+                <label className="block font-semibold text-slate-300 mb-1">Assigned Church *</label>
                 <select
                   value={newUserChurchId}
                   onChange={(e) => setNewUserChurchId(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 >
                   {safeChurches.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -499,11 +499,11 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Role Permission *</label>
+                <label className="block font-semibold text-slate-300 mb-1">Role Permission *</label>
                 <select
                   value={newUserRole}
                   onChange={(e) => setNewUserRole(e.target.value as SaaSUserRole)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 >
                   <option value="PastorAdmin">PastorAdmin (Full Church Access & User Provisioning)</option>
                   <option value="AssistantPastor">AssistantPastor (Full Ministry Operations - No SaaS Console)</option>
@@ -518,23 +518,23 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Email</label>
+                  <label className="block font-semibold text-slate-300 mb-1">Email</label>
                   <input
                     type="email"
                     value={newUserEmail}
                     onChange={(e) => setNewUserEmail(e.target.value)}
                     placeholder="user@church.in"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Phone</label>
+                  <label className="block font-semibold text-slate-300 mb-1">Phone</label>
                   <input
                     type="tel"
                     value={newUserPhone}
                     onChange={(e) => setNewUserPhone(e.target.value)}
                     placeholder="+91 98765 00000"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -552,16 +552,16 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
 
       {/* Registration Modal (SuperAdmin Only) */}
       {isRegisterOpen && isSuperAdmin && (
-        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 border border-slate-200 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 border border-slate-800 shadow-2xl max-h-[90vh] overflow-y-auto text-white">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
               <div>
-                <h3 className="text-lg font-extrabold text-slate-900">Register New Church Tenant</h3>
-                <p className="text-xs text-slate-500">Provision a fresh church management database instance</p>
+                <h3 className="text-lg font-extrabold text-white">Register New Church Tenant</h3>
+                <p className="text-xs text-slate-400">Provision a fresh church management database instance</p>
               </div>
               <button
                 onClick={() => setIsRegisterOpen(false)}
-                className="text-slate-400 hover:text-slate-600 font-bold text-lg"
+                className="text-slate-400 hover:text-white font-bold text-lg p-1 rounded-lg hover:bg-slate-800 transition"
               >
                 ✕
               </button>
@@ -569,73 +569,73 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
 
             <form onSubmit={handleCreateChurch} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Church Name *</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Church Name *</label>
                 <input
                   type="text"
                   required
                   value={churchName}
                   onChange={(e) => setChurchName(e.target.value)}
                   placeholder="e.g. Hope Harvest Fellowship"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">City *</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">City *</label>
                   <input
                     type="text"
                     required
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="e.g. Kochi"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">State *</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">State *</label>
                   <input
                     type="text"
                     required
                     value={state}
                     onChange={(e) => setState(e.target.value)}
                     placeholder="e.g. Kerala"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Senior Pastor Name</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Senior Pastor Name</label>
                   <input
                     type="text"
                     value={pastorName}
                     onChange={(e) => setPastorName(e.target.value)}
                     placeholder="e.g. Pastor Paul Varghese"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Contact Phone</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Contact Phone</label>
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Denomination / Fellowship</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Denomination / Fellowship</label>
                 <select
                   value={denomination}
                   onChange={(e) => setDenomination(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 >
                   <option value="Pentecostal / Charismatic">Pentecostal / Charismatic</option>
                   <option value="Evangelical Non-Denominational">Evangelical Non-Denominational</option>
@@ -646,7 +646,7 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Select SaaS Plan</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Select SaaS Plan</label>
                 <div className="grid grid-cols-3 gap-2">
                   {(['Free Tier', 'Growth Church', 'Enterprise Multi-Campus'] as const).map((p) => (
                     <button
@@ -656,7 +656,7 @@ export const SaaSConsole: React.FC<SaaSConsoleProps> = ({
                       className={`p-2.5 rounded-xl text-[11px] font-bold border transition ${
                         plan === p
                           ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-sm'
-                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                          : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
                       }`}
                     >
                       {p}

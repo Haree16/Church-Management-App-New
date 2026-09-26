@@ -378,18 +378,18 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
         />
       )}
     <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden max-h-[92vh] flex flex-col my-auto">
+      <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[92vh] flex flex-col my-auto">
         {/* Modal Header */}
-        <div className="bg-slate-900 text-white p-5 flex items-center justify-between shrink-0">
+        <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white p-5 flex items-center justify-between shrink-0 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center space-x-2">
-            <User className="w-5 h-5 text-amber-400" />
+            <User className="w-5 h-5 text-amber-500" />
             <h2 className="text-lg font-bold">
               {member ? `Edit Member: ${member.firstName} ${member.lastName}` : 'Add New Church Member'}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1.5 rounded-full hover:bg-slate-800 transition"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -399,15 +399,15 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
         <form onSubmit={handleSubmit} className="p-5 space-y-6 overflow-y-auto flex-1 text-xs sm:text-sm">
           
           {/* PROFILE PHOTO UPLOAD SECTION */}
-          <div className="bg-gradient-to-r from-amber-50/70 to-orange-50/50 p-4 sm:p-5 rounded-2xl border border-amber-200/80 space-y-4">
+          <div className="bg-slate-800/80 p-4 sm:p-5 rounded-2xl border border-slate-700 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider text-amber-700 flex items-center gap-1.5">
-                <Camera className="w-4 h-4 text-amber-600" />
+              <h3 className="font-bold text-xs uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                <Camera className="w-4 h-4 text-amber-400" />
                 Member Profile Photo
               </h3>
               {avatarUrl && (
-                <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" /> Photo Attached
+                <span className="text-[11px] font-semibold text-emerald-300 bg-emerald-950/80 border border-emerald-800 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Photo Attached
                 </span>
               )}
             </div>
@@ -421,10 +421,10 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
                 onClick={() => fileInputRef.current?.click()}
                 className={`relative group cursor-pointer w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 transition shrink-0 flex items-center justify-center shadow-md ${
                   isDragOver 
-                    ? 'border-amber-500 bg-amber-100 ring-4 ring-amber-400/30' 
+                    ? 'border-amber-500 bg-amber-950/50 ring-4 ring-amber-400/30' 
                     : avatarUrl 
                     ? 'border-amber-400 bg-slate-900' 
-                    : 'border-dashed border-amber-300 bg-amber-50 hover:bg-amber-100/80'
+                    : 'border-dashed border-slate-600 bg-slate-850 hover:bg-slate-750'
                 }`}
                 title="Click or Drag & Drop to upload photo"
               >
@@ -476,17 +476,17 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
               {/* Upload Controls */}
               <div className="flex-1 space-y-2.5 w-full text-center sm:text-left">
                 <div>
-                  <h4 className="font-bold text-slate-800 text-sm">
+                  <h4 className="font-bold text-white text-sm">
                     {member ? 'Update Member Picture' : 'Upload Member Photo'}
                   </h4>
-                  <p className="text-xs text-slate-600 mt-0.5">
+                  <p className="text-xs text-slate-400 mt-0.5">
                     Upload from device, browse from camera roll, choose curated preset, or paste image URL.
                   </p>
                 </div>
 
                 {uploadSuccessMsg && (
-                  <div className="text-xs font-semibold text-emerald-700 bg-emerald-100/90 border border-emerald-300 p-2 rounded-xl flex items-center gap-1.5">
-                    <Check className="w-4 h-4 shrink-0 text-emerald-600" />
+                  <div className="text-xs font-semibold text-emerald-300 bg-emerald-950/80 border border-emerald-800 p-2 rounded-xl flex items-center gap-1.5">
+                    <Check className="w-4 h-4 shrink-0 text-emerald-400" />
                     <span>{uploadSuccessMsg}</span>
                   </div>
                 )}
@@ -506,9 +506,9 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
                     onClick={() => {
                       setShowUrlInput(!showUrlInput);
                     }}
-                    className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-semibold rounded-xl text-xs flex items-center gap-1.5 transition"
+                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 font-semibold rounded-xl text-xs flex items-center gap-1.5 transition"
                   >
-                    <LinkIcon className="w-3.5 h-3.5 text-slate-500" />
+                    <LinkIcon className="w-3.5 h-3.5 text-slate-400" />
                     <span>Image URL</span>
                   </button>
 
@@ -521,7 +521,7 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
                         setUploadSuccessMsg('Photo removed. Initials will be used.');
                         setTimeout(() => setUploadSuccessMsg(''), 3000);
                       }}
-                      className="px-2.5 py-1.5 text-rose-600 hover:bg-rose-50 border border-rose-200 font-medium rounded-xl text-xs flex items-center gap-1 transition"
+                      className="px-2.5 py-1.5 text-rose-400 hover:bg-rose-950/50 border border-rose-800/80 font-medium rounded-xl text-xs flex items-center gap-1 transition"
                       title="Remove profile photo"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -532,13 +532,13 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
 
                 {/* Custom URL Input */}
                 {showUrlInput && (
-                  <div className="bg-white p-3 rounded-xl border border-slate-300 shadow-sm space-y-2 mt-2">
+                  <div className="bg-slate-900 p-3 rounded-xl border border-slate-700 shadow-sm space-y-2 mt-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-slate-700">Paste Image Web Link:</span>
+                      <span className="text-[11px] font-bold text-slate-300">Paste Image Web Link:</span>
                       <button
                         type="button"
                         onClick={() => setShowUrlInput(false)}
-                        className="text-slate-400 hover:text-slate-600 text-xs"
+                        className="text-slate-400 hover:text-slate-200 text-xs"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -549,12 +549,12 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
                         placeholder="https://images.unsplash.com/... or web image url"
                         value={customUrlInput}
                         onChange={(e) => setCustomUrlInput(e.target.value)}
-                        className="flex-1 p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        className="flex-1 p-2 bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"
                       />
                       <button
                         type="button"
                         onClick={handleApplyUrl}
-                        className="px-3 py-2 bg-slate-900 text-white font-bold rounded-xl text-xs hover:bg-slate-800 shrink-0"
+                        className="px-3 py-2 bg-amber-500 text-slate-950 font-bold rounded-xl text-xs hover:bg-amber-400 shrink-0"
                       >
                         Apply
                       </button>
@@ -567,164 +567,164 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
 
           {/* Basic Contact Info */}
           <div className="space-y-3">
-            <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider text-amber-600">
+            <h3 className="font-bold text-xs uppercase tracking-wider text-amber-400">
               Personal & Contact Information
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">First Name *</label>
+                <label className="block font-semibold text-slate-200 mb-1">First Name *</label>
                 <input
                   type="text"
                   required
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="e.g. John"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Last Name *</label>
+                <label className="block font-semibold text-slate-200 mb-1">Last Name *</label>
                 <input
                   type="text"
                   required
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="e.g. Doe"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Phone Number</label>
+                <label className="block font-semibold text-slate-200 mb-1">Phone Number</label>
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+91 98765 43210"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Email Address</label>
+                <label className="block font-semibold text-slate-200 mb-1">Email Address</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="rajesh.k@example.in"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Street Address</label>
+              <label className="block font-semibold text-slate-200 mb-1">Street Address</label>
               <input
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="42 MG Road, Indiranagar"
-                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
               />
             </div>
 
             <div className="grid grid-cols-3 gap-2">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">City</label>
+                <label className="block font-semibold text-slate-200 mb-1">City</label>
                 <input
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="e.g. Bengaluru"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">State</label>
+                <label className="block font-semibold text-slate-200 mb-1">State</label>
                 <input
                   type="text"
                   value={state}
                   onChange={(e) => setState(e.target.value)}
                   placeholder="e.g. Karnataka"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">PIN Code</label>
+                <label className="block font-semibold text-slate-200 mb-1">PIN Code</label>
                 <input
                   type="text"
                   value={zipCode}
                   onChange={(e) => setZipCode(e.target.value)}
                   placeholder="600040"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
             </div>
           </div>
 
           {/* Membership Status & Dates */}
-          <div className="space-y-3 pt-3 border-t border-slate-200">
-            <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider text-amber-600">
+          <div className="space-y-3 pt-3 border-t border-slate-800">
+            <h3 className="font-bold text-xs uppercase tracking-wider text-amber-400">
               Church Status & Dates
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Membership Status</label>
+                <label className="block font-semibold text-slate-200 mb-1">Membership Status</label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as MembershipStatus)}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white rounded-xl font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 >
                   {ALL_STATUSES.map(st => (
-                    <option key={st} value={st}>{st}</option>
+                    <option key={st} value={st} className="bg-slate-900 text-white">{st}</option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Joined Date</label>
+                <label className="block font-semibold text-slate-200 mb-1">Joined Date</label>
                 <input
                   type="date"
                   value={joinedDate}
                   onChange={(e) => setJoinedDate(e.target.value)}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none [color-scheme:dark]"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Birthdate</label>
+                <label className="block font-semibold text-slate-200 mb-1">Birthdate</label>
                 <input
                   type="date"
                   value={birthdate}
                   onChange={(e) => setBirthdate(e.target.value)}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none [color-scheme:dark]"
                 />
               </div>
             </div>
           </div>
 
           {/* Family & Household Members */}
-          <div className="space-y-3 pt-3 border-t border-slate-200">
-            <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider text-amber-600">
+          <div className="space-y-3 pt-3 border-t border-slate-800">
+            <h3 className="font-bold text-xs uppercase tracking-wider text-amber-400">
               Household / Family Members
             </h3>
 
             {familyMembers.length > 0 && (
               <div className="space-y-1.5">
                 {familyMembers.map((fam) => (
-                  <div key={fam.id} className="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-200">
-                    <span className="font-medium text-slate-800">
+                  <div key={fam.id} className="flex items-center justify-between bg-slate-800 p-2.5 rounded-xl border border-slate-700">
+                    <span className="font-medium text-slate-200">
                       {fam.name} ({fam.relationship} {fam.age ? `- ${fam.age} yrs` : ''})
                     </span>
                     <button
                       type="button"
                       onClick={() => handleRemoveFamilyMember(fam.id)}
-                      className="text-rose-500 hover:text-rose-700 p-1"
+                      className="text-rose-400 hover:text-rose-300 p-1 rounded-lg hover:bg-rose-950/40 transition"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -739,30 +739,30 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
                 placeholder="Family member name"
                 value={newFamName}
                 onChange={(e) => setNewFamName(e.target.value)}
-                className="p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs flex-1"
+                className="p-2 bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs flex-1 focus:ring-2 focus:ring-amber-500 focus:outline-none"
               />
               <select
                 value={newFamRel}
                 onChange={(e) => setNewFamRel(e.target.value as any)}
-                className="p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+                className="p-2 bg-slate-800 border border-slate-700 text-white rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
               >
-                <option value="Spouse">Spouse</option>
-                <option value="Child">Child</option>
-                <option value="Parent">Parent</option>
-                <option value="Sibling">Sibling</option>
-                <option value="Other">Other</option>
+                <option value="Spouse" className="bg-slate-900 text-white">Spouse</option>
+                <option value="Child" className="bg-slate-900 text-white">Child</option>
+                <option value="Parent" className="bg-slate-900 text-white">Parent</option>
+                <option value="Sibling" className="bg-slate-900 text-white">Sibling</option>
+                <option value="Other" className="bg-slate-900 text-white">Other</option>
               </select>
               <input
                 type="number"
                 placeholder="Age"
                 value={newFamAge}
                 onChange={(e) => setNewFamAge(e.target.value)}
-                className="p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs w-16"
+                className="p-2 bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs w-16 focus:ring-2 focus:ring-amber-500 focus:outline-none"
               />
               <button
                 type="button"
                 onClick={handleAddFamilyMember}
-                className="px-3 py-2 bg-slate-800 text-white font-semibold rounded-xl text-xs hover:bg-slate-700 shrink-0"
+                className="px-3 py-2 bg-slate-800 border border-slate-700 text-slate-200 font-semibold rounded-xl text-xs hover:bg-slate-700 hover:text-white shrink-0 transition"
               >
                 + Add
               </button>
@@ -770,14 +770,14 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
           </div>
 
           {/* Volunteer Ministry Teams & Availability */}
-          <div className="space-y-3 pt-3 border-t border-slate-200">
-            <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider text-amber-600 flex items-center gap-1.5">
-              <HeartHandshake className="w-4 h-4" />
+          <div className="space-y-3 pt-3 border-t border-slate-800">
+            <h3 className="font-bold text-xs uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+              <HeartHandshake className="w-4 h-4 text-amber-400" />
               Volunteer Teams & Availability
             </h3>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1.5">Ministry Team Involvement</label>
+              <label className="block font-semibold text-slate-200 mb-1.5">Ministry Team Involvement</label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {availableMinistryRoles.map((role) => {
                   const isChecked = ministryTeams.includes(role as any);
@@ -791,8 +791,8 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
                       onClick={() => toggleMinistryRole(role as any)}
                       className={`p-2.5 rounded-xl text-xs text-left border transition flex flex-col justify-between gap-1 ${
                         isChecked
-                          ? 'bg-emerald-100 border-emerald-400 text-emerald-950 font-bold shadow-2xs'
-                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                          ? 'bg-emerald-950/80 border-emerald-500 text-emerald-300 font-bold shadow-2xs'
+                          : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-750 hover:text-white'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-1">
@@ -802,7 +802,7 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
                         </span>
                       </div>
                       {matchedMin?.leaderName && (
-                        <span className="text-[10px] text-slate-500 truncate font-normal">
+                        <span className="text-[10px] text-slate-400 truncate font-normal">
                           👑 {matchedMin.leaderName}
                         </span>
                       )}
@@ -813,7 +813,7 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1.5">Volunteer Availability</label>
+              <label className="block font-semibold text-slate-200 mb-1.5">Volunteer Availability</label>
               <div className="flex flex-wrap gap-2">
                 {ALL_AVAILABILITY.map((day) => {
                   const isChecked = availability.includes(day);
@@ -824,8 +824,8 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
                       onClick={() => toggleAvailability(day)}
                       className={`px-3 py-1.5 rounded-xl text-xs border transition ${
                         isChecked
-                          ? 'bg-amber-100 border-amber-400 text-amber-900 font-bold'
-                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                          ? 'bg-amber-950/80 border-amber-500 text-amber-300 font-bold'
+                          : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-750 hover:text-white'
                       }`}
                     >
                       {isChecked ? '✓ ' : '+ '}{day}
@@ -836,21 +836,21 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Special Skills / Talents (comma separated)</label>
+              <label className="block font-semibold text-slate-200 mb-1">Special Skills / Talents (comma separated)</label>
               <input
                 type="text"
                 value={skillsText}
                 onChange={(e) => setSkillsText(e.target.value)}
                 placeholder="e.g. Guitar, Sound Mixer, First Aid, CPR, Baking"
-                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
               />
             </div>
           </div>
 
           {/* Pastoral & Care Notes */}
-          <div className="space-y-2 pt-3 border-t border-slate-200">
-            <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider text-amber-600 flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4" />
+          <div className="space-y-2 pt-3 border-t border-slate-800">
+            <h3 className="font-bold text-xs uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-amber-400" />
               Confidential Pastoral Notes
             </h3>
             <textarea
@@ -858,16 +858,16 @@ export const MemberFormModal: React.FC<MemberFormModalProps> = ({
               value={pastoralNotes}
               onChange={(e) => setPastoralNotes(e.target.value)}
               placeholder="Care updates, prayer interests, discipleship goals (visible to staff/leaders only)..."
-              className="w-full p-2.5 bg-amber-50/50 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-slate-800"
+              className="w-full p-2.5 bg-slate-800 border border-amber-900/40 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-white placeholder:text-slate-500"
             />
           </div>
 
           {/* Submit Footer */}
-          <div className="pt-4 border-t border-slate-200 flex items-center justify-end space-x-3">
+          <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition"
+              className="px-4 py-2 font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-xl transition"
             >
               Cancel
             </button>

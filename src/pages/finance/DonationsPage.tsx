@@ -675,9 +675,9 @@ export function DonationsPage() {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-2 text-xs text-slate-500">
+            <div className="flex items-center justify-between px-2 text-xs text-slate-400">
               <span>
-                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredDonations.length)} of {filteredDonations.length} records
+                Showing <strong className="text-white font-bold">{(currentPage - 1) * itemsPerPage + 1}</strong> to <strong className="text-white font-bold">{Math.min(currentPage * itemsPerPage, filteredDonations.length)}</strong> of <strong className="text-white font-bold">{filteredDonations.length}</strong> records
               </span>
               <div className="flex items-center gap-1.5">
                 <Button

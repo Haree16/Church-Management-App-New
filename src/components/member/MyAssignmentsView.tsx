@@ -89,16 +89,16 @@ export const MyAssignmentsView: React.FC<MyAssignmentsViewProps> = ({
       </div>
 
       {/* Upcoming Roster Assignments */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800 shadow-sm space-y-4 text-white">
         <div className="flex items-center justify-between">
-          <h2 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-            <Calendar className="w-4.5 h-4.5 text-amber-600" />
+          <h2 className="font-bold text-white text-sm flex items-center gap-2">
+            <Calendar className="w-4.5 h-4.5 text-amber-400" />
             <span>Upcoming Service Assignments ({upcomingRoster.length})</span>
           </h2>
         </div>
 
         {upcomingRoster.length === 0 ? (
-          <div className="p-8 text-center text-xs text-slate-400 border border-dashed border-slate-200 rounded-2xl">
+          <div className="p-8 text-center text-xs text-slate-400 border border-dashed border-slate-800 rounded-2xl">
             You have no upcoming service roster assignments.
           </div>
         ) : (
@@ -106,25 +106,25 @@ export const MyAssignmentsView: React.FC<MyAssignmentsViewProps> = ({
             {upcomingRoster.map((r) => (
               <div
                 key={r.id}
-                className="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 hover:bg-slate-50 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="p-4 rounded-2xl border border-slate-800 bg-slate-800/80 hover:bg-slate-800 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="bg-amber-100 text-amber-900 font-extrabold text-xs px-2.5 py-0.5 rounded-full border border-amber-300">
+                    <span className="bg-amber-500/20 text-amber-300 font-extrabold text-xs px-2.5 py-0.5 rounded-full border border-amber-500/30">
                       {r.roleName}
                     </span>
-                    <span className="text-xs font-semibold text-slate-500">
-                      Team: <strong className="text-slate-700">{r.team}</strong>
+                    <span className="text-xs font-semibold text-slate-400">
+                      Team: <strong className="text-white">{r.team}</strong>
                     </span>
                   </div>
 
-                  <h3 className="font-bold text-sm text-slate-900">{r.serviceName}</h3>
-                  <div className="flex items-center gap-3 text-xs text-slate-500 pt-0.5">
+                  <h3 className="font-bold text-sm text-white">{r.serviceName}</h3>
+                  <div className="flex items-center gap-3 text-xs text-slate-400 pt-0.5">
                     <span className="flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5 text-amber-500" /> {r.serviceDate}
+                      <Calendar className="w-3.5 h-3.5 text-amber-400" /> {r.serviceDate}
                     </span>
                     {r.createdByName && (
-                      <span>Assigned by: <strong>{r.createdByName}</strong></span>
+                      <span>Assigned by: <strong className="text-slate-200">{r.createdByName}</strong></span>
                     )}
                   </div>
                 </div>
@@ -135,7 +135,7 @@ export const MyAssignmentsView: React.FC<MyAssignmentsViewProps> = ({
                       onClick={() => onToggleRosterConfirm(r.id)}
                       className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
                         r.confirmed
-                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800'
                           : 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-md'
                       }`}
                     >
@@ -152,23 +152,23 @@ export const MyAssignmentsView: React.FC<MyAssignmentsViewProps> = ({
 
       {/* Ministry Activity Shifts */}
       {myActivityAssignments.length > 0 && (
-        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
-          <h2 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-            <HeartHandshake className="w-4.5 h-4.5 text-amber-600" />
+        <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800 shadow-sm space-y-4 text-white">
+          <h2 className="font-bold text-white text-sm flex items-center gap-2">
+            <HeartHandshake className="w-4.5 h-4.5 text-amber-400" />
             <span>Ministry Activities & Event Shifts</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {myActivityAssignments.map((act) => (
-              <div key={act.id} className="p-4 rounded-2xl border border-slate-200 bg-slate-50 space-y-1.5">
+              <div key={act.id} className="p-4 rounded-2xl border border-slate-750 bg-slate-800/80 space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase text-amber-600 bg-amber-100 px-2 py-0.5 rounded-md">
+                  <span className="text-[10px] font-bold uppercase text-amber-300 bg-amber-500/20 border border-amber-500/30 px-2 py-0.5 rounded-md">
                     {act.status}
                   </span>
                   <span className="text-[11px] text-slate-400">{act.date}</span>
                 </div>
-                <h4 className="font-bold text-xs text-slate-900">{act.name}</h4>
-                <p className="text-[11px] text-slate-500">{act.startTime} • {act.location}</p>
+                <h4 className="font-bold text-xs text-white">{act.name}</h4>
+                <p className="text-[11px] text-slate-400">{act.startTime} • {act.location}</p>
               </div>
             ))}
           </div>
@@ -177,16 +177,16 @@ export const MyAssignmentsView: React.FC<MyAssignmentsViewProps> = ({
 
       {/* Past Roster Assignments */}
       {pastRoster.length > 0 && (
-        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
-          <h2 className="font-bold text-slate-900 text-xs uppercase tracking-wider text-slate-500">
+        <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800 shadow-sm space-y-3 text-white">
+          <h2 className="font-bold text-xs uppercase tracking-wider text-slate-400">
             Past Serving History ({pastRoster.length})
           </h2>
 
           <div className="space-y-2">
             {pastRoster.slice(0, 5).map((r) => (
-              <div key={r.id} className="p-3 rounded-2xl border border-slate-100 bg-slate-50/50 flex items-center justify-between text-xs text-slate-600">
+              <div key={r.id} className="p-3 rounded-2xl border border-slate-800 bg-slate-800/60 flex items-center justify-between text-xs text-slate-300">
                 <div>
-                  <strong className="text-slate-800">{r.roleName}</strong> ({r.team}) — {r.serviceName}
+                  <strong className="text-white">{r.roleName}</strong> ({r.team}) — {r.serviceName}
                 </div>
                 <div className="text-slate-400 text-[11px]">{r.serviceDate}</div>
               </div>

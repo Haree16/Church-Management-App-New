@@ -40,17 +40,115 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { SaaSUser, Member, CompleteChurchSettings } from '@/types';
+import { getStoredUsers, getStoredMembers, getAllStoredChurchSettings, getDefaultChurchSettings } from '@/utils/storage';
+import { PastoralLeaderOption, ChurchServiceOption } from '@/components/people/VisitorFormDialog';
+
 type VisitorViewMode = 'dashboard' | 'pipeline' | 'directory' | 'followups' | 'automated-followups';
 
 interface VisitorsPageProps {
   currentChurch?: any;
   currentUser?: any;
+  allUsers?: SaaSUser[];
+  members?: Member[];
+  churchSettings?: CompleteChurchSettings;
 }
 
-export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser }: VisitorsPageProps = {}) {
+export function VisitorsPage({
+  currentChurch: propChurch,
+  currentUser: propUser,
+  allUsers: propAllUsers,
+  members: propMembers,
+  churchSettings: propChurchSettings,
+}: VisitorsPageProps = {}) {
   const auth = useAuth();
   const activeChurch = propChurch || auth?.activeChurch;
   const user = propUser || auth?.user;
+
+  const availableLeaders = useMemo<PastoralLeaderOption[]>(() => {
+    const churchId = activeChurch?.id;
+    const users = propAllUsers || getStoredUsers();
+    const membersList = propMembers || getStoredMembers();
+
+    const leaders: PastoralLeaderOption[] = [];
+    const seenIds = new Set<string>();
+
+    users.forEach((u) => {
+      if (churchId && u.church_id && u.church_id !== churchId && u.churchId !== churchId && u.role !== 'SuperAdmin') {
+        return;
+      }
+      const isLeadershipRole = ['SuperAdmin', 'PastorAdmin', 'AssistantPastor', 'MinistryLeader', 'Staff'].includes(u.role);
+      const isPastoralDesignation = Boolean(
+        u.designation && /pastor|minister|elder|reverend|bishop|leader|clergy|admin/i.test(u.designation)
+      );
+
+      if (isLeadershipRole || isPastoralDesignation) {
+        if (!seenIds.has(u.id)) {
+          seenIds.add(u.id);
+          leaders.push({
+            id: u.id,
+            name: u.name,
+            title: u.designation || (u.role === 'SuperAdmin' ? 'Super Administrator' : u.role === 'PastorAdmin' ? 'Senior Pastor' : u.role === 'AssistantPastor' ? 'Assistant Pastor' : u.role === 'MinistryLeader' ? 'Ministry Leader' : u.role || 'Pastoral Staff'),
+            role: u.role,
+            email: u.email,
+          });
+        }
+      }
+    });
+
+    membersList.forEach((m) => {
+      if (churchId && m.churchId && m.churchId !== churchId && m.church_id !== churchId) {
+        return;
+      }
+      const isPastoralStatus = ['Pastor', 'Assistant Pastor', 'Leader', 'Clergy/Staff'].includes(m.status);
+      const hasPastoralTeams = Boolean(
+        m.ministryTeams && m.ministryTeams.some((t: string) => /pastor|leader|clergy|elder/i.test(t))
+      );
+
+      if (isPastoralStatus || hasPastoralTeams) {
+        if (!seenIds.has(m.id)) {
+          seenIds.add(m.id);
+          leaders.push({
+            id: m.id,
+            name: `${m.firstName} ${m.lastName}`.trim(),
+            title: m.status || 'Leader',
+            role: m.status,
+            email: m.email,
+          });
+        }
+      }
+    });
+
+    if (user && !seenIds.has(user.id)) {
+      leaders.unshift({
+        id: user.id,
+        name: user.name || user.email || 'Current User',
+        title: user.designation || user.role || 'Staff',
+        role: user.role,
+        email: user.email,
+      });
+    }
+
+    return leaders;
+  }, [activeChurch?.id, propAllUsers, propMembers, user]);
+
+  const availableServices = useMemo<ChurchServiceOption[]>(() => {
+    const churchId = activeChurch?.id;
+    const settings = propChurchSettings || (churchId ? getAllStoredChurchSettings()[churchId] : null) || getDefaultChurchSettings(churchId || 'church-1');
+    if (settings?.services && settings.services.length > 0) {
+      return settings.services.map((s) => ({
+        id: s.id,
+        name: s.name,
+        time: s.startTime,
+      }));
+    }
+    return [
+      { id: 'st-1', name: 'Sunday Morning Worship Service', time: '08:30 AM' },
+      { id: 'st-2', name: 'Sunday Evening Service', time: '06:00 PM' },
+      { id: 'st-3', name: 'Wednesday Prayer & Bible Study', time: '07:00 PM' },
+      { id: 'st-4', name: 'Youth Fellowship', time: '07:30 PM' },
+    ];
+  }, [activeChurch?.id, propChurchSettings]);
 
   const [visitors, setVisitors] = useState<Visitor[]>([]);
   const [followUps, setFollowUps] = useState<FollowUp[]>([]);
@@ -538,6 +636,9 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
         onClose={() => setIsAddOpen(false)}
         onSave={handleCreateVisitorRequest}
         mode="create"
+        churchId={activeChurch?.id}
+        availableLeaders={availableLeaders}
+        availableServices={availableServices}
       />
 
       {/* Edit Guest Dialog */}
@@ -548,6 +649,9 @@ export function VisitorsPage({ currentChurch: propChurch, currentUser: propUser 
           onSave={handleUpdateVisitor}
           initialData={editingVisitor}
           mode="edit"
+          churchId={activeChurch?.id}
+          availableLeaders={availableLeaders}
+          availableServices={availableServices}
         />
       )}
 

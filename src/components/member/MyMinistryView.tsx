@@ -251,13 +251,13 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
   if (userMinistries.length === 0) {
     return (
       <div className="max-w-4xl mx-auto space-y-6 pb-12 animate-in fade-in duration-200">
-        <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm text-center space-y-4">
-          <div className="w-16 h-16 bg-amber-100 rounded-3xl text-amber-600 flex items-center justify-center mx-auto shadow-inner">
+        <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800 shadow-sm text-center space-y-4 text-white">
+          <div className="w-16 h-16 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
             <Landmark className="w-8 h-8" />
           </div>
           <div className="space-y-1 max-w-md mx-auto">
-            <h2 className="text-xl font-bold text-slate-900">No Ministry Assignment Yet</h2>
-            <p className="text-xs text-slate-500">
+            <h2 className="text-xl font-bold text-white">No Ministry Assignment Yet</h2>
+            <p className="text-xs text-slate-400">
               You are currently registered as a church member. You can browse all available church ministries and reach out to get involved!
             </p>
           </div>
@@ -377,37 +377,37 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
         {/* Left 2 Columns: Information, Members, Announcements */}
         <div className="lg:col-span-2 space-y-6">
           {/* About Ministry Card */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <FileText className="w-4 h-4 text-amber-600" />
+          <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-3 text-white">
+            <h3 className="font-bold text-white text-sm flex items-center gap-2">
+              <FileText className="w-4 h-4 text-amber-400" />
               <span>About {activeMinistry?.name}</span>
             </h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-300 leading-relaxed">
               {activeMinistry?.description}
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs border-t border-slate-100">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs border-t border-slate-800">
               {activeMinistry?.meetingDay && (
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Clock className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span><strong>Schedule:</strong> {activeMinistry.meetingDay} {activeMinistry.meetingTime}</span>
+                <div className="flex items-center gap-2 text-slate-300">
+                  <Clock className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span><strong className="text-white">Schedule:</strong> {activeMinistry.meetingDay} {activeMinistry.meetingTime}</span>
                 </div>
               )}
               {activeMinistry?.meetingLocation && (
-                <div className="flex items-center gap-2 text-slate-600">
-                  <MapPin className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span><strong>Location:</strong> {activeMinistry.meetingLocation}</span>
+                <div className="flex items-center gap-2 text-slate-300">
+                  <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span><strong className="text-white">Location:</strong> {activeMinistry.meetingLocation}</span>
                 </div>
               )}
               {activeMinistry?.contactEmail && (
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Mail className="w-4 h-4 text-amber-500 shrink-0" />
+                <div className="flex items-center gap-2 text-slate-300">
+                  <Mail className="w-4 h-4 text-amber-400 shrink-0" />
                   <span>{activeMinistry.contactEmail}</span>
                 </div>
               )}
               {activeMinistry?.contactPhone && (
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Phone className="w-4 h-4 text-amber-500 shrink-0" />
+                <div className="flex items-center gap-2 text-slate-300">
+                  <Phone className="w-4 h-4 text-amber-400 shrink-0" />
                   <span>{activeMinistry.contactPhone}</span>
                 </div>
               )}
@@ -415,20 +415,20 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
           </div>
 
           {/* Ministry Members List (Section 5 - Privacy Guarded) */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-4">
+          <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-4 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                  <Users className="w-4 h-4 text-amber-600" />
+                <h3 className="font-bold text-white text-sm flex items-center gap-2">
+                  <Users className="w-4 h-4 text-amber-400" />
                   <span>{activeMinistry?.name} Members</span>
                 </h3>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-slate-400">
                   Members serving in this ministry team
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="bg-slate-100 text-slate-700 text-xs font-bold px-2.5 py-1 rounded-xl">
+                <span className="bg-slate-800 text-slate-300 border border-slate-700 text-xs font-bold px-2.5 py-1 rounded-xl">
                   {activeMinMembersWithDetails.length} Members
                 </span>
                 {isLeader && (
@@ -447,10 +447,10 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
               {activeMinMembersWithDetails.map((m) => (
                 <div
                   key={m.id}
-                  className="p-3 bg-slate-50/80 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-3"
+                  className="p-3 bg-slate-800/80 rounded-2xl border border-slate-700 flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-700 font-bold flex items-center justify-center text-xs shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold flex items-center justify-center text-xs shrink-0">
                       {m.avatarUrl ? (
                         <img src={m.avatarUrl} alt={m.name} className="w-full h-full rounded-xl object-cover" />
                       ) : (
@@ -458,15 +458,15 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
                       )}
                     </div>
                     <div>
-                      <h4 className="font-bold text-xs text-slate-900">{m.name}</h4>
-                      <p className="text-[10px] text-amber-600 font-semibold">{m.roleTitle}</p>
+                      <h4 className="font-bold text-xs text-white">{m.name}</h4>
+                      <p className="text-[10px] text-amber-400 font-semibold">{m.roleTitle}</p>
                     </div>
                   </div>
 
                   {isLeader && onDeleteMinistryMember && !m.id.startsWith('leader-') && (
                     <button
                       onClick={() => onDeleteMinistryMember(m.id)}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg transition"
+                      className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg transition"
                       title="Remove member from ministry"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -476,21 +476,21 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
               ))}
             </div>
 
-            <div className="p-3 bg-slate-100/60 rounded-2xl text-[11px] text-slate-500 flex items-center gap-2">
+            <div className="p-3 bg-slate-800/60 border border-slate-700/60 rounded-2xl text-[11px] text-slate-400 flex items-center gap-2">
               <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <span>Member contact data is privacy-protected and strictly visible to team members.</span>
             </div>
           </div>
 
           {/* Ministry Announcements (Section 9) */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-4">
+          <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-4 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                  <Megaphone className="w-4 h-4 text-amber-600" />
+                <h3 className="font-bold text-white text-sm flex items-center gap-2">
+                  <Megaphone className="w-4 h-4 text-amber-400" />
                   <span>Ministry Announcements</span>
                 </h3>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-slate-400">
                   Updates posted specifically for {activeMinistry?.name} members
                 </p>
               </div>
@@ -507,7 +507,7 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
             </div>
 
             {activeMinAnnouncements.length === 0 ? (
-              <div className="p-6 text-center text-xs text-slate-400 border border-dashed border-slate-200 rounded-2xl">
+              <div className="p-6 text-center text-xs text-slate-400 border border-dashed border-slate-800 rounded-2xl">
                 No ministry announcements posted yet.
               </div>
             ) : (
@@ -515,20 +515,20 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
                 {activeMinAnnouncements.map((ann) => (
                   <div
                     key={ann.id}
-                    className="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-2 relative"
+                    className="p-4 rounded-2xl border border-slate-750 bg-slate-800/80 space-y-2 relative"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           ann.priority === 'Urgent'
-                            ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                            ? 'bg-rose-950/80 text-rose-300 border border-rose-800'
                             : ann.priority === 'High'
-                            ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                            : 'bg-sky-100 text-sky-800'
+                            ? 'bg-amber-950/80 text-amber-300 border border-amber-800'
+                            : 'bg-sky-950/80 text-sky-300 border border-sky-800'
                         }`}>
                           {ann.priority}
                         </span>
-                        <h4 className="font-bold text-xs text-slate-900">{ann.title}</h4>
+                        <h4 className="font-bold text-xs text-white">{ann.title}</h4>
                       </div>
 
                       <div className="flex items-center gap-2 text-[10px] text-slate-400">
@@ -536,7 +536,7 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
                         {isLeader && onDeleteMinistryAnnouncement && (
                           <button
                             onClick={() => onDeleteMinistryAnnouncement(ann.id)}
-                            className="p-1 text-slate-400 hover:text-rose-600 transition"
+                            className="p-1 text-slate-400 hover:text-rose-400 transition"
                             title="Delete announcement"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -545,9 +545,9 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
                       </div>
                     </div>
 
-                    <p className="text-xs text-slate-600 whitespace-pre-wrap">{ann.message}</p>
+                    <p className="text-xs text-slate-300 whitespace-pre-wrap">{ann.message}</p>
                     <div className="text-[10px] text-slate-400 font-medium">
-                      Posted by: <strong className="text-slate-700">{ann.authorName}</strong>
+                      Posted by: <strong className="text-white">{ann.authorName}</strong>
                     </div>
                   </div>
                 ))}
@@ -559,36 +559,36 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
         {/* Right 1 Column: Assignments & Events */}
         <div className="space-y-6">
           {/* My Duty Roster Assignments (Section 6) */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+          <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-3 text-white">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-amber-600" />
+              <h3 className="font-bold text-white text-sm flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-amber-400" />
                 <span>My Ministry Assignments</span>
               </h3>
               <button
                 onClick={() => onNavigateTab('my-assignments')}
-                className="text-[11px] font-bold text-amber-600 hover:underline"
+                className="text-[11px] font-bold text-amber-400 hover:text-amber-300 hover:underline"
               >
                 View All
               </button>
             </div>
 
             {myMinRoster.length === 0 ? (
-              <div className="p-4 text-center text-xs text-slate-400 border border-dashed border-slate-200 rounded-2xl">
+              <div className="p-4 text-center text-xs text-slate-400 border border-dashed border-slate-800 rounded-2xl">
                 No upcoming service roster duties assigned for this ministry.
               </div>
             ) : (
               <div className="space-y-2.5">
                 {myMinRoster.map((r) => (
-                  <div key={r.id} className="p-3 bg-amber-50/50 rounded-2xl border border-amber-200/80 space-y-1.5">
+                  <div key={r.id} className="p-3 bg-slate-800/80 rounded-2xl border border-slate-750 space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-extrabold text-slate-900">{r.roleName}</span>
+                      <span className="text-xs font-extrabold text-white">{r.roleName}</span>
                       {onToggleRosterConfirm && (
                         <button
                           onClick={() => onToggleRosterConfirm(r.id)}
                           className={`px-2.5 py-1 rounded-xl text-[10px] font-bold transition flex items-center gap-1 ${
                             r.confirmed
-                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                              ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800'
                               : 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-sm'
                           }`}
                         >
@@ -597,7 +597,7 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
                         </button>
                       )}
                     </div>
-                    <p className="text-[11px] text-slate-600">{r.serviceDate} • {r.serviceName}</p>
+                    <p className="text-[11px] text-slate-400">{r.serviceDate} • {r.serviceName}</p>
                   </div>
                 ))}
               </div>
@@ -605,29 +605,29 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
           </div>
 
           {/* Ministry Activities & Events (Section 7) */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-600" />
+          <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-3 text-white">
+            <h3 className="font-bold text-white text-sm flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-400" />
               <span>Upcoming Ministry Events</span>
             </h3>
 
             {activeMinActivities.length === 0 && activeMinEvents.length === 0 ? (
-              <div className="p-4 text-center text-xs text-slate-400 border border-dashed border-slate-200 rounded-2xl">
+              <div className="p-4 text-center text-xs text-slate-400 border border-dashed border-slate-800 rounded-2xl">
                 No upcoming ministry events scheduled.
               </div>
             ) : (
               <div className="space-y-2.5">
                 {activeMinActivities.map((act) => (
-                  <div key={act.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
-                    <h4 className="font-bold text-xs text-slate-900">{act.name}</h4>
-                    <p className="text-[11px] text-slate-500">{act.date} at {act.startTime} • {act.location}</p>
+                  <div key={act.id} className="p-3 bg-slate-800/80 rounded-2xl border border-slate-750 space-y-1">
+                    <h4 className="font-bold text-xs text-white">{act.name}</h4>
+                    <p className="text-[11px] text-slate-400">{act.date} at {act.startTime} • {act.location}</p>
                   </div>
                 ))}
 
                 {activeMinEvents.map((ev) => (
-                  <div key={ev.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
-                    <h4 className="font-bold text-xs text-slate-900">{ev.title}</h4>
-                    <p className="text-[11px] text-slate-500">{ev.date} at {ev.time} • {ev.location}</p>
+                  <div key={ev.id} className="p-3 bg-slate-800/80 rounded-2xl border border-slate-750 space-y-1">
+                    <h4 className="font-bold text-xs text-white">{ev.title}</h4>
+                    <p className="text-[11px] text-slate-400">{ev.date} at {ev.time} • {ev.location}</p>
                   </div>
                 ))}
               </div>
@@ -657,15 +657,15 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
       {/* Post Announcement Modal (Leaders Only) */}
       {isAddAnnouncementOpen && (
         <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
-                <Megaphone className="w-4 h-4 text-amber-600" />
+          <div className="bg-slate-900 text-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-800">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 className="font-bold text-sm text-white flex items-center gap-2">
+                <Megaphone className="w-4 h-4 text-amber-400" />
                 Post {activeMinistry?.name} Announcement
               </h3>
               <button
                 onClick={() => setIsAddAnnouncementOpen(false)}
-                className="text-slate-400 hover:text-slate-600 font-bold text-sm"
+                className="text-slate-400 hover:text-white font-bold text-sm p-1 rounded-lg hover:bg-slate-800"
               >
                 ✕
               </button>
@@ -673,39 +673,39 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
 
             <form onSubmit={handlePostAnnouncement} className="space-y-3 text-xs">
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Title *</label>
+                <label className="font-bold text-slate-200 block mb-1">Title *</label>
                 <input
                   type="text"
                   required
                   value={annTitle}
                   onChange={(e) => setAnnTitle(e.target.value)}
                   placeholder="e.g. Please arrive 30 mins early for Sunday sound check"
-                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Priority</label>
+                <label className="font-bold text-slate-200 block mb-1">Priority</label>
                 <select
                   value={annPriority}
                   onChange={(e) => setAnnPriority(e.target.value as any)}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
-                  <option value="Normal">Normal</option>
-                  <option value="High">High Priority</option>
-                  <option value="Urgent">Urgent Notice</option>
+                  <option value="Normal" className="bg-slate-900 text-white">Normal</option>
+                  <option value="High" className="bg-slate-900 text-white">High Priority</option>
+                  <option value="Urgent" className="bg-slate-900 text-white">Urgent Notice</option>
                 </select>
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Announcement Message *</label>
+                <label className="font-bold text-slate-200 block mb-1">Announcement Message *</label>
                 <textarea
                   required
                   rows={4}
                   value={annMessage}
                   onChange={(e) => setAnnMessage(e.target.value)}
                   placeholder="Enter detailed notice for team members..."
-                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
@@ -713,14 +713,14 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsAddAnnouncementOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-600 font-bold hover:bg-slate-100"
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-750 border border-slate-700 rounded-xl text-slate-300 hover:text-white font-bold transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl shadow-md"
+                  className="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl shadow-md transition"
                 >
                   {isSubmitting ? 'Posting...' : 'Post Notice'}
                 </button>
@@ -733,15 +733,15 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
       {/* Add Member Modal (Leaders Only) */}
       {isAddMemberModalOpen && (
         <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
-                <Users className="w-4 h-4 text-amber-600" />
+          <div className="bg-slate-900 text-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-800">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 className="font-bold text-sm text-white flex items-center gap-2">
+                <Users className="w-4 h-4 text-amber-400" />
                 Add Member to {activeMinistry?.name}
               </h3>
               <button
                 onClick={() => setIsAddMemberModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 font-bold text-sm"
+                className="text-slate-400 hover:text-white font-bold text-sm p-1 rounded-lg hover:bg-slate-800"
               >
                 ✕
               </button>
@@ -749,16 +749,16 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
 
             <form onSubmit={handleAddMemberToMinistry} className="space-y-3 text-xs">
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Select Church Member *</label>
+                <label className="font-bold text-slate-200 block mb-1">Select Church Member *</label>
                 <select
                   required
                   value={selectedMemberToAddId}
                   onChange={(e) => setSelectedMemberToAddId(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
-                  <option value="">-- Choose Member --</option>
+                  <option value="" className="bg-slate-900 text-white">-- Choose Member --</option>
                   {availableMembersToAdd.map((m) => (
-                    <option key={m.id} value={m.id}>
+                    <option key={m.id} value={m.id} className="bg-slate-900 text-white">
                       {m.firstName} {m.lastName} ({m.email || m.phone || 'Member'})
                     </option>
                   ))}
@@ -766,13 +766,13 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Ministry Role Title</label>
+                <label className="font-bold text-slate-200 block mb-1">Ministry Role Title</label>
                 <input
                   type="text"
                   value={newMemberRoleTitle}
                   onChange={(e) => setNewMemberRoleTitle(e.target.value)}
                   placeholder="e.g. Media Team, Sound Mixer, Vocalist"
-                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
@@ -780,14 +780,14 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsAddMemberModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-600 font-bold hover:bg-slate-100"
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-750 border border-slate-700 rounded-xl text-slate-300 hover:text-white font-bold transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting || !selectedMemberToAddId}
-                  className="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl shadow-md"
+                  className="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl shadow-md transition"
                 >
                   {isSubmitting ? 'Adding...' : 'Add to Ministry'}
                 </button>

@@ -183,16 +183,16 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
       )}
 
       {/* Filter & Sub-Header */}
-      <div className="bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+      <div className="bg-slate-900 p-3 sm:p-3.5 rounded-2xl border border-slate-800 shadow-sm space-y-2.5">
         {/* Active vs Answered Toggle */}
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold w-full sm:w-auto">
+          <div className="flex items-center bg-slate-800 p-1 rounded-xl text-xs font-semibold w-full sm:w-auto border border-slate-700">
             <button
               onClick={() => setActiveTab('active')}
               className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-lg transition ${
                 activeTab === 'active'
-                  ? 'bg-white text-slate-900 shadow-sm font-bold'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'bg-rose-600 text-white shadow-sm font-bold'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               Active Requests
@@ -201,8 +201,8 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
               onClick={() => setActiveTab('answered')}
               className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-lg transition flex items-center justify-center gap-1.5 ${
                 activeTab === 'answered'
-                  ? 'bg-emerald-500 text-white shadow-sm font-bold'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'bg-emerald-600 text-white shadow-sm font-bold'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
@@ -222,7 +222,7 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
         {/* Category Pills */}
         <div className="flex items-center space-x-1.5 overflow-x-auto no-scrollbar scrollbar-none text-xs -mx-0.5 px-0.5">
           <span className="text-slate-400 font-medium px-1 flex items-center gap-1 shrink-0">
-            <Filter className="w-3 h-3" /> Category:
+            <Filter className="w-3 h-3 text-slate-400" /> Category:
           </span>
           {CATEGORIES.map((cat) => (
             <button
@@ -231,7 +231,7 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
               className={`px-2.5 py-1 rounded-lg border font-medium shrink-0 transition ${
                 selectedCategory === cat
                   ? 'bg-rose-500 text-white border-rose-500 shadow-sm font-bold'
-                  : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                  : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white'
               }`}
             >
               {cat === 'ALL' ? 'All Categories' : cat}
@@ -242,14 +242,14 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
 
       {/* Prayer Request Cards */}
       {filteredPrayers.length === 0 ? (
-        <div className="bg-white rounded-2xl p-6 sm:p-8 text-center border border-dashed border-slate-300 space-y-3">
-          <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto">
+        <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 text-center border border-dashed border-slate-800 space-y-3">
+          <div className="w-12 h-12 bg-rose-950/80 text-rose-400 border border-rose-800/80 rounded-full flex items-center justify-center mx-auto">
             <Heart className="w-6 h-6" />
           </div>
-          <h3 className="font-semibold text-slate-800">
+          <h3 className="font-semibold text-white">
             {activeTab === 'active' ? 'No active prayer requests found' : 'No answered prayers yet'}
           </h3>
-          <p className="text-xs text-slate-500 max-w-xs mx-auto">
+          <p className="text-xs text-slate-400 max-w-xs mx-auto">
             Submit a request to invite your church family to pray alongside you.
           </p>
           <button
@@ -268,38 +268,38 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
             return (
               <div
                 key={prayer.id}
-                className={`bg-white rounded-2xl border p-4 shadow-sm transition-all space-y-3 ${
+                className={`bg-slate-900 rounded-2xl border p-4 shadow-sm transition-all space-y-3 ${
                   prayer.status === 'Urgent'
-                    ? 'border-rose-300 bg-rose-50/20'
+                    ? 'border-rose-500/50 bg-rose-950/20'
                     : prayer.status === 'Answered'
-                    ? 'border-emerald-200 bg-emerald-50/20'
-                    : 'border-slate-200'
+                    ? 'border-emerald-500/50 bg-emerald-950/20'
+                    : 'border-slate-800'
                 }`}
               >
                 {/* Request Header */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-bold text-slate-900 text-base">{prayer.title}</span>
-                      <span className="bg-slate-100 text-slate-700 text-[10px] font-medium px-2 py-0.5 rounded-full border border-slate-200">
+                      <span className="font-bold text-white text-base">{prayer.title}</span>
+                      <span className="bg-slate-800 text-slate-300 text-[10px] font-medium px-2 py-0.5 rounded-full border border-slate-700">
                         {prayer.category}
                       </span>
                       {prayer.confidentiality !== 'Public Congregation' && (
-                        <span className="bg-amber-100 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-300 flex items-center gap-1">
-                          <ShieldAlert className="w-3 h-3 text-amber-600" />
+                        <span className="bg-amber-950/80 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-800 flex items-center gap-1">
+                          <ShieldAlert className="w-3 h-3 text-amber-400" />
                           {prayer.confidentiality}
                         </span>
                       )}
                     </div>
 
-                    <div className="text-xs text-slate-500 flex items-center gap-1.5 pt-0.5">
+                    <div className="text-xs text-slate-400 flex items-center gap-1.5 pt-0.5">
                       <UserAvatar
                         name={prayer.memberName}
                         avatarUrl={members.find(m => m.id === prayer.memberId || `${m.firstName} ${m.lastName}`.toLowerCase().trim() === prayer.memberName.toLowerCase().trim())?.avatarUrl}
                         size="xs"
                         shape="circle"
                       />
-                      <span className="font-semibold text-slate-800">{prayer.memberName}</span>
+                      <span className="font-semibold text-slate-200">{prayer.memberName}</span>
                       <span>•</span>
                       <Clock className="w-3.5 h-3.5 text-slate-400" />
                       <span>{new Date(prayer.dateSubmitted).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
@@ -311,10 +311,10 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
                     <span
                       className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${
                         prayer.status === 'Urgent'
-                          ? 'bg-rose-100 text-rose-800 border-rose-300'
+                          ? 'bg-rose-950/80 text-rose-300 border-rose-800'
                           : prayer.status === 'Answered'
-                          ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                          : 'bg-amber-100 text-amber-800 border-amber-300'
+                          ? 'bg-emerald-950/80 text-emerald-300 border-emerald-800'
+                          : 'bg-amber-950/80 text-amber-300 border-amber-800'
                       }`}
                     >
                       {prayer.status}
@@ -324,7 +324,7 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
                       <button
                         type="button"
                         onClick={() => onEditPrayer(prayer)}
-                        className="p-1.5 text-slate-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition flex items-center gap-1 text-xs font-semibold"
+                        className="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-slate-800 rounded-lg transition flex items-center gap-1 text-xs font-semibold"
                         title="Edit Prayer Request"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
@@ -335,7 +335,7 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
                     {onDeletePrayer && (
                       <button
                         onClick={() => setDeletingPrayerId(prayer.id)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                        className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 rounded-lg transition"
                         title="Remove Prayer Request"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -345,27 +345,27 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
                 </div>
 
                 {/* Description Body */}
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-sans">
+                <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
                   {prayer.description}
                 </p>
 
                 {/* Answered Testimony Block if answered */}
                 {prayer.status === 'Answered' && prayer.answeredTestimony && (
-                  <div className="bg-emerald-100/60 border border-emerald-300 p-3 rounded-xl text-xs space-y-1">
-                    <span className="font-bold text-emerald-900 flex items-center gap-1">
-                      <Sparkles className="w-3.5 h-3.5 text-emerald-600" /> Answered Testimony:
+                  <div className="bg-emerald-950/60 border border-emerald-800 p-3 rounded-xl text-xs space-y-1">
+                    <span className="font-bold text-emerald-300 flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> Answered Testimony:
                     </span>
-                    <p className="text-emerald-950 font-medium italic">"{prayer.answeredTestimony}"</p>
+                    <p className="text-emerald-100 font-medium italic">"{prayer.answeredTestimony}"</p>
                   </div>
                 )}
 
                 {/* Updates Log */}
                 {prayer.updates && prayer.updates.length > 0 && (
-                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-1.5 text-xs">
-                    <span className="font-bold text-slate-700 block">Updates & Progress:</span>
+                  <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 space-y-1.5 text-xs">
+                    <span className="font-bold text-slate-200 block">Updates & Progress:</span>
                     {(prayer.updates || []).map((upd) => (
                       <div key={upd.id} className="border-l-2 border-rose-400 pl-2 space-y-0.5">
-                        <p className="text-slate-800">{upd.note}</p>
+                        <p className="text-slate-100">{upd.note}</p>
                         <p className="text-[10px] text-slate-400">{upd.authorName} • {upd.date}</p>
                       </div>
                     ))}
@@ -373,7 +373,7 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
                 )}
 
                 {/* Card Action Row */}
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs gap-2">
+                <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs gap-2">
                   <div className="flex items-center space-x-2">
                     {/* Pray Button */}
                     <button
@@ -381,13 +381,13 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
                       title={hasPrayed ? "You prayed for this request (click to remove count)" : "Click to add your prayer"}
                       className={`px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition active:scale-95 ${
                         hasPrayed
-                          ? 'bg-rose-500 text-white shadow-sm ring-2 ring-rose-300'
-                          : 'bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200'
+                          ? 'bg-rose-600 text-white shadow-sm ring-2 ring-rose-500/40'
+                          : 'bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 border border-rose-800/70'
                       }`}
                     >
                       <PrayingHandsIcon />
                       <span>I Prayed</span>
-                      <span className="bg-white/30 text-current text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ml-0.5">
+                      <span className="bg-white/20 text-current text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ml-0.5">
                         {prayer.prayerCount}
                       </span>
                     </button>
@@ -395,7 +395,7 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
                     {/* Add Update Button */}
                     <button
                       onClick={() => setActiveUpdateDrawerId(activeUpdateDrawerId === prayer.id ? null : prayer.id)}
-                      className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold flex items-center gap-1 transition"
+                      className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl font-semibold flex items-center gap-1 transition"
                     >
                       <MessageSquare className="w-3.5 h-3.5" />
                       <span>Update</span>
@@ -405,7 +405,7 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
                   {prayer.status !== 'Answered' && (
                     <button
                       onClick={() => setAnsweringPrayerId(prayer.id)}
-                      className="text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1 hover:underline"
+                      className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 hover:underline"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>Mark Answered</span>
@@ -421,7 +421,7 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
                       placeholder="Add an update or progress note..."
                       value={newUpdateText}
                       onChange={(e) => setNewUpdateText(e.target.value)}
-                      className="flex-1 p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none"
+                      className="flex-1 p-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-400 focus:ring-2 focus:ring-rose-500 focus:outline-none"
                     />
                     <button
                       onClick={() => handleAddUpdateSubmit(prayer.id)}
@@ -441,12 +441,12 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
       {/* Answered Testimony Modal */}
       {answeringPrayerId && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 p-5 space-y-4">
-            <div className="flex items-center space-x-2 text-emerald-700 font-bold text-base">
+          <div className="bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl border border-slate-800 p-5 space-y-4">
+            <div className="flex items-center space-x-2 text-emerald-400 font-bold text-base">
               <CheckCircle2 className="w-5 h-5" />
-              <h3>Record Prayer Answer / Testimony</h3>
+              <h3 className="text-white">Record Prayer Answer / Testimony</h3>
             </div>
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-slate-300">
               Share how God answered this prayer to encourage the church family!
             </p>
 
@@ -455,19 +455,19 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
               placeholder="e.g. Surgery went smoothly and healing is well underway! Thank you all for praying."
               value={testimonyText}
               onChange={(e) => setTestimonyText(e.target.value)}
-              className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             />
 
             <div className="flex items-center justify-end space-x-2">
               <button
                 onClick={() => setAnsweringPrayerId(null)}
-                className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-xl font-semibold"
+                className="px-3 py-1.5 text-xs text-slate-300 hover:bg-slate-800 rounded-xl font-semibold border border-slate-700"
               >
                 Cancel
               </button>
               <button
                 onClick={handleAnswerSubmit}
-                className="px-4 py-2 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow"
+                className="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow"
               >
                 Save Answered Testimony
               </button>
@@ -479,25 +479,25 @@ export const PrayerWall: React.FC<PrayerWallProps> = ({
       {/* Delete Prayer Confirmation Modal */}
       {deletingPrayerId && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-sm rounded-2xl shadow-2xl border border-slate-200 p-5 space-y-4 animate-in fade-in zoom-in duration-150">
-            <div className="flex items-center space-x-2 text-rose-600 font-bold text-base">
+          <div className="bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl border border-slate-800 p-5 space-y-4 animate-in fade-in zoom-in duration-150">
+            <div className="flex items-center space-x-2 text-rose-400 font-bold text-base">
               <Trash2 className="w-5 h-5" />
-              <h3>Remove Prayer Request?</h3>
+              <h3 className="text-white">Remove Prayer Request?</h3>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-300 leading-relaxed">
               Are you sure you want to permanently delete this prayer request from the prayer wall? This action cannot be undone.
             </p>
 
             <div className="flex items-center justify-end space-x-2 pt-2">
               <button
                 onClick={() => setDeletingPrayerId(null)}
-                className="px-3.5 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl font-semibold transition"
+                className="px-3.5 py-2 text-xs text-slate-300 hover:bg-slate-800 rounded-xl font-semibold transition border border-slate-700"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteConfirm}
-                className="px-4 py-2 text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white rounded-xl shadow transition flex items-center gap-1.5"
+                className="px-4 py-2 text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white rounded-xl shadow transition flex items-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Remove Request</span>

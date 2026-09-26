@@ -757,25 +757,25 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
             {/* Right Column: Group Detail Dashboard */}
             <div className={`lg:col-span-7 ${mobileTab === 'list' ? 'hidden lg:block' : 'block'}`}>
               {activeGroup ? (
-                <Card className="bg-slate-900 border-slate-800 text-white shadow-2xl rounded-2xl overflow-hidden">
+                <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-2xl rounded-2xl overflow-hidden">
                   {/* Group Dashboard Header */}
-                  <div className="p-5 border-b border-slate-800 bg-slate-950/40 space-y-3">
+                  <div className="p-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/40 space-y-3">
                     <button
                       type="button"
                       onClick={() => setMobileTab('list')}
-                      className="lg:hidden inline-flex items-center gap-1 text-xs text-amber-400 font-semibold hover:underline mb-1"
+                      className="lg:hidden inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 font-semibold hover:underline mb-1"
                     >
                       ← Back to Group List
                     </button>
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="text-xl font-bold text-white">{activeGroup.name}</h3>
-                          <Badge variant="outline" className="text-[10px] bg-amber-950 text-amber-300 border-amber-800">
+                          <h3 className="text-xl font-bold text-slate-900 dark:text-white">{activeGroup.name}</h3>
+                          <Badge variant="outline" className="text-[10px] bg-amber-50 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800 font-bold">
                             {activeGroup.terminology || 'Small Group'}
                           </Badge>
                         </div>
-                        <p className="text-xs text-slate-400 mt-1">
+                        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
                           {activeGroup.description || 'Spiritual fellowship, Bible study, and prayer support group.'}
                         </p>
                       </div>
@@ -801,7 +801,7 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
                                 setGroupModalMode('edit');
                                 setIsGroupModalOpen(true);
                               }}
-                              className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 text-xs h-8"
+                              className="bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs h-8"
                               title="Edit Group"
                             >
                               <Edit3 className="w-3.5 h-3.5 mr-1" /> Edit
@@ -810,14 +810,14 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
                               size="sm"
                               variant="outline"
                               onClick={() => handleDeleteGroup(activeGroup.id)}
-                              className="bg-slate-800 border-red-900/60 text-red-400 hover:bg-red-950 hover:text-red-300 hover:border-red-700 text-xs h-8 px-2.5"
+                              className="bg-white dark:bg-slate-800 border-red-200 dark:border-red-900/60 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 hover:text-red-700 dark:hover:text-red-300 text-xs h-8 px-2.5"
                               title="Delete Cell Group"
                             >
                               <Trash2 className="w-3.5 h-3.5 mr-1" /> Delete Group
                             </Button>
                           </>
                         ) : (
-                          <Badge variant="outline" className="bg-amber-950/60 text-amber-300 border-amber-800/80 text-[10px] px-2.5 py-1 font-semibold">
+                          <Badge variant="outline" className="bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800/80 text-[10px] px-2.5 py-1 font-semibold">
                             Member Read-Only View
                           </Badge>
                         )}
@@ -825,27 +825,27 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
                     </div>
 
                   {/* Operational Details Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 text-[11px] text-slate-400">
-                    <div className="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
-                      <span className="text-slate-500 block">Leader:</span>
-                      <strong className="text-amber-400 font-bold">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                    <div className="bg-white dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-xs">
+                      <span className="text-slate-500 dark:text-slate-400 block">Leader:</span>
+                      <strong className="text-amber-700 dark:text-amber-400 font-bold">
                         {activeGroup.leader?.display_name || activeGroup.leader_name || (activeGroup as any).leaderName || 'Assigned Leader'}
                       </strong>
                     </div>
 
-                    <div className="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
-                      <span className="text-slate-500 block">Schedule:</span>
-                      <strong className="text-white">{activeGroup.meeting_day}s @ {activeGroup.meeting_time}</strong>
+                    <div className="bg-white dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-xs">
+                      <span className="text-slate-500 dark:text-slate-400 block">Schedule:</span>
+                      <strong className="text-slate-900 dark:text-white">{activeGroup.meeting_day}s @ {activeGroup.meeting_time}</strong>
                     </div>
 
-                    <div className="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
-                      <span className="text-slate-500 block">Location:</span>
-                      <strong className="text-white">{activeGroup.location || 'Host Home'}</strong>
+                    <div className="bg-white dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-xs">
+                      <span className="text-slate-500 dark:text-slate-400 block">Location:</span>
+                      <strong className="text-slate-900 dark:text-white">{activeGroup.location || 'Host Home'}</strong>
                     </div>
 
-                    <div className="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
-                      <span className="text-slate-500 block">Group Capacity:</span>
-                      <strong className="text-amber-300">
+                    <div className="bg-white dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-xs">
+                      <span className="text-slate-500 dark:text-slate-400 block">Group Capacity:</span>
+                      <strong className="text-amber-700 dark:text-amber-300 font-bold">
                         {activeGroup.member_count || 0} / {activeGroup.capacity || 15} Capacity
                       </strong>
                     </div>
@@ -853,7 +853,7 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
                 </div>
 
                 {/* Dashboard Tabs */}
-                <div className="flex items-center space-x-1 border-b border-slate-800 px-4 pt-2 text-xs font-bold overflow-x-auto">
+                <div className="flex items-center space-x-1 border-b border-slate-200 dark:border-slate-800 px-4 pt-2 text-xs font-bold overflow-x-auto">
                   {[
                     { id: 'overview', label: 'Group Overview' },
                     { id: 'members', label: `Members (${groupDetails?.members?.length || 0})` },
@@ -865,8 +865,8 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
                       onClick={() => setActiveTab(t.id as any)}
                       className={`px-3 py-2 border-b-2 transition font-bold whitespace-nowrap ${
                         activeTab === t.id
-                          ? 'border-amber-500 text-amber-400'
-                          : 'border-transparent text-slate-400 hover:text-white'
+                          ? 'border-amber-500 text-amber-600 dark:text-amber-400'
+                          : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
                       {t.label}
@@ -881,36 +881,36 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
                     <div className="space-y-4">
                       {/* Operational Attendance Pattern Summary */}
                       {attendancePattern ? (
-                        <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-700 flex items-center justify-between text-xs">
+                        <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
                           <div>
-                            <span className="font-bold text-amber-300 block">Group Activity Rate:</span>
-                            <p className="text-slate-300 mt-0.5">
+                            <span className="font-bold text-amber-700 dark:text-amber-300 block">Group Activity Rate:</span>
+                            <p className="text-slate-600 dark:text-slate-300 mt-0.5">
                               Average <strong>{attendancePattern.avgPresent} members present</strong> per meeting across {attendancePattern.totalSessions} sessions logged.
                             </p>
                           </div>
-                          <Badge variant="outline" className="bg-emerald-950 text-emerald-300 border-emerald-800">
+                          <Badge variant="outline" className="bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 font-bold">
                             Active Attendance Pattern
                           </Badge>
                         </div>
                       ) : (
-                        <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-800 text-xs text-slate-400 text-center">
+                        <div className="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 text-center">
                           No attendance sessions logged yet. Tap "Quick Attendance" to record meeting checklist.
                         </div>
                       )}
 
                       {/* Leadership Card */}
-                      <div className="p-4 bg-slate-800/60 rounded-xl border border-slate-700/60 space-y-2">
-                        <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Group Leadership</h4>
+                      <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60 space-y-2">
+                        <h4 className="text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider">Group Leadership</h4>
                         <div className="flex items-center justify-between text-xs">
-                          <span className="text-slate-400">Primary Group Leader:</span>
-                          <strong className="text-white">
+                          <span className="text-slate-500 dark:text-slate-400">Primary Group Leader:</span>
+                          <strong className="text-slate-900 dark:text-white">
                             {activeGroup.leader?.display_name || activeGroup.leader_name || 'Assigned Leader'}
                           </strong>
                         </div>
                         {activeGroup.co_leader_id && (
-                          <div className="flex items-center justify-between text-xs border-t border-slate-700/50 pt-2">
-                            <span className="text-slate-400">Assistant Co-Leader:</span>
-                            <strong className="text-white">
+                          <div className="flex items-center justify-between text-xs border-t border-slate-200 dark:border-slate-700/50 pt-2">
+                            <span className="text-slate-500 dark:text-slate-400">Assistant Co-Leader:</span>
+                            <strong className="text-slate-900 dark:text-white">
                               {activeGroup.assistant_leader?.display_name || activeGroup.assistant_leader_name || 'Co-Leader'}
                             </strong>
                           </div>
@@ -918,10 +918,10 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
                       </div>
 
                       {/* Pastoral Care Pathway Banner */}
-                      <div className="p-4 bg-purple-950/30 border border-purple-900/50 rounded-xl flex items-center justify-between text-xs">
+                      <div className="p-4 bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/50 rounded-xl flex items-center justify-between text-xs">
                         <div>
-                          <p className="font-bold text-purple-300">Need Pastoral Support for a Group Member?</p>
-                          <p className="text-purple-200/80 text-[11px] mt-0.5">
+                          <p className="font-bold text-purple-950 dark:text-purple-300 text-xs">Need Pastoral Support for a Group Member?</p>
+                          <p className="text-purple-800 dark:text-purple-200/80 text-[11px] mt-0.5">
                             Submit a confidential pastoral check-in request to the senior pastoral care team.
                           </p>
                         </div>
@@ -932,7 +932,7 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
                             setPastoralSummary('');
                             setIsPastoralCareModalOpen(true);
                           }}
-                          className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shrink-0"
+                          className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shrink-0 shadow-sm"
                         >
                           Request Pastoral Care
                         </Button>

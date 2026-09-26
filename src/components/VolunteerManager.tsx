@@ -127,20 +127,20 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
   return (
     <div className="space-y-4">
       {/* Ministry Teams Overview Cards */}
-      <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-slate-900 p-4 sm:p-5 rounded-3xl border border-slate-800 shadow-sm space-y-4 text-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-emerald-100 text-emerald-800">
+            <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
               <HeartHandshake className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-extrabold text-slate-900 text-base">Ministry Teams & Volunteers</h2>
-              <p className="text-xs text-slate-500">
+              <h2 className="font-extrabold text-white text-base">Ministry Teams & Volunteers</h2>
+              <p className="text-xs text-slate-400">
                 Browse church ministries, active roster squads, team leaders, and volunteer skills.
               </p>
             </div>
           </div>
-          <span className="text-xs bg-emerald-50 text-emerald-800 font-bold px-3 py-1 rounded-full border border-emerald-200 self-start sm:self-auto">
+          <span className="text-xs bg-emerald-950/80 text-emerald-300 font-bold px-3 py-1 rounded-full border border-emerald-800 self-start sm:self-auto">
             {totalActiveVolunteersCount} Active Volunteers
           </span>
         </div>
@@ -152,8 +152,8 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
             onClick={() => setSelectedTeam('ALL')}
             className={`p-3 rounded-2xl border text-xs font-semibold text-left transition flex flex-col justify-between gap-1.5 ${
               selectedTeam === 'ALL'
-                ? 'bg-slate-900 text-amber-400 border-slate-900 shadow-sm ring-2 ring-slate-900/20'
-                : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-sm font-bold'
+                : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750'
             }`}
           >
             <div className="flex items-center justify-between">
@@ -176,8 +176,8 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
                 onClick={() => setSelectedTeam(team.id)}
                 className={`p-3 rounded-2xl border text-xs text-left transition flex flex-col justify-between gap-1.5 relative group ${
                   isSelected
-                    ? 'bg-emerald-700 text-white border-emerald-800 shadow-md font-bold ring-2 ring-emerald-500/20'
-                    : 'bg-white text-slate-800 border-slate-200 hover:border-emerald-300 hover:bg-slate-50'
+                    ? 'bg-emerald-600 text-white border-emerald-500 shadow-md font-bold'
+                    : 'bg-slate-800 text-slate-200 border-slate-700 hover:border-emerald-500/50 hover:bg-slate-750'
                 }`}
               >
                 <div className="flex items-center justify-between gap-1.5">
@@ -190,16 +190,16 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
                   </div>
                   <span
                     className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold shrink-0 ${
-                      isSelected ? 'bg-white/25 text-white' : 'bg-emerald-100 text-emerald-900'
+                      isSelected ? 'bg-white/25 text-white' : 'bg-emerald-950/80 text-emerald-300 border border-emerald-800'
                     }`}
                   >
                     {teamVolunteers.length}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-1 pt-1 text-[10px] border-t border-slate-100/40">
-                  <span className="truncate opacity-90">
-                    👑 Leader: <strong>{team.leaderName}</strong>
+                <div className="flex items-center justify-between gap-1 pt-1 text-[10px] border-t border-slate-700/60">
+                  <span className="truncate opacity-90 text-slate-300">
+                    👑 Leader: <strong className="text-white">{team.leaderName}</strong>
                   </span>
                   {onNavigateMinistry && (
                     <span
@@ -208,7 +208,7 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
                         onNavigateMinistry(team.id || team.name);
                       }}
                       className={`text-[10px] underline cursor-pointer shrink-0 transition ${
-                        isSelected ? 'text-amber-300 hover:text-white' : 'text-emerald-700 hover:text-emerald-900'
+                        isSelected ? 'text-amber-300 hover:text-white' : 'text-emerald-400 hover:text-emerald-300'
                       }`}
                       title="Open full ministry details"
                     >
@@ -223,7 +223,7 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
       </div>
 
       {/* Availability & Skill Search Filters */}
-      <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+      <div className="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 shadow-sm space-y-3">
         <div className="flex flex-col sm:flex-row gap-2">
           {/* Skill search */}
           <div className="relative flex-1">
@@ -233,7 +233,7 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
               placeholder="Search volunteers by skill (e.g. Guitar, Sound Mixer, First Aid, CPR)..."
               value={skillSearch}
               onChange={(e) => setSkillSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             />
           </div>
 
@@ -242,11 +242,11 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
             <select
               value={selectedAvailability}
               onChange={(e) => setSelectedAvailability(e.target.value as any)}
-              className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="w-full p-2 bg-slate-800 border border-slate-700 rounded-xl text-xs font-medium text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             >
-              <option value="ALL">All Service Times & Days</option>
+              <option value="ALL" className="bg-slate-900 text-white">All Service Times & Days</option>
               {ALL_AVAILABILITIES.map((day) => (
-                <option key={day} value={day}>
+                <option key={day} value={day} className="bg-slate-900 text-white">
                   {day}
                 </option>
               ))}
@@ -257,16 +257,16 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
 
       {/* Volunteer Members Cards */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between px-1 text-xs text-slate-500">
+        <div className="flex items-center justify-between px-1 text-xs text-slate-400">
           <span>
-            Found <strong className="text-slate-800">{availableVolunteers.length}</strong> available volunteers
+            Found <strong className="text-white font-extrabold">{availableVolunteers.length}</strong> available volunteers
           </span>
         </div>
 
         {availableVolunteers.length === 0 ? (
-          <div className="bg-white rounded-2xl p-8 text-center border border-dashed border-slate-300">
-            <UserCheck className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-            <p className="font-semibold text-slate-700 text-xs">No volunteers match the selected filter</p>
+          <div className="bg-slate-900 rounded-2xl p-8 text-center border border-dashed border-slate-800">
+            <UserCheck className="w-8 h-8 text-slate-500 mx-auto mb-2" />
+            <p className="font-semibold text-slate-300 text-xs">No volunteers match the selected filter</p>
             <p className="text-[11px] text-slate-500 mt-1">
               Try clearing your skill search or selecting "All Service Times".
             </p>
@@ -286,7 +286,7 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
               return (
                 <div
                   key={vol.id}
-                  className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm hover:border-emerald-400 transition space-y-3"
+                  className="bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-sm hover:border-emerald-500/60 transition space-y-3 text-white"
                 >
                   <div className="flex items-start justify-between">
                     <div
@@ -298,34 +298,34 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
                         avatarUrl={vol.avatarUrl}
                         size="md"
                         shape="rounded"
-                        border="border border-slate-200"
+                        border="border border-slate-700"
                       />
                       <div>
                         <div className="flex items-center gap-1.5">
-                          <h3 className="font-bold text-slate-900 text-sm hover:text-emerald-700 transition">
+                          <h3 className="font-bold text-white text-sm hover:text-emerald-400 transition">
                             {vol.firstName} {vol.lastName}
                           </h3>
                           {ledTeams.length > 0 && (
-                            <span className="text-[10px] font-black bg-amber-100 text-amber-900 border border-amber-300 px-1.5 py-0.2 rounded-md shadow-2xs">
+                            <span className="text-[10px] font-black bg-amber-100 dark:bg-amber-500/20 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30 px-1.5 py-0.2 rounded-md shadow-2xs">
                               👑 Leader
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-slate-500">{vol.phone || vol.email}</p>
+                        <p className="text-xs text-slate-400">{vol.phone || vol.email}</p>
                       </div>
                     </div>
 
                     <button
                       type="button"
                       onClick={() => onEditMember(vol)}
-                      className="text-xs text-slate-500 hover:text-emerald-700 font-semibold underline"
+                      className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold underline"
                     >
                       Edit Teams
                     </button>
                   </div>
 
                   {/* Assigned Teams & Leadership */}
-                  <div className="space-y-1.5 pt-2 border-t border-slate-100">
+                  <div className="space-y-1.5 pt-2 border-t border-slate-800">
                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
                       Ministry Teams:
                     </span>
@@ -333,7 +333,7 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
                       {ledTeams.map((lt) => (
                         <span
                           key={`lead-${lt.id}`}
-                          className="bg-amber-100 text-amber-950 font-extrabold text-[10px] px-2 py-0.5 rounded-md border border-amber-300 flex items-center gap-1 shadow-2xs"
+                          className="bg-amber-100 dark:bg-amber-500/20 text-amber-900 dark:text-amber-300 font-extrabold text-[10px] px-2 py-0.5 rounded-md border border-amber-300 dark:border-amber-500/30 flex items-center gap-1 shadow-2xs"
                         >
                           👑 Leader: {lt.name}
                         </span>
@@ -345,21 +345,21 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
                           .map((t) => (
                             <span
                               key={t}
-                              className="bg-emerald-50 text-emerald-800 font-bold text-[10px] px-2 py-0.5 rounded-md border border-emerald-200"
+                              className="bg-emerald-950/80 text-emerald-300 font-bold text-[10px] px-2 py-0.5 rounded-md border border-emerald-800"
                             >
                               {t}
                             </span>
                           ))
                       ) : (
                         ledTeams.length === 0 && (
-                          <span className="text-[11px] text-slate-400 italic">No team assigned</span>
+                          <span className="text-[11px] text-slate-500 italic">No team assigned</span>
                         )
                       )}
                     </div>
                   </div>
 
                   {/* Availability Days */}
-                  <div className="text-xs text-slate-600 flex items-center gap-1.5 pt-1">
+                  <div className="text-xs text-slate-300 flex items-center gap-1.5 pt-1">
                     <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                     <span className="truncate">
                       {vol.availability && vol.availability.length > 0
@@ -374,7 +374,7 @@ export const VolunteerManager: React.FC<VolunteerManagerProps> = ({
                       {(vol.skills || []).map((s) => (
                         <span
                           key={s}
-                          className="bg-slate-100 text-slate-700 text-[10px] px-2 py-0.5 rounded border border-slate-200 font-medium"
+                          className="bg-slate-800 text-slate-300 text-[10px] px-2 py-0.5 rounded border border-slate-700 font-medium"
                         >
                           ★ {s}
                         </span>

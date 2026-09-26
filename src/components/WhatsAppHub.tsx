@@ -610,41 +610,51 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
   const getCategoryBadgeClass = (cat: string) => {
     switch (cat) {
       case 'Service Reminder':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+        return 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800';
       case 'Sunday School':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+        return 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-950/80 dark:text-purple-300 dark:border-purple-800';
       case 'Prayer Alert':
       case 'Prayer Warriors':
-        return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+        return 'bg-indigo-100 text-indigo-800 border-indigo-200 dark:bg-indigo-950/80 dark:text-indigo-300 dark:border-indigo-800';
       case 'Attendance Follow-up':
       case 'Youth':
-        return 'bg-amber-100 text-amber-900 border-amber-200';
+        return 'bg-amber-100 text-amber-900 border-amber-200 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-800';
       case 'Tithe Receipt':
-        return 'bg-sky-100 text-sky-900 border-sky-200';
+        return 'bg-sky-100 text-sky-900 border-sky-200 dark:bg-sky-950/80 dark:text-sky-300 dark:border-sky-800';
       case 'General Announcement':
       case 'General':
-        return 'bg-teal-100 text-teal-800 border-teal-200';
+        return 'bg-teal-100 text-teal-800 border-teal-200 dark:bg-teal-950/80 dark:text-teal-300 dark:border-teal-800';
       default:
-        return 'bg-slate-100 text-slate-800 border-slate-200';
+        return 'bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700';
     }
   };
 
   return (
     <div className="space-y-5">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl relative overflow-hidden">
+      <div 
+        data-theme-surface="dark"
+        data-preserve-dark="true"
+        className="dark-hero-panel bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl relative overflow-hidden border border-emerald-800/40"
+      >
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold mb-3 border border-emerald-500/30">
-              <MessageSquare className="w-3.5 h-3.5" />
-              WhatsApp Reminders & Automated Broadcast Hub
+            <div 
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-[#a7f3d0] text-xs font-bold mb-3 border border-emerald-500/30"
+              style={{ color: '#a7f3d0' }}
+            >
+              <MessageSquare className="w-3.5 h-3.5 text-[#34d399]" style={{ color: '#34d399' }} />
+              <span>WhatsApp Reminders & Automated Broadcast Hub</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white" style={{ color: '#ffffff' }}>
               WhatsApp Messaging, Verse Summaries & Service Reminders
             </h2>
-            <p className="text-emerald-100/80 text-sm mt-1 max-w-xl">
+            <div 
+              className="text-[#ecfdf5] text-sm mt-1 max-w-xl font-normal leading-relaxed"
+              style={{ color: '#ecfdf5' }}
+            >
               Dispatch 1-click Sunday School attendance & memory verse summaries to parents, broadcast service reminders to church groups, and shepherd members with personalized pastoral care.
-            </p>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -682,13 +692,13 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
       </div>
 
       {/* Main Navigation Tab Bar */}
-      <div className="flex items-center gap-2 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm overflow-x-auto no-scrollbar scrollbar-none">
+      <div className="flex items-center gap-2 bg-white dark:bg-slate-900/90 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto no-scrollbar scrollbar-none">
         <button
           onClick={() => setActiveTabMode('composer')}
           className={`flex-1 min-w-[170px] py-2.5 px-4 rounded-xl text-xs font-extrabold transition flex items-center justify-center gap-2 ${
             activeTabMode === 'composer'
-              ? 'bg-emerald-700 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-emerald-700 dark:bg-emerald-600 text-white shadow-sm'
+              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-200'
           }`}
         >
           <FileText className="w-4 h-4 shrink-0" />
@@ -702,8 +712,8 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
           }}
           className={`flex-1 min-w-[210px] py-2.5 px-4 rounded-xl text-xs font-extrabold transition flex items-center justify-center gap-2 ${
             activeTabMode === 'ss_auto'
-              ? 'bg-purple-800 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-purple-800 dark:bg-purple-700 text-white shadow-sm'
+              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-200'
           }`}
         >
           <GraduationCap className="w-4 h-4 shrink-0 text-purple-400" />
@@ -717,8 +727,8 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
           }}
           className={`flex-1 min-w-[200px] py-2.5 px-4 rounded-xl text-xs font-extrabold transition flex items-center justify-center gap-2 ${
             activeTabMode === 'service_auto'
-              ? 'bg-amber-700 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-amber-700 dark:bg-amber-600 text-white shadow-sm'
+              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-200'
           }`}
         >
           <Bell className="w-4 h-4 shrink-0 text-amber-300" />
@@ -729,8 +739,8 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
           onClick={() => setActiveTabMode('groups')}
           className={`flex-1 min-w-[170px] py-2.5 px-4 rounded-xl text-xs font-extrabold transition flex items-center justify-center gap-2 ${
             activeTabMode === 'groups'
-              ? 'bg-emerald-700 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-emerald-700 dark:bg-emerald-600 text-white shadow-sm'
+              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-200'
           }`}
         >
           <Layers className="w-4 h-4 shrink-0" />
@@ -746,21 +756,21 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
           {/* TAB 1: SUNDAY SCHOOL ATTENDANCE & VERSE SUMMARY AUTO-GENERATOR */}
           {/* ========================================================================= */}
           {activeTabMode === 'ss_auto' && (
-            <div className="bg-white p-5 sm:p-6 rounded-3xl border border-purple-200 shadow-sm space-y-5">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-purple-200 dark:border-purple-900/40 shadow-sm space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-2xl bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
+                  <div className="w-9 h-9 rounded-2xl bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300 flex items-center justify-center font-bold">
                     <GraduationCap className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-900">
+                    <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100">
                       Automated Sunday School Attendance & Verse Generator
                     </h3>
-                    <p className="text-xs text-slate-500">Auto-pull attendance headcount, weekly lessons, and memory verses into WhatsApp</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Auto-pull attendance headcount, weekly lessons, and memory verses into WhatsApp</p>
                   </div>
                 </div>
 
-                <span className="px-3 py-1 bg-purple-50 text-purple-800 border border-purple-200 text-xs font-extrabold rounded-xl">
+                <span className="px-3 py-1 bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-extrabold rounded-xl">
                   {safeSSClasses.length} Classes Available
                 </span>
               </div>
@@ -768,16 +778,16 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
               {/* Class & Session Picker */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
                     1. Select Sunday School Class
                   </label>
                   <select
                     value={selectedSSClassId}
                     onChange={(e) => setSelectedSSClassId(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-purple-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
                   >
                     {safeSSClasses.map((cls) => (
-                      <option key={cls.id} value={cls.id}>
+                      <option key={cls.id} value={cls.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
                         {cls.className} ({cls.ageGroup}) — Teacher: {cls.teacherName}
                       </option>
                     ))}
@@ -785,19 +795,19 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
                     2. Select Attendance Session
                   </label>
                   <select
                     value={selectedSSRecordId}
                     onChange={(e) => setSelectedSSRecordId(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-purple-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
                   >
-                    <option value="newest">Latest Recorded Session (Auto-detect)</option>
+                    <option value="newest" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Latest Recorded Session (Auto-detect)</option>
                     {safeSSAttendance
                       .filter((a) => !selectedSSClassId || a.classId === selectedSSClassId)
                       .map((rec) => (
-                        <option key={rec.id} value={rec.id}>
+                        <option key={rec.id} value={rec.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
                           {rec.date} — {rec.presentStudentIds?.length || 0} Present • {rec.lessonTaught || 'Lesson'}
                         </option>
                       ))}
@@ -807,7 +817,7 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
 
               {/* Summary Format Selector */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
                   3. Select Message Format & Audience
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
@@ -816,14 +826,14 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                     onClick={() => setSsSummaryFormat('full_summary')}
                     className={`p-3 rounded-2xl border text-left font-bold transition flex items-start gap-2.5 ${
                       ssSummaryFormat === 'full_summary'
-                        ? 'bg-purple-50 border-purple-500 text-purple-950 ring-2 ring-purple-400/20'
-                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        ? 'bg-purple-50 dark:bg-purple-950/60 border-purple-500 dark:border-purple-500 text-purple-950 dark:text-purple-200 ring-2 ring-purple-400/20'
+                        : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
-                    <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${ssSummaryFormat === 'full_summary' ? 'text-purple-700' : 'text-slate-400'}`} />
+                    <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${ssSummaryFormat === 'full_summary' ? 'text-purple-700 dark:text-purple-400' : 'text-slate-400 dark:text-slate-500'}`} />
                     <div>
                       <div className="font-extrabold">Complete Class Broadcast</div>
-                      <p className="text-[11px] text-slate-500 font-normal mt-0.5">Headcount breakdown + Lesson + Memory Verse home action</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 font-normal mt-0.5">Headcount breakdown + Lesson + Memory Verse home action</p>
                     </div>
                   </button>
 
@@ -832,14 +842,14 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                     onClick={() => setSsSummaryFormat('verse_challenge')}
                     className={`p-3 rounded-2xl border text-left font-bold transition flex items-start gap-2.5 ${
                       ssSummaryFormat === 'verse_challenge'
-                        ? 'bg-purple-50 border-purple-500 text-purple-950 ring-2 ring-purple-400/20'
-                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        ? 'bg-purple-50 dark:bg-purple-950/60 border-purple-500 dark:border-purple-500 text-purple-950 dark:text-purple-200 ring-2 ring-purple-400/20'
+                        : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
-                    <BookOpen className={`w-4 h-4 shrink-0 mt-0.5 ${ssSummaryFormat === 'verse_challenge' ? 'text-purple-700' : 'text-slate-400'}`} />
+                    <BookOpen className={`w-4 h-4 shrink-0 mt-0.5 ${ssSummaryFormat === 'verse_challenge' ? 'text-purple-700 dark:text-purple-400' : 'text-slate-400 dark:text-slate-500'}`} />
                     <div>
                       <div className="font-extrabold">Memory Verse Challenge</div>
-                      <p className="text-[11px] text-slate-500 font-normal mt-0.5">Focus on scripture recitation, bedtime challenge & badges</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 font-normal mt-0.5">Focus on scripture recitation, bedtime challenge & badges</p>
                     </div>
                   </button>
 
@@ -848,14 +858,14 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                     onClick={() => setSsSummaryFormat('parent_update')}
                     className={`p-3 rounded-2xl border text-left font-bold transition flex items-start gap-2.5 ${
                       ssSummaryFormat === 'parent_update'
-                        ? 'bg-purple-50 border-purple-500 text-purple-950 ring-2 ring-purple-400/20'
-                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        ? 'bg-purple-50 dark:bg-purple-950/60 border-purple-500 dark:border-purple-500 text-purple-950 dark:text-purple-200 ring-2 ring-purple-400/20'
+                        : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
-                    <Users className={`w-4 h-4 shrink-0 mt-0.5 ${ssSummaryFormat === 'parent_update' ? 'text-purple-700' : 'text-slate-400'}`} />
+                    <Users className={`w-4 h-4 shrink-0 mt-0.5 ${ssSummaryFormat === 'parent_update' ? 'text-purple-700 dark:text-purple-400' : 'text-slate-400 dark:text-slate-500'}`} />
                     <div>
                       <div className="font-extrabold">Direct Parent Note (Present)</div>
-                      <p className="text-[11px] text-slate-500 font-normal mt-0.5">Personalized thank you to individual parent for attendance</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 font-normal mt-0.5">Personalized thank you to individual parent for attendance</p>
                     </div>
                   </button>
 
@@ -864,14 +874,14 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                     onClick={() => setSsSummaryFormat('absentee_care')}
                     className={`p-3 rounded-2xl border text-left font-bold transition flex items-start gap-2.5 ${
                       ssSummaryFormat === 'absentee_care'
-                        ? 'bg-purple-50 border-purple-500 text-purple-950 ring-2 ring-purple-400/20'
-                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        ? 'bg-purple-50 dark:bg-purple-950/60 border-purple-500 dark:border-purple-500 text-purple-950 dark:text-purple-200 ring-2 ring-purple-400/20'
+                        : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
-                    <HeartHandshake className={`w-4 h-4 shrink-0 mt-0.5 ${ssSummaryFormat === 'absentee_care' ? 'text-purple-700' : 'text-slate-400'}`} />
+                    <HeartHandshake className={`w-4 h-4 shrink-0 mt-0.5 ${ssSummaryFormat === 'absentee_care' ? 'text-purple-700 dark:text-purple-400' : 'text-slate-400 dark:text-slate-500'}`} />
                     <div>
                       <div className="font-extrabold">Absentee Caring Check-in</div>
-                      <p className="text-[11px] text-slate-500 font-normal mt-0.5">We missed you note with verse so kids don't fall behind</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 font-normal mt-0.5">We missed you note with verse so kids don't fall behind</p>
                     </div>
                   </button>
                 </div>
@@ -887,7 +897,7 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                   Generate & Populate WhatsApp Summary Now
                 </button>
 
-                <span className="text-[11px] text-purple-700 font-medium">
+                <span className="text-[11px] text-purple-700 dark:text-purple-400 font-medium">
                   ✓ Automatically formats emojis & bold scripture quotes
                 </span>
               </div>
@@ -898,21 +908,21 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
           {/* TAB 2: SERVICE BROADCAST REMINDER AUTO-GENERATOR */}
           {/* ========================================================================= */}
           {activeTabMode === 'service_auto' && (
-            <div className="bg-white p-5 sm:p-6 rounded-3xl border border-amber-200 shadow-sm space-y-5">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-amber-200 dark:border-amber-900/40 shadow-sm space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                  <div className="w-9 h-9 rounded-2xl bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 flex items-center justify-center font-bold">
                     <Bell className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-900">
+                    <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100">
                       Automated Service Broadcast Reminder Generator
                     </h3>
-                    <p className="text-xs text-slate-500">Generate high-engagement service bulletins, livestream links, and prayer reminders</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Generate high-engagement service bulletins, livestream links, and prayer reminders</p>
                   </div>
                 </div>
 
-                <span className="px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 text-xs font-extrabold rounded-xl">
+                <span className="px-3 py-1 bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-extrabold rounded-xl">
                   {churchServicesList.length} Church Services
                 </span>
               </div>
@@ -920,16 +930,16 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
               {/* Service & Preset Picker */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
                     1. Target Church Gathering
                   </label>
                   <select
                     value={selectedServiceId}
                     onChange={(e) => setSelectedServiceId(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-amber-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-amber-500"
                   >
                     {churchServicesList.map((srv) => (
-                      <option key={srv.id} value={srv.id}>
+                      <option key={srv.id} value={srv.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
                         {srv.name} — {srv.day} ({srv.startTime})
                       </option>
                     ))}
@@ -937,53 +947,53 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
                     2. Broadcast Timing / Theme
                   </label>
                   <select
                     value={serviceBroadcastType}
                     onChange={(e) => setServiceBroadcastType(e.target.value as any)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-amber-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-amber-500"
                   >
-                    <option value="sunday_service">Sunday Morning Worship Service Reminder</option>
-                    <option value="midweek_prayer">Wednesday Word & Intercessory Prayer</option>
-                    <option value="youth_night">Friday Youth Fellowship & Praise Night</option>
-                    <option value="livestream_alert">Live Now: YouTube / Stream Broadcast Alert</option>
-                    <option value="post_service_followup">Post-Service Absentee Care & Sermon Replay</option>
+                    <option value="sunday_service" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Sunday Morning Worship Service Reminder</option>
+                    <option value="midweek_prayer" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Wednesday Word & Intercessory Prayer</option>
+                    <option value="youth_night" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Friday Youth Fellowship & Praise Night</option>
+                    <option value="livestream_alert" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Live Now: YouTube / Stream Broadcast Alert</option>
+                    <option value="post_service_followup" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Post-Service Absentee Care & Sermon Replay</option>
                   </select>
                 </div>
               </div>
 
               {/* Custom Meta Inputs */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs bg-amber-50/50 p-4 rounded-2xl border border-amber-100">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs bg-amber-50/50 dark:bg-amber-950/30 p-4 rounded-2xl border border-amber-100 dark:border-amber-900/40">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1">Speaker / Preacher</label>
+                  <label className="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Speaker / Preacher</label>
                   <input
                     type="text"
                     value={speakerParam}
                     onChange={(e) => setSpeakerParam(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1">Livestream URL</label>
+                  <label className="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Livestream URL</label>
                   <input
                     type="text"
                     value={livestreamParam}
                     onChange={(e) => setLivestreamParam(e.target.value)}
                     placeholder="https://youtube.com/@churchlive"
-                    className="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1">Sanctuary Location</label>
+                  <label className="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Sanctuary Location</label>
                   <input
                     type="text"
                     value={locationParam}
                     onChange={(e) => setLocationParam(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                   />
                 </div>
               </div>
@@ -998,7 +1008,7 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                   Generate & Populate Service Broadcast
                 </button>
 
-                <span className="text-[11px] text-amber-800 font-medium">
+                <span className="text-[11px] text-amber-800 dark:text-amber-400 font-medium">
                   ✓ Auto-links to target WhatsApp channels
                 </span>
               </div>
@@ -1009,19 +1019,19 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
           {/* TAB 3: WHATSAPP GROUPS VIEW */}
           {/* ========================================================================= */}
           {activeTabMode === 'groups' && (
-            <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+            <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-emerald-600" />
+                  <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     Configured Church WhatsApp Broadcast Channels
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Manage community channels for Sunday School, Youth, Prayer, and Leadership</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage community channels for Sunday School, Youth, Prayer, and Leadership</p>
                 </div>
 
                 <button
                   onClick={handleOpenCreateGroupModal}
-                  className="text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1.5 transition"
+                  className="text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800 flex items-center gap-1.5 transition"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Add Group Channel
@@ -1034,8 +1044,8 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                   onClick={() => setGroupCategoryFilter('All')}
                   className={`px-3 py-1.5 rounded-xl font-bold transition whitespace-nowrap ${
                     groupCategoryFilter === 'All'
-                      ? 'bg-slate-900 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-sm'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 dark:hover:text-slate-200'
                   }`}
                 >
                   All ({safeGroups.length})
@@ -1050,7 +1060,7 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                       className={`px-3 py-1.5 rounded-xl font-bold transition whitespace-nowrap ${
                         groupCategoryFilter === cat
                           ? 'bg-emerald-600 text-white shadow-sm'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 dark:hover:text-slate-200'
                       }`}
                     >
                       {cat} ({count})
@@ -1061,8 +1071,8 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
 
               {/* Groups Grid */}
               {filteredGroups.length === 0 ? (
-                <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                  <p className="text-sm font-semibold text-slate-600">No WhatsApp groups in this category.</p>
+                <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">No WhatsApp groups in this category.</p>
                   <button
                     onClick={handleOpenCreateGroupModal}
                     className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow hover:bg-emerald-700"
@@ -1084,8 +1094,8 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                         }}
                         className={`p-3.5 rounded-2xl text-left border cursor-pointer transition flex flex-col justify-between group ${
                           isSelected
-                            ? 'bg-emerald-50/90 border-emerald-500 shadow-sm ring-2 ring-emerald-500/20'
-                            : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
+                            ? 'bg-emerald-50/90 dark:bg-emerald-950/60 border-emerald-500 shadow-sm ring-2 ring-emerald-500/20'
+                            : 'bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
                         }`}
                       >
                         <div>
@@ -1098,7 +1108,7 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                               <button
                                 type="button"
                                 onClick={(e) => handleOpenEditGroupModal(grp, e)}
-                                className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-100 rounded-lg transition"
+                                className="p-1 text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/80 rounded-lg transition"
                                 title="Edit Group"
                               >
                                 <Edit3 className="w-3.5 h-3.5" />
@@ -1107,7 +1117,7 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                                 <button
                                   type="button"
                                   onClick={(e) => handleDeleteGroup(grp.id, grp.name, e)}
-                                  className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-100 rounded-lg transition"
+                                  className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/80 rounded-lg transition"
                                   title="Delete Group"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -1116,22 +1126,22 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                             </div>
                           </div>
 
-                          <h4 className="text-xs font-bold text-slate-900 leading-snug">{grp.name}</h4>
+                          <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 leading-snug">{grp.name}</h4>
                           {grp.description && (
-                            <p className="text-[11px] text-slate-500 line-clamp-2 mt-1">
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-1">
                               {grp.description}
                             </p>
                           )}
-                          <div className="flex items-center gap-2 text-[10px] text-slate-400 mt-2">
+                          <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-slate-500 mt-2">
                             <span>👥 {grp.memberCount || 25} Members</span>
                             <span>•</span>
                             <span>Leader: {grp.leaderName || 'Pastoral Team'}</span>
                           </div>
                         </div>
 
-                        <div className="mt-2.5 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[10px] font-semibold text-slate-400">
+                        <div className="mt-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-[10px] font-semibold text-slate-400 dark:text-slate-500">
                           <span>{grp.inviteLink ? '🔗 Direct Invite Link' : 'Universal Share'}</span>
-                          {isSelected && <span className="text-emerald-700 font-bold flex items-center gap-1">Active Target ✓</span>}
+                          {isSelected && <span className="text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1">Active Target ✓</span>}
                         </div>
                       </div>
                     );
@@ -1145,19 +1155,19 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
           {/* TEMPLATE SELECTION CARD (IN COMPOSER MODE) */}
           {/* ========================================================================= */}
           {activeTabMode === 'composer' && (
-            <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+            <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-emerald-600" />
+                  <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     Choose WhatsApp Template Presets
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Select a pre-built reminder for Sunday School, Worship Service, or Pastoral Care</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Select a pre-built reminder for Sunday School, Worship Service, or Pastoral Care</p>
                 </div>
 
                 <button
                   onClick={handleOpenCreateModal}
-                  className="text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1.5 transition"
+                  className="text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800 flex items-center gap-1.5 transition"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Add Template
@@ -1170,8 +1180,8 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                   onClick={() => setCategoryFilter('All')}
                   className={`px-3 py-1.5 rounded-xl font-bold transition whitespace-nowrap ${
                     categoryFilter === 'All'
-                      ? 'bg-slate-900 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-sm'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 dark:hover:text-slate-200'
                   }`}
                 >
                   All ({safeTemplates.length})
@@ -1186,7 +1196,7 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                       className={`px-3 py-1.5 rounded-xl font-bold transition whitespace-nowrap ${
                         categoryFilter === cat
                           ? 'bg-emerald-600 text-white shadow-sm'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 dark:hover:text-slate-200'
                       }`}
                     >
                       {cat} ({count})
@@ -1208,8 +1218,8 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                       }}
                       className={`p-3.5 rounded-2xl text-left border cursor-pointer transition flex flex-col justify-between group ${
                         isSelected
-                          ? 'bg-emerald-50/90 border-emerald-500 shadow-sm ring-2 ring-emerald-500/20'
-                          : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
+                          ? 'bg-emerald-50/90 dark:bg-emerald-950/60 border-emerald-500 shadow-sm ring-2 ring-emerald-500/20'
+                          : 'bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       <div>
@@ -1222,7 +1232,7 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                             <button
                               type="button"
                               onClick={(e) => handleOpenEditModal(tpl, e)}
-                              className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-100 rounded-lg transition"
+                              className="p-1 text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/80 rounded-lg transition"
                               title="Edit Template"
                             >
                               <Edit3 className="w-3.5 h-3.5" />
@@ -1231,7 +1241,7 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                               <button
                                 type="button"
                                 onClick={(e) => handleDeleteTemplate(tpl.id, tpl.title, e)}
-                                className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-100 rounded-lg transition"
+                                className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/80 rounded-lg transition"
                                 title="Delete Template"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1240,15 +1250,15 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                           </div>
                         </div>
 
-                        <h4 className="text-xs font-bold text-slate-900 leading-snug">{tpl.title}</h4>
-                        <p className="text-[11px] text-slate-500 line-clamp-2 mt-1 font-mono">
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 leading-snug">{tpl.title}</h4>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-1 font-mono">
                           {tpl.templateText}
                         </p>
                       </div>
 
-                      <div className="mt-2.5 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[10px] font-semibold text-slate-400">
+                      <div className="mt-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-[10px] font-semibold text-slate-400 dark:text-slate-500">
                         <span>Click to load</span>
-                        {isSelected && <span className="text-emerald-700 font-bold flex items-center gap-1">Active ✓</span>}
+                        {isSelected && <span className="text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1">Active ✓</span>}
                       </div>
                     </div>
                   );
@@ -1260,21 +1270,21 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
           {/* ========================================================================= */}
           {/* ACTIVE MESSAGE BODY & BROADCAST TARGET CONTROLS */}
           {/* ========================================================================= */}
-          <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 flex items-center gap-2">
-                <Send className="w-4 h-4 text-emerald-600" />
+          <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <Send className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 Target WhatsApp Destination & Message
               </h3>
 
-              <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+              <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-bold">
                 <button
                   type="button"
                   onClick={() => setTargetType('group')}
                   className={`px-3 py-1 rounded-lg transition flex items-center gap-1.5 ${
                     targetType === 'group'
                       ? 'bg-emerald-600 text-white shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                   }`}
                 >
                   <Layers className="w-3.5 h-3.5" />
@@ -1287,7 +1297,7 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                   className={`px-3 py-1 rounded-lg transition flex items-center gap-1.5 ${
                     targetType === 'direct'
                       ? 'bg-emerald-600 text-white shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                   }`}
                 >
                   <Users className="w-3.5 h-3.5" />
@@ -1298,16 +1308,16 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
 
             {targetType === 'group' ? (
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
                   Target Church WhatsApp Group Channel
                 </label>
                 <select
                   value={selectedGroupId}
                   onChange={(e) => setSelectedGroupId(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   {safeGroups.map((g) => (
-                    <option key={g.id} value={g.id}>
+                    <option key={g.id} value={g.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
                       {g.name} ({g.category}) — {g.memberCount || 25} Members
                     </option>
                   ))}
@@ -1315,16 +1325,16 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
               </div>
             ) : (
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
                   Recipient Church Member (Direct Send)
                 </label>
                 <select
                   value={selectedMemberId}
                   onChange={(e) => setSelectedMemberId(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   {safeMembers.map((m) => (
-                    <option key={m.id} value={m.id}>
+                    <option key={m.id} value={m.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
                       {m.firstName} {m.lastName} ({m.phone}) — {m.status}
                     </option>
                   ))}
@@ -1335,14 +1345,14 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
             {/* Live Message Textarea */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                   <span>Editable WhatsApp Message Text</span>
-                  <span className="text-[10px] text-slate-400 font-normal">(Formatting with *bold*, _italics_, &gt; quote supported)</span>
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">(Formatting with *bold*, _italics_, &gt; quote supported)</span>
                 </label>
                 <button
                   type="button"
                   onClick={() => setCustomText(activeTemplate?.templateText || '')}
-                  className="text-[11px] font-bold text-rose-600 hover:underline"
+                  className="text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:underline"
                 >
                   Reset
                 </button>
@@ -1351,7 +1361,7 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                 rows={7}
                 value={customText || activeTemplate?.templateText || ''}
                 onChange={(e) => setCustomText(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono leading-relaxed"
+                className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-3.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono leading-relaxed"
                 placeholder="Compose your WhatsApp message..."
               />
             </div>
@@ -1379,19 +1389,19 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                 {activeGroup?.inviteLink && (
                   <button
                     onClick={() => window.open(activeGroup.inviteLink, '_blank')}
-                    className="px-4 py-3 bg-teal-50 hover:bg-teal-100 text-teal-800 font-bold text-xs rounded-2xl border border-teal-200 flex items-center justify-center gap-1.5 transition shrink-0"
+                    className="px-4 py-3 bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 text-teal-800 dark:text-teal-300 font-bold text-xs rounded-2xl border border-teal-200 dark:border-teal-800 flex items-center justify-center gap-1.5 transition shrink-0"
                     title="Open Group Invite Chat"
                   >
-                    <ExternalLink className="w-4 h-4 text-teal-700 shrink-0" />
+                    <ExternalLink className="w-4 h-4 text-teal-700 dark:text-teal-400 shrink-0" />
                     <span>Open Group</span>
                   </button>
                 )}
 
                 <button
                   onClick={handleCopyText}
-                  className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-2xl border border-slate-200 flex items-center justify-center gap-2 transition shrink-0"
+                  className="px-4 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 transition shrink-0"
                 >
-                  {copied ? <Check className="w-4 h-4 text-emerald-600 shrink-0" /> : <Copy className="w-4 h-4 text-slate-600 shrink-0" />}
+                  {copied ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" /> : <Copy className="w-4 h-4 text-slate-600 dark:text-slate-400 shrink-0" />}
                   <span>{copied ? 'Copied!' : 'Copy'}</span>
                 </button>
               </div>
@@ -1416,9 +1426,9 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
 
                 <button
                   onClick={handleCopyText}
-                  className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-2xl border border-slate-200 flex items-center justify-center gap-2 transition shrink-0"
+                  className="px-4 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 transition shrink-0"
                 >
-                  {copied ? <Check className="w-4 h-4 text-emerald-600 shrink-0" /> : <Copy className="w-4 h-4 text-slate-600 shrink-0" />}
+                  {copied ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" /> : <Copy className="w-4 h-4 text-slate-600 dark:text-slate-400 shrink-0" />}
                   <span>{copied ? 'Copied!' : 'Copy Text'}</span>
                 </button>
               </div>
@@ -1428,33 +1438,45 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
 
         {/* Live Mobile Chat Preview Column */}
         <div className="lg:col-span-1 space-y-5">
-          <div className="bg-emerald-950 p-4 rounded-3xl border border-emerald-800 text-white shadow-xl space-y-3">
+          <div 
+            data-theme-surface="dark"
+            data-preserve-dark="true"
+            className="dark-hero-panel bg-emerald-950 p-4 rounded-3xl border border-emerald-800 text-white shadow-xl space-y-3"
+          >
             <div className="flex items-center justify-between border-b border-emerald-800 pb-3">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-full bg-emerald-700 text-white font-extrabold flex items-center justify-center text-xs shadow-inner">
                   {targetType === 'group' ? (activeGroup?.name.charAt(0) || 'G') : currentChurch.name.charAt(0)}
                 </div>
                 <div className="min-w-0">
-                  <h4 className="text-xs font-bold text-white leading-tight truncate">
+                  <h4 className="text-xs font-bold text-white leading-tight truncate" style={{ color: '#ffffff' }}>
                     {targetType === 'group' ? (activeGroup?.name || 'WhatsApp Group') : currentChurch.name}
                   </h4>
-                  <p className="text-[10px] text-emerald-300 truncate">
+                  <div className="text-[10px] text-[#a7f3d0] truncate" style={{ color: '#a7f3d0' }}>
                     {targetType === 'group' ? `${activeGroup?.memberCount || 25} participants • Official Channel` : 'WhatsApp Official Notice'}
-                  </p>
+                  </div>
                 </div>
               </div>
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-900/60 px-2 py-0.5 rounded-full border border-emerald-700 shrink-0">
+              <span className="text-[10px] font-mono text-[#34d399] bg-emerald-900/60 px-2 py-0.5 rounded-full border border-emerald-700 shrink-0" style={{ color: '#34d399' }}>
                 {targetType === 'group' ? 'Group Live' : 'Direct Live'}
               </span>
             </div>
 
             {/* Chat Bubble Container */}
             <div className="bg-[#0b141a] p-4 rounded-2xl min-h-[300px] border border-emerald-900/50 flex flex-col justify-end">
-              <div className="bg-[#005c4b] text-emerald-50 p-3.5 rounded-2xl rounded-tr-none text-xs space-y-2 shadow-md max-w-[96%] ml-auto">
-                <p className="whitespace-pre-wrap leading-relaxed font-sans">{finalMessage}</p>
-                <div className="flex items-center justify-end gap-1 text-[9px] text-emerald-300 font-mono">
-                  <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                  <span className="text-sky-400 font-bold">✓✓</span>
+              <div 
+                className="bg-[#005c4b] p-3.5 rounded-2xl rounded-tr-none text-xs space-y-2 shadow-md max-w-[96%] ml-auto text-white"
+                style={{ color: '#ffffff' }}
+              >
+                <div 
+                  className="whitespace-pre-wrap leading-relaxed font-sans text-white text-[#ffffff]"
+                  style={{ color: '#ffffff' }}
+                >
+                  {finalMessage}
+                </div>
+                <div className="flex items-center justify-end gap-1 text-[9px] text-[#a7f3d0] font-mono" style={{ color: '#a7f3d0' }}>
+                  <span style={{ color: '#a7f3d0' }}>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  <span className="text-sky-400 font-bold" style={{ color: '#38bdf8' }}>✓✓</span>
                 </div>
               </div>
             </div>
@@ -1462,12 +1484,12 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
 
           {/* Quick Target List */}
           {targetType === 'group' ? (
-            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-3">
+            <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Church Group Channels</h4>
+                <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">Church Group Channels</h4>
                 <button
                   onClick={handleOpenCreateGroupModal}
-                  className="text-[10px] text-emerald-700 font-extrabold hover:underline"
+                  className="text-[10px] text-emerald-700 dark:text-emerald-400 font-extrabold hover:underline"
                 >
                   + Add Group
                 </button>
@@ -1478,15 +1500,15 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                 placeholder="Search groups or leaders..."
                 value={searchGroupQuery}
                 onChange={(e) => setSearchGroupQuery(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
 
               <div className="space-y-2 max-h-[260px] overflow-y-auto pr-1">
                 {filteredGroups.map((g) => (
-                  <div key={g.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition">
+                  <div key={g.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
                     <div className="min-w-0 pr-2">
-                      <p className="text-xs font-bold text-slate-900 truncate">{g.name}</p>
-                      <p className="text-[10px] text-slate-500 truncate">{g.category} • {g.memberCount || 25} members</p>
+                      <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{g.name}</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{g.category} • {g.memberCount || 25} members</p>
                     </div>
 
                     <div className="flex items-center gap-1 shrink-0">
@@ -1507,10 +1529,10 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
               </div>
             </div>
           ) : (
-            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-3">
+            <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Quick Direct Send</h4>
-                <span className="text-[10px] text-slate-400">{filteredMembers.length} Members</span>
+                <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">Quick Direct Send</h4>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500">{filteredMembers.length} Members</span>
               </div>
 
               <input
@@ -1518,15 +1540,15 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                 placeholder="Search member name or phone..."
                 value={searchMemberQuery}
                 onChange={(e) => setSearchMemberQuery(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
 
               <div className="space-y-2 max-h-[260px] overflow-y-auto pr-1">
                 {filteredMembers.map((m) => (
-                  <div key={m.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition">
+                  <div key={m.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
                     <div className="min-w-0 pr-2">
-                      <p className="text-xs font-bold text-slate-900 truncate">{m.firstName} {m.lastName}</p>
-                      <p className="text-[10px] text-slate-500 truncate">{m.phone}</p>
+                      <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{m.firstName} {m.lastName}</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{m.phone}</p>
                     </div>
 
                     <button
@@ -1553,23 +1575,23 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
       {/* ============================================================= */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 border border-slate-200 shadow-2xl max-h-[92vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+          <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 space-y-4 border border-slate-800 shadow-2xl max-h-[92vh] overflow-y-auto text-white">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-emerald-950/70 border border-emerald-800/50 text-emerald-400 flex items-center justify-center font-bold">
                   <MessageSquare className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold text-slate-900">
+                  <h3 className="text-base font-extrabold text-white">
                     {editingTemplateId ? 'Edit WhatsApp Template' : 'Create WhatsApp Template'}
                   </h3>
-                  <p className="text-[11px] text-slate-500">Configure reminder presets with dynamic tags</p>
+                  <p className="text-[11px] text-slate-400">Configure reminder presets with dynamic tags</p>
                 </div>
               </div>
 
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-slate-400 hover:text-white p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1577,26 +1599,26 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
 
             <form onSubmit={handleSaveModalTemplate} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Template Title *</label>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Template Title *</label>
                 <input
                   type="text"
                   required
                   value={modalTitle}
                   onChange={(e) => setModalTitle(e.target.value)}
                   placeholder="e.g. Sunday Morning Fasting Prayer Reminder"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-slate-500 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Category</label>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Category</label>
                 <select
                   value={modalCategory}
                   onChange={(e) => setModalCategory(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   {STANDARD_CATEGORIES.map((c) => (
-                    <option key={c} value={c}>
+                    <option key={c} value={c} className="bg-slate-900 text-white">
                       {c}
                     </option>
                   ))}
@@ -1605,27 +1627,27 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
 
               {modalCategory === 'Custom' && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Custom Category Name *</label>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Custom Category Name *</label>
                   <input
                     type="text"
                     required
                     value={modalCustomCategory}
                     onChange={(e) => setModalCustomCategory(e.target.value)}
                     placeholder="e.g. Youth Camp 2026"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-slate-500 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Insert Dynamic Tags</label>
-                <div className="flex flex-wrap gap-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200 max-h-32 overflow-y-auto">
+                <label className="block text-xs font-bold text-slate-300 mb-1.5">Insert Dynamic Tags</label>
+                <div className="flex flex-wrap gap-1.5 bg-slate-800/80 p-2.5 rounded-xl border border-slate-700 max-h-32 overflow-y-auto">
                   {VARIABLE_TAGS.map((v) => (
                     <button
                       key={v.tag}
                       type="button"
                       onClick={() => handleInsertTag(v.tag)}
-                      className="px-2 py-1 bg-white hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-800 text-slate-700 text-[10px] font-mono font-bold rounded-lg border border-slate-200 transition"
+                      className="px-2 py-1 bg-slate-800 hover:bg-slate-700 hover:border-emerald-500 hover:text-emerald-300 text-slate-300 text-[10px] font-mono font-bold rounded-lg border border-slate-700 transition"
                       title={v.desc}
                     >
                       + {v.tag}
@@ -1635,7 +1657,7 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Message Text Template *</label>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Message Text Template *</label>
                 <textarea
                   ref={modalTextareaRef}
                   required
@@ -1643,18 +1665,18 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                   value={modalText}
                   onChange={(e) => setModalText(e.target.value)}
                   placeholder="Dear {MemberName}, peace be with you! Join us for service at {ChurchName}..."
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-xs text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500 leading-relaxed"
+                  className="w-full bg-slate-800/90 border border-slate-700 rounded-2xl p-3.5 text-xs text-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500 leading-relaxed"
                 />
                 <p className="text-[10px] text-slate-400 mt-1">
-                  Tip: Use standard WhatsApp formatting: <code className="text-emerald-700 font-bold">*bold*</code>, <code className="text-emerald-700 font-bold">_italic_</code>, <code className="text-emerald-700 font-bold">~strikethrough~</code>.
+                  Tip: Use standard WhatsApp formatting: <code className="text-emerald-400 font-bold">*bold*</code>, <code className="text-emerald-400 font-bold">_italic_</code>, <code className="text-emerald-400 font-bold">~strikethrough~</code>.
                 </p>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-100 transition"
+                  className="px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white font-bold text-xs transition"
                 >
                   Cancel
                 </button>
@@ -1676,23 +1698,23 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
       {/* ============================================================= */}
       {isGroupModalOpen && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 border border-slate-200 shadow-2xl max-h-[92vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+          <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 space-y-4 border border-slate-800 shadow-2xl max-h-[92vh] overflow-y-auto text-white">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-emerald-950/70 border border-emerald-800/50 text-emerald-400 flex items-center justify-center font-bold">
                   <Layers className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold text-slate-900">
+                  <h3 className="text-base font-extrabold text-white">
                     {editingGroupId ? 'Edit WhatsApp Group Channel' : 'Configure WhatsApp Group Channel'}
                   </h3>
-                  <p className="text-[11px] text-slate-500">Set up church community & ministry group channels</p>
+                  <p className="text-[11px] text-slate-400">Set up church community & ministry group channels</p>
                 </div>
               </div>
 
               <button
                 onClick={() => setIsGroupModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-slate-400 hover:text-white p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1700,27 +1722,27 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
 
             <form onSubmit={handleSaveModalGroup} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">WhatsApp Group Name *</label>
+                <label className="block text-xs font-bold text-slate-300 mb-1">WhatsApp Group Name *</label>
                 <input
                   type="text"
                   required
                   value={modalGroupName}
                   onChange={(e) => setModalGroupName(e.target.value)}
                   placeholder="e.g. New Creation Church - Youth Fellowship"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-slate-500 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Group Ministry / Category</label>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Group Ministry / Category</label>
                   <select
                     value={modalGroupCategory}
                     onChange={(e) => setModalGroupCategory(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs font-semibold text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     {GROUP_CATEGORIES.map((c) => (
-                      <option key={c} value={c}>
+                      <option key={c} value={c} className="bg-slate-900 text-white">
                         {c}
                       </option>
                     ))}
@@ -1728,19 +1750,19 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Leader / Admin Name</label>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Leader / Admin Name</label>
                   <input
                     type="text"
                     value={modalGroupLeader}
                     onChange={(e) => setModalGroupLeader(e.target.value)}
                     placeholder="e.g. Pastor David / Bro. John"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-slate-500 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
+                <label className="block text-xs font-bold text-slate-300 mb-1 flex items-center justify-between">
                   <span>WhatsApp Group Invite Link (Optional)</span>
                   <span className="text-[10px] text-slate-400 font-normal">e.g. https://chat.whatsapp.com/...</span>
                 </label>
@@ -1751,53 +1773,53 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
                     value={modalGroupInviteLink}
                     onChange={(e) => setModalGroupInviteLink(e.target.value)}
                     placeholder="https://chat.whatsapp.com/J8KL90MNOPQ12345678901"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2 text-xs text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-9 pr-3.5 py-2 text-xs text-white placeholder:text-slate-500 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Estimated Member Count</label>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Estimated Member Count</label>
                   <input
                     type="number"
                     min="1"
                     value={modalGroupMemberCount}
                     onChange={(e) => setModalGroupMemberCount(Number(e.target.value))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-slate-500 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Group Accent Badge Color</label>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Group Accent Badge Color</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
                       value={modalGroupColor}
                       onChange={(e) => setModalGroupColor(e.target.value)}
-                      className="w-9 h-9 rounded-xl border border-slate-200 cursor-pointer p-0.5"
+                      className="w-9 h-9 rounded-xl border border-slate-700 bg-slate-800 cursor-pointer p-0.5"
                     />
-                    <span className="text-xs font-mono text-slate-600">{modalGroupColor}</span>
+                    <span className="text-xs font-mono text-slate-300">{modalGroupColor}</span>
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Group Purpose & Description</label>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Group Purpose & Description</label>
                 <textarea
                   rows={2}
                   value={modalGroupDescription}
                   onChange={(e) => setModalGroupDescription(e.target.value)}
                   placeholder="e.g. Official communication channel for Sunday school parents and weekly memory verse updates."
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-2xl p-3 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsGroupModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-100 transition"
+                  className="px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white font-bold text-xs transition"
                 >
                   Cancel
                 </button>

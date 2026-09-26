@@ -22,7 +22,7 @@ export function MobileNavigation({ isOpen, onClose }: MobileNavigationProps) {
       <div className="fixed inset-y-0 left-0 flex w-72 flex-col bg-white shadow-2xl animate-in slide-in-from-left duration-200 dark:bg-slate-900">
         <button
           onClick={onClose}
-          className="absolute right-3 top-4 z-50 rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800"
+          className="absolute right-3 top-4 z-50 rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition"
         >
           <X className="h-5 w-5" />
           <span className="sr-only">Close sidebar</span>

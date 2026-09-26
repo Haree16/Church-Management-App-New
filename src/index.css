@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   html, body, #root {
     height: 100%;
@@ -40,4 +42,489 @@
 .scrollbar-none {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
+}
+
+/* ========================================================================= */
+/* UNIVERSAL LIGHT MODE ADAPTATION                                           */
+/* Automatically maps dark obsidian surfaces, panels, dialogs, and text      */
+/* to clean, crisp light mode when html is NOT .dark                         */
+/* In Dark Mode (.dark), ALL rules below are bypassed completely.            */
+/* ========================================================================= */
+html:not(.dark) {
+  color-scheme: light;
+}
+
+html:not(.dark) body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* 1. Surfaces & Backgrounds */
+html:not(.dark) .bg-slate-950 {
+  background-color: #f8fafc !important;
+}
+
+html:not(.dark) .bg-slate-900 {
+  background-color: #ffffff !important;
+}
+
+html:not(.dark) .bg-slate-850,
+html:not(.dark) .bg-slate-800 {
+  background-color: #f1f5f9 !important;
+}
+
+html:not(.dark) .bg-slate-700:not(.dark-hero-panel *):not([data-theme-surface="dark"] *):not([data-preserve-dark="true"] *):not(.dark-ai-modal *) {
+  background-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+html:not(.dark) [class*="bg-slate-800/"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *) {
+  background-color: #f8fafc !important;
+}
+
+html:not(.dark) [class*="bg-slate-900/"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *) {
+  background-color: #f8fafc !important;
+}
+
+html:not(.dark) [class*="bg-slate-950/"]:not(.fixed):not(.dark-hero-panel *):not([data-theme-surface="dark"] *) {
+  background-color: #f8fafc !important;
+}
+
+/* Maintain translucent modal / drawer backdrop blur */
+html:not(.dark) .fixed.inset-0[class*="bg-slate-950"],
+html:not(.dark) .fixed.inset-0[class*="bg-black"] {
+  background-color: rgba(15, 23, 42, 0.45) !important;
+}
+
+/* Hover background states */
+html:not(.dark) .hover\:bg-slate-800:hover,
+html:not(.dark) .hover\:bg-slate-750:hover {
+  background-color: #f1f5f9 !important;
+}
+
+html:not(.dark) .hover\:bg-slate-700:hover {
+  background-color: #e2e8f0 !important;
+}
+
+html:not(.dark) .hover\:bg-slate-900:hover {
+  background-color: #f8fafc !important;
+}
+
+/* 2. Borders & Dividers */
+html:not(.dark) .border-slate-800,
+html:not(.dark) .border-slate-800\/80,
+html:not(.dark) .border-slate-800\/60,
+html:not(.dark) .border-slate-800\/50,
+html:not(.dark) .border-slate-800\/40,
+html:not(.dark) .border-slate-800\/30 {
+  border-color: #e2e8f0 !important;
+}
+
+html:not(.dark) .border-slate-700,
+html:not(.dark) .border-slate-700\/80,
+html:not(.dark) .border-slate-700\/70,
+html:not(.dark) .border-slate-700\/60,
+html:not(.dark) .border-slate-700\/50 {
+  border-color: #cbd5e1 !important;
+}
+
+html:not(.dark) .divide-slate-800 > :not([hidden]) ~ :not([hidden]),
+html:not(.dark) .divide-slate-700 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #e2e8f0 !important;
+}
+
+/* 3. Typography & Text Colors */
+/* General text classes on light surfaces */
+html:not(.dark) .text-white:not(
+  [class*="bg-amber-500"], [class*="bg-amber-600"],
+  [class*="bg-emerald-"], [class*="bg-rose-"],
+  [class*="bg-indigo-"], [class*="bg-purple-"], [class*="bg-blue-"],
+  [class*="bg-red-"], [class*="bg-green-"], [class*="bg-sky-"],
+  [class*="bg-teal-"], [class*="bg-violet-"]
+) {
+  color: #0f172a !important;
+}
+
+/* Button text: keep white on colored action buttons */
+html:not(.dark) button[class*="bg-amber-"] .text-white,
+html:not(.dark) button[class*="bg-emerald-"] .text-white,
+html:not(.dark) button[class*="bg-rose-"] .text-white,
+html:not(.dark) button[class*="bg-indigo-"] .text-white,
+html:not(.dark) button[class*="bg-purple-"] .text-white,
+html:not(.dark) button[class*="bg-blue-"] .text-white,
+html:not(.dark) .bg-emerald-600 .text-white,
+html:not(.dark) .bg-emerald-500 .text-white,
+html:not(.dark) .bg-rose-600 .text-white,
+html:not(.dark) .bg-rose-500 .text-white,
+html:not(.dark) .bg-purple-600 .text-white,
+html:not(.dark) .bg-purple-500 .text-white,
+html:not(.dark) .bg-indigo-600 .text-white,
+html:not(.dark) .bg-indigo-500 .text-white {
+  color: #ffffff !important;
+}
+
+html:not(.dark) .text-slate-100 {
+  color: #0f172a !important;
+}
+
+html:not(.dark) .text-slate-200 {
+  color: #1e293b !important;
+}
+
+html:not(.dark) .text-slate-300 {
+  color: #334155 !important;
+}
+
+html:not(.dark) .text-slate-400 {
+  color: #64748b !important;
+}
+
+html:not(.dark) .hover\:text-white:hover {
+  color: #0f172a !important;
+}
+
+/* 4. Form Controls (Inputs, Selects, Textareas) */
+html:not(.dark) input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([class*="bg-amber"]):not([class*="bg-emerald"]):not(.dark-ai-modal *):not([data-theme-surface="dark"] *):not([data-preserve-dark="true"] *),
+html:not(.dark) textarea:not(.dark-ai-modal *):not([data-theme-surface="dark"] *):not([data-preserve-dark="true"] *),
+html:not(.dark) select:not(.dark-ai-modal *):not([data-theme-surface="dark"] *):not([data-preserve-dark="true"] *) {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html:not(.dark) input:not(.dark-ai-modal *):not([data-theme-surface="dark"] *):not([data-preserve-dark="true"] *)::placeholder,
+html:not(.dark) textarea:not(.dark-ai-modal *):not([data-theme-surface="dark"] *):not([data-preserve-dark="true"] *)::placeholder {
+  color: #64748b !important;
+}
+
+/* 5. Dropdown Options */
+html:not(.dark) select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* 6. Dialog & Panel Shadows */
+html:not(.dark) .shadow-xl,
+html:not(.dark) .shadow-2xl {
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04) !important;
+}
+
+/* ==========================================================================
+   7. PRESERVE DARK PANELS & HERO BANNERS IN LIGHT MODE
+   Hero cards, banners, and modals with dark gradients that intentionally
+   remain dark in both Light & Dark modes must retain their original
+   crisp white/light typography, badges, and button styling.
+   ========================================================================== */
+
+/* Dark hero panel surfaces & borders */
+html:not(.dark) [data-theme-surface="dark"],
+html:not(.dark) [data-preserve-dark="true"],
+html:not(.dark) .dark-hero-panel,
+html:not(.dark) [class*="from-slate-9"],
+html:not(.dark) [class*="from-slate-8"],
+html:not(.dark) [class*="from-indigo-9"],
+html:not(.dark) [class*="from-purple-9"],
+html:not(.dark) [class*="from-amber-9"],
+html:not(.dark) [class*="from-blue-9"],
+html:not(.dark) [class*="from-sky-9"],
+html:not(.dark) [class*="from-sky-7"] {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Headings and primary text inside dark panels */
+html:not(.dark) [data-theme-surface="dark"] .text-white,
+html:not(.dark) [data-preserve-dark="true"] .text-white,
+html:not(.dark) .dark-hero-panel .text-white,
+html:not(.dark) [class*="from-slate-9"] .text-white,
+html:not(.dark) [class*="from-slate-8"] .text-white,
+html:not(.dark) [class*="from-indigo-9"] .text-white,
+html:not(.dark) [class*="from-purple-9"] .text-white,
+html:not(.dark) [class*="from-amber-9"] .text-white,
+html:not(.dark) [class*="from-blue-9"] .text-white,
+html:not(.dark) [class*="from-sky-9"] .text-white,
+html:not(.dark) [class*="from-sky-7"] .text-white,
+html:not(.dark) [data-theme-surface="dark"] h1,
+html:not(.dark) [data-theme-surface="dark"] h2,
+html:not(.dark) [data-theme-surface="dark"] h3,
+html:not(.dark) [data-preserve-dark="true"] h1,
+html:not(.dark) [data-preserve-dark="true"] h2,
+html:not(.dark) [data-preserve-dark="true"] h3,
+html:not(.dark) .dark-hero-panel h1,
+html:not(.dark) .dark-hero-panel h2,
+html:not(.dark) .dark-hero-panel h3,
+html:not(.dark) [class*="from-slate-9"] h1,
+html:not(.dark) [class*="from-slate-9"] h2,
+html:not(.dark) [class*="from-indigo-9"] h1,
+html:not(.dark) [class*="from-indigo-9"] h2,
+html:not(.dark) [class*="from-purple-9"] h1,
+html:not(.dark) [class*="from-purple-9"] h2,
+html:not(.dark) [class*="from-amber-9"] h1,
+html:not(.dark) [class*="from-amber-9"] h2,
+html:not(.dark) [class*="from-blue-9"] h1,
+html:not(.dark) [class*="from-blue-9"] h2 {
+  color: #ffffff !important;
+}
+
+/* Secondary & body text inside dark panels */
+html:not(.dark) [data-theme-surface="dark"] .text-slate-100,
+html:not(.dark) [data-preserve-dark="true"] .text-slate-100,
+html:not(.dark) .dark-hero-panel .text-slate-100,
+html:not(.dark) [class*="from-slate-9"] .text-slate-100,
+html:not(.dark) [class*="from-indigo-9"] .text-slate-100 {
+  color: #f8fafc !important;
+}
+
+html:not(.dark) [data-theme-surface="dark"] .text-slate-200,
+html:not(.dark) [data-preserve-dark="true"] .text-slate-200,
+html:not(.dark) .dark-hero-panel .text-slate-200,
+html:not(.dark) [class*="from-slate-9"] .text-slate-200,
+html:not(.dark) [class*="from-indigo-9"] .text-slate-200 {
+  color: #e2e8f0 !important;
+}
+
+html:not(.dark) [data-theme-surface="dark"] .text-slate-300,
+html:not(.dark) [data-preserve-dark="true"] .text-slate-300,
+html:not(.dark) .dark-hero-panel .text-slate-300,
+html:not(.dark) [class*="from-slate-9"] .text-slate-300,
+html:not(.dark) [class*="from-indigo-9"] .text-slate-300,
+html:not(.dark) [class*="from-purple-9"] .text-slate-300,
+html:not(.dark) [class*="from-amber-9"] .text-slate-300,
+html:not(.dark) [data-theme-surface="dark"] p,
+html:not(.dark) [data-preserve-dark="true"] p,
+html:not(.dark) .dark-hero-panel p,
+html:not(.dark) [class*="from-slate-9"] p,
+html:not(.dark) [class*="from-indigo-9"] p {
+  color: #cbd5e1 !important;
+}
+
+html:not(.dark) [data-theme-surface="dark"] .text-slate-400,
+html:not(.dark) [data-preserve-dark="true"] .text-slate-400,
+html:not(.dark) .dark-hero-panel .text-slate-400,
+html:not(.dark) [class*="from-slate-9"] .text-slate-400,
+html:not(.dark) [class*="from-indigo-9"] .text-slate-400,
+html:not(.dark) [class*="from-purple-9"] .text-slate-400,
+html:not(.dark) [class*="from-amber-9"] .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+/* Semi-transparent buttons, pills, chips, and icons inside dark panels */
+html:not(.dark) [data-theme-surface="dark"] button[class*="bg-white/"],
+html:not(.dark) [data-preserve-dark="true"] button[class*="bg-white/"],
+html:not(.dark) .dark-hero-panel button[class*="bg-white/"],
+html:not(.dark) [class*="from-slate-9"] button[class*="bg-white/"],
+html:not(.dark) [class*="from-indigo-9"] button[class*="bg-white/"],
+html:not(.dark) [data-theme-surface="dark"] span[class*="bg-white/"],
+html:not(.dark) [data-preserve-dark="true"] span[class*="bg-white/"],
+html:not(.dark) .dark-hero-panel span[class*="bg-white/"],
+html:not(.dark) [class*="from-slate-9"] span[class*="bg-white/"],
+html:not(.dark) [class*="from-indigo-9"] span[class*="bg-white/"] {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+html:not(.dark) [data-theme-surface="dark"] button[class*="bg-white/"] span,
+html:not(.dark) [data-preserve-dark="true"] button[class*="bg-white/"] span,
+html:not(.dark) .dark-hero-panel button[class*="bg-white/"] span,
+html:not(.dark) [class*="from-slate-9"] button[class*="bg-white/"] span,
+html:not(.dark) [class*="from-indigo-9"] button[class*="bg-white/"] span {
+  color: #ffffff !important;
+}
+
+html:not(.dark) [data-theme-surface="dark"] button[class*="bg-white/"]:hover,
+html:not(.dark) [data-preserve-dark="true"] button[class*="bg-white/"]:hover,
+html:not(.dark) .dark-hero-panel button[class*="bg-white/"]:hover,
+html:not(.dark) [class*="from-slate-9"] button[class*="bg-white/"]:hover,
+html:not(.dark) [class*="from-indigo-9"] button[class*="bg-white/"]:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+/* Retain dark background if explicit dark-panel is used */
+html:not(.dark) [data-theme-surface="dark"].bg-slate-900,
+html:not(.dark) .dark-hero-panel.bg-slate-900 {
+  background-color: #0f172a !important;
+}
+
+html:not(.dark) [data-theme-surface="dark"].bg-slate-950,
+html:not(.dark) .dark-hero-panel.bg-slate-950 {
+  background-color: #020617 !important;
+}
+
+/* ==========================================================================
+   8. TINTED BADGES & ALERT PANELS IN LIGHT MODE
+   Light mode conversions for semantic colored cards (Purple, Amber, Emerald, Rose, Blue).
+   Ensures text contrast is sharp, deep, and fully readable.
+   ========================================================================== */
+
+/* Purple Panels & Badges (e.g. Pastoral Care, Ministry) */
+html:not(.dark) [class*="bg-purple-950"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) [class*="bg-purple-900/"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *) {
+  background-color: #faf5ff !important;
+  border-color: #e9d5ff !important;
+}
+
+html:not(.dark) .text-purple-300:not([class*="bg-purple-6"]):not([class*="bg-purple-5"]):not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) .text-purple-200:not([class*="bg-purple-6"]):not([class*="bg-purple-5"]):not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) [class*="text-purple-200"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) .text-purple-400:not([class*="bg-purple-6"]):not([class*="bg-purple-5"]):not(.dark-hero-panel *):not([data-theme-surface="dark"] *) {
+  color: #581c87 !important;
+}
+
+/* Amber Panels & Badges */
+html:not(.dark) [class*="bg-amber-950"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) [class*="bg-amber-900/"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) [class*="bg-amber-500/10"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) [class*="bg-amber-500/20"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *) {
+  background-color: #fffbeb !important;
+  border-color: #fde68a !important;
+}
+
+html:not(.dark) [class*="text-amber-200"]:not([class*="bg-amber-5"]):not([class*="bg-amber-6"]):not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) [class*="text-amber-300"]:not([class*="bg-amber-5"]):not([class*="bg-amber-6"]):not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) [class*="text-amber-400"]:not([class*="bg-amber-5"]):not([class*="bg-amber-6"]):not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) .text-amber-200:not([class*="bg-amber-5"]):not([class*="bg-amber-6"]):not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) .text-amber-300:not([class*="bg-amber-5"]):not([class*="bg-amber-6"]):not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) .text-amber-400:not([class*="bg-amber-5"]):not([class*="bg-amber-6"]):not(.dark-hero-panel *):not([data-theme-surface="dark"] *) {
+  color: #92400e !important;
+}
+
+html:not(.dark) [class*="bg-amber-50"] p,
+html:not(.dark) [class*="bg-amber-950"] p,
+html:not(.dark) [class*="bg-amber-500/"] p {
+  color: #92400e !important;
+}
+
+/* Emerald Panels & Badges */
+html:not(.dark) [class*="bg-emerald-950"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) [class*="bg-emerald-900/"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) [class*="bg-emerald-500/10"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) [class*="bg-emerald-500/20"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *) {
+  background-color: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+}
+
+html:not(.dark) [class*="text-emerald-100"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *):not([class*="from-"] *),
+html:not(.dark) [class*="text-emerald-200"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *):not([class*="from-"] *),
+html:not(.dark) [class*="text-emerald-300"]:not([class*="bg-emerald-6"]):not([class*="bg-emerald-5"]):not(.dark-hero-panel *):not([data-theme-surface="dark"] *):not([class*="from-"] *),
+html:not(.dark) [class*="text-emerald-400"]:not([class*="bg-emerald-6"]):not([class*="bg-emerald-5"]):not(.dark-hero-panel *):not([data-theme-surface="dark"] *):not([class*="from-"] *),
+html:not(.dark) .text-emerald-300:not([class*="bg-emerald-6"]):not([class*="bg-emerald-5"]):not(.dark-hero-panel *):not([data-theme-surface="dark"] *):not([class*="from-"] *),
+html:not(.dark) .text-emerald-400:not([class*="bg-emerald-6"]):not([class*="bg-emerald-5"]):not(.dark-hero-panel *):not([data-theme-surface="dark"] *):not([class*="from-"] *) {
+  color: #15803d !important;
+}
+
+/* Rose & Red Panels & Badges */
+html:not(.dark) [class*="bg-rose-950"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) [class*="bg-red-950"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *) {
+  background-color: #fff1f2 !important;
+  border-color: #fecdd3 !important;
+}
+
+html:not(.dark) .text-rose-300:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) .text-rose-400:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) .text-red-400:not(.dark-hero-panel *):not([data-theme-surface="dark"] *) {
+  color: #be123c !important;
+}
+
+/* Blue & Indigo Panels & Badges */
+html:not(.dark) [class*="bg-blue-950"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) [class*="bg-indigo-950"]:not(.dark-hero-panel *):not([data-theme-surface="dark"] *) {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+}
+
+html:not(.dark) .text-blue-300:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) .text-blue-400:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) .text-indigo-300:not(.dark-hero-panel *):not([data-theme-surface="dark"] *),
+html:not(.dark) .text-indigo-400:not(.dark-hero-panel *):not([data-theme-surface="dark"] *) {
+  color: #1d4ed8 !important;
+}
+
+/* ==========================================================================
+   9. STRICT DARK PRESERVATION FOR AI ASSISTANTS & MODALS (.dark-ai-modal)
+   AI popups (Church AI, AI Pastor Assistant, AI Ministry Assistant) must
+   retain pure obsidian dark styling across both light and dark modes.
+   ========================================================================== */
+.dark-ai-modal,
+[data-preserve-dark="true"] {
+  color-scheme: dark;
+}
+
+/* Modal container & base surfaces */
+html:not(.dark) .dark-ai-modal,
+html:not(.dark) [data-preserve-dark="true"] {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+/* Form inputs & textareas inside AI modals */
+html:not(.dark) .dark-ai-modal input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+html:not(.dark) .dark-ai-modal textarea,
+html:not(.dark) .dark-ai-modal select,
+html:not(.dark) [data-preserve-dark="true"] input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+html:not(.dark) [data-preserve-dark="true"] textarea,
+html:not(.dark) [data-preserve-dark="true"] select {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  border-color: #334155 !important;
+}
+
+html:not(.dark) .dark-ai-modal input::placeholder,
+html:not(.dark) .dark-ai-modal textarea::placeholder,
+html:not(.dark) [data-preserve-dark="true"] input::placeholder,
+html:not(.dark) [data-preserve-dark="true"] textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Message bubbles, cards & inner containers */
+html:not(.dark) .dark-ai-modal .bg-slate-900,
+html:not(.dark) [data-preserve-dark="true"] .bg-slate-900 {
+  background-color: #0f172a !important;
+}
+
+html:not(.dark) .dark-ai-modal .bg-slate-950,
+html:not(.dark) [data-preserve-dark="true"] .bg-slate-950 {
+  background-color: #020617 !important;
+}
+
+html:not(.dark) .dark-ai-modal .bg-slate-800,
+html:not(.dark) [data-preserve-dark="true"] .bg-slate-800 {
+  background-color: #1e293b !important;
+}
+
+/* Text colors inside AI modals */
+html:not(.dark) .dark-ai-modal .text-white,
+html:not(.dark) [data-preserve-dark="true"] .text-white {
+  color: #ffffff !important;
+}
+
+html:not(.dark) .dark-ai-modal .text-slate-100,
+html:not(.dark) [data-preserve-dark="true"] .text-slate-100 {
+  color: #f1f5f9 !important;
+}
+
+html:not(.dark) .dark-ai-modal .text-slate-200,
+html:not(.dark) [data-preserve-dark="true"] .text-slate-200 {
+  color: #e2e8f0 !important;
+}
+
+html:not(.dark) .dark-ai-modal .text-slate-300,
+html:not(.dark) [data-preserve-dark="true"] .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+
+html:not(.dark) .dark-ai-modal .text-slate-400,
+html:not(.dark) [data-preserve-dark="true"] .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+/* Borders */
+html:not(.dark) .dark-ai-modal .border-slate-800,
+html:not(.dark) [data-preserve-dark="true"] .border-slate-800 {
+  border-color: #1e293b !important;
+}
+
+html:not(.dark) .dark-ai-modal .border-slate-700,
+html:not(.dark) [data-preserve-dark="true"] .border-slate-700 {
+  border-color: #334155 !important;
 }

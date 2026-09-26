@@ -43,14 +43,14 @@ export function Pagination({
       className={cn("flex w-full items-center justify-between px-2 py-3", className)}
       {...props}
     >
-      <div className="text-xs text-slate-500">
+      <div className="text-xs text-slate-400">
         {totalItems !== undefined && (
           <span>
-            Showing <strong className="font-medium text-slate-700 dark:text-slate-200">
+            Showing <strong className="font-bold text-white">
               {Math.min((currentPage - 1) * (pageSize || 10) + 1, totalItems)}
-            </strong> to <strong className="font-medium text-slate-700 dark:text-slate-200">
+            </strong> to <strong className="font-bold text-white">
               {Math.min(currentPage * (pageSize || 10), totalItems)}
-            </strong> of <strong className="font-medium text-slate-700 dark:text-slate-200">{totalItems}</strong> entries
+            </strong> of <strong className="font-bold text-white">{totalItems}</strong> entries
           </span>
         )}
       </div>

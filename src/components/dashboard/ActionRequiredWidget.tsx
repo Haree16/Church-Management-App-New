@@ -161,10 +161,10 @@ export const ActionRequiredWidget: React.FC<ActionRequiredWidgetProps> = ({
             <CheckSquare className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="font-bold text-sm sm:text-base text-white tracking-wide">
+            <h4 className="font-bold text-sm sm:text-base text-white tracking-wide" style={{ color: '#ffffff' }}>
               All Clear! No Pending Actions Required
             </h4>
-            <p className="text-xs text-emerald-100 font-medium mt-0.5 leading-relaxed">
+            <p className="text-xs text-white font-medium mt-0.5 leading-relaxed" style={{ color: '#ffffff' }}>
               Visitor follow-ups, prayer care, and upcoming service rosters are up to date.
             </p>
           </div>
@@ -174,18 +174,18 @@ export const ActionRequiredWidget: React.FC<ActionRequiredWidgetProps> = ({
   }
 
   return (
-    <div className="bg-slate-900 border border-amber-500/40 rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl text-white">
+    <div className="bg-amber-500/5 dark:bg-slate-900 border border-amber-500/40 rounded-3xl p-5 sm:p-6 space-y-4 shadow-sm dark:shadow-xl text-slate-900 dark:text-white">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-500/20 pb-3">
         <div className="flex items-center gap-2">
-          <span className="p-1.5 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
+          <span className="p-1.5 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
             <AlertTriangle className="w-4 h-4" />
           </span>
-          <h3 className="font-black text-sm sm:text-base text-amber-300 tracking-wide uppercase">
+          <h3 className="font-black text-sm sm:text-base text-amber-700 dark:text-amber-300 tracking-wide uppercase">
             ACTION REQUIRED ({actionItems.length})
           </h3>
         </div>
-        <span className="text-xs text-slate-300 font-medium">
+        <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">
           Operational records requiring immediate leadership response
         </span>
       </div>
@@ -195,15 +195,15 @@ export const ActionRequiredWidget: React.FC<ActionRequiredWidgetProps> = ({
         {actionItems.slice(0, 6).map((item) => {
           const badgeClass =
             item.badgeVariant === 'urgent'
-              ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+              ? 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/40'
               : item.badgeVariant === 'warning'
-              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-              : 'bg-sky-500/20 text-sky-300 border-sky-500/40';
+              ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/40'
+              : 'bg-sky-500/20 text-sky-700 dark:text-sky-300 border-sky-500/40';
 
           return (
             <div
               key={item.id}
-              className="bg-slate-800/90 hover:bg-slate-800 rounded-2xl p-4 border border-amber-500/20 hover:border-amber-400/60 shadow-md transition-all flex flex-col justify-between space-y-3 group"
+              className="bg-white dark:bg-slate-800/90 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl p-4 border border-amber-500/20 hover:border-amber-400/60 shadow-xs dark:shadow-md transition-all flex flex-col justify-between space-y-3 group"
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
@@ -211,24 +211,24 @@ export const ActionRequiredWidget: React.FC<ActionRequiredWidgetProps> = ({
                     {item.badgeText}
                   </span>
                   {item.dateStr && (
-                    <span className="text-[10px] text-slate-400 font-mono font-semibold">{item.dateStr}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono font-semibold">{item.dateStr}</span>
                   )}
                 </div>
 
-                <h4 className="font-bold text-xs sm:text-sm text-white group-hover:text-amber-300 transition-colors leading-snug line-clamp-1">
+                <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors leading-snug line-clamp-1">
                   {item.title}
                 </h4>
-                <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
                   {item.subtitle}
                 </p>
               </div>
 
               {/* Action Footer */}
-              <div className="pt-2.5 border-t border-slate-700/60 flex items-center justify-between gap-2">
+              <div className="pt-2.5 border-t border-slate-200 dark:border-slate-700/60 flex items-center justify-between gap-2">
                 {item.personPhone ? (
                   <a
                     href={`tel:${item.personPhone}`}
-                    className="text-xs font-bold text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1"
+                    className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
                   >
                     <Phone className="w-3.5 h-3.5" />
                     <span>Call Now</span>

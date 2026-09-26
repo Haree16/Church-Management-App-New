@@ -644,47 +644,47 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      <div className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
         
         {/* Header */}
-        <div className="bg-slate-900 text-white p-4 sm:p-5 flex items-center justify-between shrink-0 border-b border-slate-800">
+        <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white p-4 sm:p-5 flex items-center justify-between shrink-0 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 font-bold shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-500 dark:text-amber-400 font-bold shrink-0">
               <FileSpreadsheet className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold">Import Church Members</h2>
-              <p className="text-xs text-slate-400">Bulk upload members from CSV or Excel file</p>
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Import Church Members</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Bulk upload members from CSV or Excel file</p>
             </div>
           </div>
 
           <button
             onClick={handleClose}
-            className="text-slate-400 hover:text-white p-2 rounded-full hover:bg-slate-800 transition"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Step Navigation Progress Bar */}
-        <div className="bg-slate-50 border-b border-slate-200 px-5 py-2.5 flex items-center justify-between text-xs font-semibold text-slate-600 overflow-x-auto">
+        <div className="bg-slate-950/70 border-b border-slate-800 px-5 py-2.5 flex items-center justify-between text-xs font-semibold text-slate-400 overflow-x-auto">
           <div className="flex items-center space-x-2 shrink-0">
-            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 'upload' ? 'bg-amber-500 text-slate-950' : 'bg-slate-200 text-slate-600'}`}>1</span>
-            <span className={currentStep === 'upload' ? 'text-amber-700 font-bold' : ''}>Download & Upload</span>
+            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 'upload' ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'}`}>1</span>
+            <span className={currentStep === 'upload' ? 'text-amber-400 font-bold' : ''}>Download & Upload</span>
           </div>
 
-          <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+          <ChevronRight className="w-4 h-4 text-slate-600 shrink-0" />
 
           <div className="flex items-center space-x-2 shrink-0">
-            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 'preview' ? 'bg-amber-500 text-slate-950' : 'bg-slate-200 text-slate-600'}`}>2</span>
-            <span className={currentStep === 'preview' ? 'text-amber-700 font-bold' : ''}>Preview & Validate</span>
+            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 'preview' ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'}`}>2</span>
+            <span className={currentStep === 'preview' ? 'text-amber-400 font-bold' : ''}>Preview & Validate</span>
           </div>
 
-          <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+          <ChevronRight className="w-4 h-4 text-slate-600 shrink-0" />
 
           <div className="flex items-center space-x-2 shrink-0">
-            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${['results', 'create_accounts'].includes(currentStep) ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-600'}`}>3</span>
-            <span className={['results', 'create_accounts'].includes(currentStep) ? 'text-emerald-700 font-bold' : ''}>Result & Accounts</span>
+            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${['results', 'create_accounts'].includes(currentStep) ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}`}>3</span>
+            <span className={['results', 'create_accounts'].includes(currentStep) ? 'text-emerald-400 font-bold' : ''}>Result & Accounts</span>
           </div>
         </div>
 
@@ -698,14 +698,14 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
             <div className="space-y-6">
               
               {/* Template Download Section */}
-              <div className="bg-amber-50/60 border border-amber-200/80 p-4 rounded-2xl space-y-3">
+              <div className="bg-amber-950/30 border border-amber-900/60 p-4 rounded-2xl space-y-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="text-sm font-bold text-amber-950 flex items-center gap-1.5">
-                      <Download className="w-4 h-4 text-amber-600" />
+                    <h3 className="text-sm font-bold text-amber-300 flex items-center gap-1.5">
+                      <Download className="w-4 h-4 text-amber-400" />
                       Step 1 — Download Member Import Template
                     </h3>
-                    <p className="text-xs text-amber-900/80 mt-1">
+                    <p className="text-xs text-amber-200/80 mt-1">
                       Download a template file with pre-formatted column headers for First Name, Last Name, Phone, Email, Member Type, Ministry, etc.
                     </p>
                   </div>
@@ -714,15 +714,15 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
                 <div className="flex flex-wrap items-center gap-3 pt-1">
                   <button
                     onClick={handleDownloadCsvTemplate}
-                    className="px-3.5 py-2 bg-white text-emerald-800 border border-emerald-300 hover:bg-emerald-50 rounded-xl text-xs font-bold flex items-center gap-2 shadow-2xs transition"
+                    className="px-3.5 py-2 bg-slate-800 text-emerald-300 border border-emerald-800/80 hover:bg-slate-750 rounded-xl text-xs font-bold flex items-center gap-2 shadow-2xs transition"
                   >
-                    <FileText className="w-4 h-4 text-emerald-600" />
+                    <FileText className="w-4 h-4 text-emerald-400" />
                     <span>Download CSV Template</span>
                   </button>
 
                   <button
                     onClick={handleDownloadExcelTemplate}
-                    className="px-3.5 py-2 bg-emerald-700 text-white hover:bg-emerald-800 rounded-xl text-xs font-bold flex items-center gap-2 shadow-2xs transition"
+                    className="px-3.5 py-2 bg-emerald-700 text-white hover:bg-emerald-600 rounded-xl text-xs font-bold flex items-center gap-2 shadow-2xs transition"
                   >
                     <FileSpreadsheet className="w-4 h-4" />
                     <span>Download Excel Template (.xlsx)</span>
@@ -732,8 +732,8 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
 
               {/* Upload Dropzone */}
               <div className="space-y-3">
-                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                  <Upload className="w-4 h-4 text-slate-600" />
+                <h3 className="text-sm font-bold text-slate-200 flex items-center gap-1.5">
+                  <Upload className="w-4 h-4 text-amber-400" />
                   Step 2 — Select & Upload CSV or Excel File
                 </h3>
 
@@ -743,8 +743,8 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
                   onClick={() => fileInputRef.current?.click()}
                   className={`border-2 border-dashed rounded-3xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center space-y-3 ${
                     selectedFile
-                      ? 'border-emerald-400 bg-emerald-50/50'
-                      : 'border-slate-300 hover:border-amber-400 bg-slate-50/50 hover:bg-amber-50/30'
+                      ? 'border-emerald-500 bg-emerald-950/30'
+                      : 'border-slate-700 hover:border-amber-400 bg-slate-800/50 hover:bg-amber-950/20'
                   }`}
                 >
                   <input
@@ -755,28 +755,28 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
                     className="hidden"
                   />
 
-                  <div className="w-14 h-14 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center text-amber-500">
+                  <div className="w-14 h-14 bg-slate-800 rounded-2xl shadow-sm border border-slate-700 flex items-center justify-center text-amber-400">
                     <Upload className="w-7 h-7" />
                   </div>
 
                   <div>
-                    <p className="text-sm font-bold text-slate-800">
+                    <p className="text-sm font-bold text-white">
                       Click to browse or drag and drop your file here
                     </p>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Supports <span className="font-semibold text-slate-700">.csv</span> and <span className="font-semibold text-slate-700">.xlsx</span> spreadsheet files
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Supports <span className="font-semibold text-slate-300">.csv</span> and <span className="font-semibold text-slate-300">.xlsx</span> spreadsheet files
                     </p>
                   </div>
                 </div>
 
                 {/* Display File Selection Status & Errors */}
                 {selectedFile && (
-                  <div className="bg-slate-100 border border-slate-300 p-3.5 rounded-2xl flex items-center justify-between">
+                  <div className="bg-slate-800 border border-slate-700 p-3.5 rounded-2xl flex items-center justify-between">
                     <div className="flex items-center space-x-3 truncate">
-                      <FileSpreadsheet className="w-6 h-6 text-emerald-600 shrink-0" />
+                      <FileSpreadsheet className="w-6 h-6 text-emerald-400 shrink-0" />
                       <div className="truncate">
-                        <p className="text-xs font-bold text-slate-800 truncate">{selectedFile.name}</p>
-                        <p className="text-[11px] text-slate-500">
+                        <p className="text-xs font-bold text-slate-200 truncate">{selectedFile.name}</p>
+                        <p className="text-[11px] text-slate-400">
                           {(selectedFile.size / 1024).toFixed(1)} KB • Ready to parse
                         </p>
                       </div>
@@ -787,7 +787,7 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
                         setSelectedFile(null);
                         setFileError(null);
                       }}
-                      className="text-slate-400 hover:text-rose-600 p-1 rounded-lg transition"
+                      className="text-slate-400 hover:text-rose-400 p-1 rounded-lg transition"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -795,8 +795,8 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
                 )}
 
                 {fileError && (
-                  <div className="bg-rose-50 border border-rose-200 text-rose-800 p-3.5 rounded-2xl text-xs flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <div className="bg-rose-950/50 border border-rose-800 text-rose-300 p-3.5 rounded-2xl text-xs flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
                     <span>{fileError}</span>
                   </div>
                 )}
@@ -812,32 +812,32 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
               
               {/* Summary Metrics */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-slate-50 border border-slate-200 p-3 rounded-2xl">
-                  <p className="text-[11px] text-slate-500 font-medium">Total Found</p>
-                  <p className="text-xl font-black text-slate-800">{summaryStats.total} <span className="text-xs font-normal">records</span></p>
+                <div className="bg-slate-800 border border-slate-700 p-3 rounded-2xl">
+                  <p className="text-[11px] text-slate-400 font-medium">Total Found</p>
+                  <p className="text-xl font-black text-white">{summaryStats.total} <span className="text-xs font-normal text-slate-400">records</span></p>
                 </div>
 
-                <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl">
-                  <p className="text-[11px] text-emerald-700 font-medium">Valid Records</p>
-                  <p className="text-xl font-black text-emerald-800">{summaryStats.valid}</p>
+                <div className="bg-emerald-950/40 border border-emerald-800/80 p-3 rounded-2xl">
+                  <p className="text-[11px] text-emerald-400 font-medium">Valid Records</p>
+                  <p className="text-xl font-black text-emerald-300">{summaryStats.valid}</p>
                 </div>
 
-                <div className="bg-amber-50 border border-amber-200 p-3 rounded-2xl">
-                  <p className="text-[11px] text-amber-700 font-medium">Possible Duplicates</p>
-                  <p className="text-xl font-black text-amber-800">{summaryStats.duplicates}</p>
+                <div className="bg-amber-950/40 border border-amber-800/80 p-3 rounded-2xl">
+                  <p className="text-[11px] text-amber-400 font-medium">Possible Duplicates</p>
+                  <p className="text-xl font-black text-amber-300">{summaryStats.duplicates}</p>
                 </div>
 
-                <div className="bg-rose-50 border border-rose-200 p-3 rounded-2xl">
-                  <p className="text-[11px] text-rose-700 font-medium">Invalid Records</p>
-                  <p className="text-xl font-black text-rose-800">{summaryStats.invalid}</p>
+                <div className="bg-rose-950/40 border border-rose-800/80 p-3 rounded-2xl">
+                  <p className="text-[11px] text-rose-400 font-medium">Invalid Records</p>
+                  <p className="text-xl font-black text-rose-300">{summaryStats.invalid}</p>
                 </div>
               </div>
 
               {/* Duplicate Handling Global Bar */}
               {summaryStats.duplicates > 0 && (
-                <div className="bg-amber-50 border border-amber-300 p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs">
-                  <div className="flex items-center space-x-2 text-amber-900">
-                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                <div className="bg-amber-950/40 border border-amber-800/80 p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center space-x-2 text-amber-300">
+                    <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
                     <span className="font-semibold">
                       {summaryStats.duplicates} possible duplicates detected. Select default action:
                     </span>
@@ -846,19 +846,19 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => handleBulkDuplicateActionChange('skip')}
-                      className="px-2.5 py-1 bg-amber-200 text-amber-950 font-bold rounded-lg border border-amber-300 hover:bg-amber-300 transition"
+                      className="px-2.5 py-1 bg-amber-500 text-slate-950 font-bold rounded-lg hover:bg-amber-400 transition"
                     >
                       Skip All Duplicates (Safest)
                     </button>
                     <button
                       onClick={() => handleBulkDuplicateActionChange('update_existing')}
-                      className="px-2.5 py-1 bg-white text-slate-800 font-bold rounded-lg border border-slate-300 hover:bg-slate-100 transition"
+                      className="px-2.5 py-1 bg-slate-800 text-slate-200 font-bold rounded-lg border border-slate-700 hover:bg-slate-700 hover:text-white transition"
                     >
                       Update Existing
                     </button>
                     <button
                       onClick={() => handleBulkDuplicateActionChange('import_new')}
-                      className="px-2.5 py-1 bg-white text-slate-800 font-bold rounded-lg border border-slate-300 hover:bg-slate-100 transition"
+                      className="px-2.5 py-1 bg-slate-800 text-slate-200 font-bold rounded-lg border border-slate-700 hover:bg-slate-700 hover:text-white transition"
                     >
                       Import as New
                     </button>
@@ -867,46 +867,46 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
               )}
 
               {/* Table Filter Tabs */}
-              <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                 <div className="flex items-center space-x-2 text-xs font-semibold">
                   <button
                     onClick={() => setPreviewFilter('ALL')}
-                    className={`px-3 py-1.5 rounded-xl transition ${previewFilter === 'ALL' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                    className={`px-3 py-1.5 rounded-xl transition ${previewFilter === 'ALL' ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'}`}
                   >
                     All ({summaryStats.total})
                   </button>
 
                   <button
                     onClick={() => setPreviewFilter('VALID')}
-                    className={`px-3 py-1.5 rounded-xl transition ${previewFilter === 'VALID' ? 'bg-emerald-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                    className={`px-3 py-1.5 rounded-xl transition ${previewFilter === 'VALID' ? 'bg-emerald-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'}`}
                   >
                     Valid ({summaryStats.valid})
                   </button>
 
                   <button
                     onClick={() => setPreviewFilter('DUPLICATES')}
-                    className={`px-3 py-1.5 rounded-xl transition ${previewFilter === 'DUPLICATES' ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                    className={`px-3 py-1.5 rounded-xl transition ${previewFilter === 'DUPLICATES' ? 'bg-amber-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'}`}
                   >
                     Duplicates ({summaryStats.duplicates})
                   </button>
 
                   <button
                     onClick={() => setPreviewFilter('INVALID')}
-                    className={`px-3 py-1.5 rounded-xl transition ${previewFilter === 'INVALID' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                    className={`px-3 py-1.5 rounded-xl transition ${previewFilter === 'INVALID' ? 'bg-rose-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'}`}
                   >
                     Invalid ({summaryStats.invalid})
                   </button>
                 </div>
 
-                <span className="text-xs text-slate-500 hidden sm:inline">
-                  Ready to Import: <strong className="text-emerald-700 font-bold">{summaryStats.readyToImport}</strong> records
+                <span className="text-xs text-slate-400 hidden sm:inline">
+                  Ready to Import: <strong className="text-emerald-400 font-bold">{summaryStats.readyToImport}</strong> records
                 </span>
               </div>
 
               {/* Preview Table */}
-              <div className="overflow-x-auto border border-slate-200 rounded-2xl max-h-72">
-                <table className="w-full text-left text-xs text-slate-700 border-collapse">
-                  <thead className="bg-slate-100 sticky top-0 font-bold text-slate-800 border-b border-slate-200">
+              <div className="overflow-x-auto border border-slate-800 rounded-2xl max-h-72">
+                <table className="w-full text-left text-xs text-slate-300 border-collapse">
+                  <thead className="bg-slate-800 sticky top-0 font-bold text-slate-200 border-b border-slate-700">
                     <tr>
                       <th className="py-2.5 px-3">Row</th>
                       <th className="py-2.5 px-3">Name</th>
@@ -917,10 +917,10 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
                       <th className="py-2.5 px-3">Validation & Duplicate Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-800">
                     {displayedRows.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="py-6 text-center text-slate-400 italic">
+                        <td colSpan={7} className="py-6 text-center text-slate-500 italic">
                           No records match the selected preview filter.
                         </td>
                       </tr>
@@ -931,63 +931,63 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
                         return (
                           <tr
                             key={row.rowIndex}
-                            className={`hover:bg-slate-50/80 transition ${
+                            className={`hover:bg-slate-800/60 transition ${
                               !row.isValid
-                                ? 'bg-rose-50/40'
+                                ? 'bg-rose-950/20'
                                 : row.isDuplicate
-                                ? 'bg-amber-50/40'
+                                ? 'bg-amber-950/20'
                                 : ''
                             }`}
                           >
                             <td className="py-2.5 px-3 font-mono text-slate-400 font-bold">{row.rowIndex}</td>
-                            <td className="py-2.5 px-3 font-bold text-slate-900">{fullName}</td>
+                            <td className="py-2.5 px-3 font-bold text-white">{fullName}</td>
                             <td className="py-2.5 px-3 font-mono">{row.phone || '—'}</td>
                             <td className="py-2.5 px-3">{row.email || '—'}</td>
                             <td className="py-2.5 px-3 font-medium">{row.memberType}</td>
                             <td className="py-2.5 px-3">
                               {row.matchedMinistry ? (
-                                <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md font-medium">
+                                <span className="bg-emerald-950/80 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-md font-medium">
                                   {row.matchedMinistry.name}
                                 </span>
                               ) : row.ministry ? (
-                                <span className="text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md font-medium" title={row.ministryWarning}>
+                                <span className="text-amber-300 bg-amber-950/80 border border-amber-800 px-2 py-0.5 rounded-md font-medium" title={row.ministryWarning}>
                                   ⚠️ {row.ministry} (Not in registry)
                                 </span>
                               ) : (
-                                <span className="text-slate-400 italic">—</span>
+                                <span className="text-slate-500 italic">—</span>
                               )}
                             </td>
                             <td className="py-2.5 px-3">
                               {!row.isValid ? (
-                                <div className="text-rose-700 font-semibold flex items-center gap-1">
-                                  <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                                <div className="text-rose-400 font-semibold flex items-center gap-1">
+                                  <XCircle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                                   <span>{row.validationErrors.join(', ')}</span>
                                 </div>
                               ) : row.isDuplicate ? (
                                 <div className="space-y-1">
-                                  <div className="text-amber-800 font-bold flex items-center gap-1">
-                                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                                  <div className="text-amber-400 font-bold flex items-center gap-1">
+                                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                                     <span>Duplicate</span>
                                   </div>
-                                  <p className="text-[10px] text-amber-900/80">{row.duplicateReason}</p>
+                                  <p className="text-[10px] text-amber-300/80">{row.duplicateReason}</p>
 
                                   <div className="flex items-center gap-1 mt-1">
                                     <select
                                       value={row.duplicateAction}
                                       onChange={(e) => handleDuplicateActionChange(row.rowIndex, e.target.value as DuplicateAction)}
-                                      className="bg-white border border-amber-300 text-slate-900 rounded-md px-1.5 py-0.5 text-[11px] font-bold focus:outline-none"
+                                      className="bg-slate-800 border border-amber-500/80 text-white rounded-md px-1.5 py-0.5 text-[11px] font-bold focus:outline-none"
                                     >
-                                      <option value="skip">Skip Duplicate (Default)</option>
-                                      <option value="import_new">Import as New Member</option>
+                                      <option value="skip" className="bg-slate-900 text-white">Skip Duplicate (Default)</option>
+                                      <option value="import_new" className="bg-slate-900 text-white">Import as New Member</option>
                                       {row.matchedExistingMember && (
-                                        <option value="update_existing">Update Existing Member</option>
+                                        <option value="update_existing" className="bg-slate-900 text-white">Update Existing Member</option>
                                       )}
                                     </select>
                                   </div>
                                 </div>
                               ) : (
-                                <div className="text-emerald-700 font-semibold flex items-center gap-1">
-                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                <div className="text-emerald-400 font-semibold flex items-center gap-1">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                                   <span>Valid</span>
                                 </div>
                               )}
@@ -1001,7 +1001,7 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
               </div>
 
               {/* Confirmation Ready Info Banner */}
-              <div className="bg-slate-900 text-white p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+              <div className="bg-slate-950 border border-slate-800 text-white p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h4 className="font-bold text-sm">Ready to Import</h4>
                   <p className="text-xs text-slate-300">
@@ -1015,7 +1015,7 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => setCurrentStep('upload')}
-                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-xs transition"
+                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 font-semibold rounded-xl text-xs transition"
                   >
                     Back to Upload
                   </button>
@@ -1026,7 +1026,7 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
                     className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm ${
                       summaryStats.readyToImport > 0
                         ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 cursor-pointer'
-                        : 'bg-slate-700 text-slate-400 cursor-not-allowed'
+                        : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
                     }`}
                   >
                     <span>Import {summaryStats.readyToImport} Members</span>
@@ -1041,54 +1041,54 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
               STEP 3: IMPORT COMPLETED RESULTS & USER ACCOUNTS OPTION
           ------------------------------------------------------------- */}
           {currentStep === 'results' && (
-            <div className="space-y-6 text-slate-800">
+            <div className="space-y-6 text-white">
               
               {/* Success Banner */}
-              <div className="bg-emerald-50 border border-emerald-200 p-5 rounded-3xl text-center space-y-2">
+              <div className="bg-emerald-950/40 border border-emerald-800/80 p-5 rounded-3xl text-center space-y-2">
                 <div className="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto shadow-md">
                   <Check className="w-7 h-7 stroke-[3]" />
                 </div>
-                <h3 className="text-lg font-bold text-emerald-950">Import Completed Successfully</h3>
-                <p className="text-xs text-emerald-800">
+                <h3 className="text-lg font-bold text-emerald-300">Import Completed Successfully</h3>
+                <p className="text-xs text-emerald-400">
                   Church member records have been processed and added to your cloud database.
                 </p>
               </div>
 
               {/* Statistics Breakdown */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl text-center">
-                  <span className="text-[11px] font-semibold text-emerald-700 block">Successfully Imported</span>
-                  <span className="text-2xl font-black text-emerald-900">{importedCount}</span>
+                <div className="bg-slate-800 border border-slate-700 p-4 rounded-2xl text-center">
+                  <span className="text-[11px] font-semibold text-emerald-400 block">Successfully Imported</span>
+                  <span className="text-2xl font-black text-emerald-300">{importedCount}</span>
                 </div>
 
-                <div className="bg-blue-50 border border-blue-200 p-4 rounded-2xl text-center">
-                  <span className="text-[11px] font-semibold text-blue-700 block">Updated Existing</span>
-                  <span className="text-2xl font-black text-blue-900">{updatedCount}</span>
+                <div className="bg-slate-800 border border-slate-700 p-4 rounded-2xl text-center">
+                  <span className="text-[11px] font-semibold text-blue-400 block">Updated Existing</span>
+                  <span className="text-2xl font-black text-blue-300">{updatedCount}</span>
                 </div>
 
-                <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-center">
-                  <span className="text-[11px] font-semibold text-amber-700 block">Skipped</span>
-                  <span className="text-2xl font-black text-amber-900">{skippedCount}</span>
+                <div className="bg-slate-800 border border-slate-700 p-4 rounded-2xl text-center">
+                  <span className="text-[11px] font-semibold text-amber-400 block">Skipped</span>
+                  <span className="text-2xl font-black text-amber-300">{skippedCount}</span>
                 </div>
 
-                <div className="bg-rose-50 border border-rose-200 p-4 rounded-2xl text-center">
-                  <span className="text-[11px] font-semibold text-rose-700 block">Failed / Errors</span>
-                  <span className="text-2xl font-black text-rose-900">{failedCount}</span>
+                <div className="bg-slate-800 border border-slate-700 p-4 rounded-2xl text-center">
+                  <span className="text-[11px] font-semibold text-rose-400 block">Failed / Errors</span>
+                  <span className="text-2xl font-black text-rose-300">{failedCount}</span>
                 </div>
               </div>
 
               {/* Error Report Download Button */}
               {errorReportData.length > 0 && (
-                <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex items-center justify-between">
+                <div className="bg-slate-800 border border-slate-700 p-4 rounded-2xl flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-slate-800 text-xs block">Download Error Report</span>
-                    <span className="text-[11px] text-slate-500">
+                    <span className="font-bold text-white text-xs block">Download Error Report</span>
+                    <span className="text-[11px] text-slate-400">
                       Download a CSV report detailing reasons for skipped or failed rows.
                     </span>
                   </div>
                   <button
                     onClick={handleDownloadErrorReport}
-                    className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition"
+                    className="px-3.5 py-2 bg-slate-900 hover:bg-slate-750 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition border border-slate-700"
                   >
                     <Download className="w-4 h-4 text-amber-400" />
                     <span>Download Error Report</span>
@@ -1098,21 +1098,21 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
 
               {/* User Account Creation Option */}
               {newlyCreatedMembers.length > 0 && (
-                <div className="bg-indigo-50/60 border border-indigo-200 p-4 rounded-3xl space-y-4">
+                <div className="bg-indigo-950/40 border border-indigo-800/80 p-4 rounded-3xl space-y-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="text-sm font-bold text-indigo-950 flex items-center gap-1.5">
-                        <UserPlus className="w-4 h-4 text-indigo-600" />
+                      <h4 className="text-sm font-bold text-indigo-300 flex items-center gap-1.5">
+                        <UserPlus className="w-4 h-4 text-indigo-400" />
                         Create Application Login Accounts (Optional)
                       </h4>
-                      <p className="text-xs text-indigo-900/80 mt-0.5">
+                      <p className="text-xs text-indigo-200/80 mt-0.5">
                         Select which imported members should receive an application login account. Children or members without email remain directory-only records.
                       </p>
                     </div>
 
                     <button
                       onClick={() => setCurrentStep('create_accounts')}
-                      className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition shrink-0"
+                      className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-xs transition shrink-0"
                     >
                       Manage User Accounts ({newlyCreatedMembers.length})
                     </button>
@@ -1126,25 +1126,25 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
               STEP 4: USER ACCOUNT CREATION SELECTION TABLE
           ------------------------------------------------------------- */}
           {currentStep === 'create_accounts' && (
-            <div className="space-y-4 text-slate-800">
+            <div className="space-y-4 text-white">
               
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Select Members to Create Login Accounts</h3>
-                  <p className="text-xs text-slate-500">Only selected members will be granted login access to the Church Management App.</p>
+                  <h3 className="text-sm font-bold text-white">Select Members to Create Login Accounts</h3>
+                  <p className="text-xs text-slate-400">Only selected members will be granted login access to the Church Management App.</p>
                 </div>
 
                 {createdAccountsCount !== null && (
-                  <div className="bg-emerald-100 text-emerald-900 px-3 py-1 rounded-xl text-xs font-bold border border-emerald-300">
+                  <div className="bg-emerald-950/80 text-emerald-300 px-3 py-1 rounded-xl text-xs font-bold border border-emerald-800">
                     ✓ Created {createdAccountsCount} Login Accounts
                   </div>
                 )}
               </div>
 
               {/* Member Selection Table */}
-              <div className="overflow-x-auto border border-slate-200 rounded-2xl max-h-64">
-                <table className="w-full text-left text-xs text-slate-700 border-collapse">
-                  <thead className="bg-slate-100 sticky top-0 font-bold text-slate-800 border-b border-slate-200">
+              <div className="overflow-x-auto border border-slate-800 rounded-2xl max-h-64">
+                <table className="w-full text-left text-xs text-slate-300 border-collapse">
+                  <thead className="bg-slate-800 sticky top-0 font-bold text-slate-200 border-b border-slate-700">
                     <tr>
                       <th className="py-2.5 px-3 w-10 text-center">
                         <input
@@ -1156,7 +1156,7 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
                             newlyCreatedMembers.forEach(m => { updated[m.id] = checked; });
                             setSelectedForAccount(updated);
                           }}
-                          className="rounded border-slate-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                          className="rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-amber-500 cursor-pointer"
                         />
                       </th>
                       <th className="py-2.5 px-3">Member Name</th>
@@ -1166,13 +1166,13 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
                       <th className="py-2.5 px-3">Account Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-800">
                     {newlyCreatedMembers.map((member) => {
                       const fullName = `${member.firstName} ${member.lastName}`.trim();
                       const isChecked = !!selectedForAccount[member.id];
 
                       return (
-                        <tr key={member.id} className="hover:bg-slate-50 transition">
+                        <tr key={member.id} className="hover:bg-slate-800/60 transition">
                           <td className="py-2.5 px-3 text-center">
                             <input
                               type="checkbox"
@@ -1180,20 +1180,20 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
                               onChange={(e) => {
                                 setSelectedForAccount(prev => ({ ...prev, [member.id]: e.target.checked }));
                               }}
-                              className="rounded border-slate-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                              className="rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-amber-500 cursor-pointer"
                             />
                           </td>
-                          <td className="py-2.5 px-3 font-bold text-slate-900">{fullName}</td>
-                          <td className="py-2.5 px-3">{member.email || <span className="text-slate-400 italic">No Email</span>}</td>
+                          <td className="py-2.5 px-3 font-bold text-white">{fullName}</td>
+                          <td className="py-2.5 px-3">{member.email || <span className="text-slate-500 italic">No Email</span>}</td>
                           <td className="py-2.5 px-3 font-mono">{member.phone || '—'}</td>
                           <td className="py-2.5 px-3 font-medium">{member.status}</td>
                           <td className="py-2.5 px-3">
                             {isChecked ? (
-                              <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                              <span className="bg-emerald-950/80 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-full text-[10px] font-bold">
                                 ☑ Create Account
                               </span>
                             ) : (
-                              <span className="bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded-full text-[10px]">
+                              <span className="bg-slate-800 text-slate-400 border border-slate-700 px-2 py-0.5 rounded-full text-[10px]">
                                 ☐ No Account
                               </span>
                             )}
@@ -1208,14 +1208,14 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
               <div className="flex items-center justify-between pt-2">
                 <button
                   onClick={() => setCurrentStep('results')}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition"
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 font-semibold rounded-xl text-xs transition"
                 >
                   Back to Summary
                 </button>
 
                 <button
                   onClick={handleCreateSelectedUserAccounts}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1.5"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1.5"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>Create User Accounts for Selected</span>
@@ -1227,8 +1227,8 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
-          <div className="text-xs text-slate-500">
+        <div className="p-4 bg-slate-950/80 border-t border-slate-800 flex items-center justify-between shrink-0">
+          <div className="text-xs text-slate-400">
             {currentStep === 'upload' && 'Step 1 of 3: Download template or upload file.'}
             {currentStep === 'preview' && `Step 2 of 3: Reviewing ${parsedRows.length} rows.`}
             {['results', 'create_accounts'].includes(currentStep) && 'Step 3 of 3: Import complete.'}
@@ -1238,7 +1238,7 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
             {currentStep === 'upload' && (
               <button
                 onClick={handleClose}
-                className="px-4 py-2 font-semibold text-slate-600 hover:bg-slate-200 rounded-xl text-xs transition"
+                className="px-4 py-2 font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-xl text-xs transition"
               >
                 Cancel
               </button>
@@ -1247,7 +1247,7 @@ export const ImportMembersModal: React.FC<ImportMembersModalProps> = ({
             {['results', 'create_accounts'].includes(currentStep) && (
               <button
                 onClick={handleClose}
-                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-amber-400 font-bold rounded-xl text-xs shadow-sm transition flex items-center gap-1.5"
+                className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs shadow-sm transition flex items-center gap-1.5"
               >
                 <Users className="w-4 h-4" />
                 <span>View Directory Members</span>

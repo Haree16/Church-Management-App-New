@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,9 +8,23 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Visitor, VisitorStatus } from '@/types/database';
 import { CreateVisitorPayload } from '@/services/visitorService';
-import { DEMO_USERS, DEMO_SETTINGS } from '@/lib/mockData';
+import { getStoredUsers, getStoredMembers, getAllStoredChurchSettings, getDefaultChurchSettings, getStoredAuthSession } from '@/utils/storage';
 import { UserCheck, Phone, Mail, X } from 'lucide-react';
 import { toast } from 'sonner';
+
+export interface PastoralLeaderOption {
+  id: string;
+  name: string;
+  title?: string;
+  role?: string;
+  email?: string;
+}
+
+export interface ChurchServiceOption {
+  id: string;
+  name: string;
+  time?: string;
+}
 
 interface VisitorFormDialogProps {
   isOpen: boolean;
@@ -18,6 +32,9 @@ interface VisitorFormDialogProps {
   onSave: (payload: CreateVisitorPayload) => Promise<void>;
   initialData?: Visitor | null;
   mode?: 'create' | 'edit';
+  churchId?: string;
+  availableLeaders?: PastoralLeaderOption[];
+  availableServices?: ChurchServiceOption[];
 }
 
 export function VisitorFormDialog({
@@ -26,7 +43,106 @@ export function VisitorFormDialog({
   onSave,
   initialData,
   mode = 'create',
+  churchId,
+  availableLeaders,
+  availableServices,
 }: VisitorFormDialogProps) {
+  const leadersList = useMemo<PastoralLeaderOption[]>(() => {
+    if (availableLeaders && availableLeaders.length > 0) {
+      return availableLeaders;
+    }
+
+    const leaders: PastoralLeaderOption[] = [];
+    const seenIds = new Set<string>();
+
+    // 1. Qualified SaaS Users
+    const users = getStoredUsers();
+    users.forEach((u) => {
+      if (churchId && u.church_id && u.church_id !== churchId && u.churchId !== churchId && u.role !== 'SuperAdmin') {
+        return;
+      }
+      const isLeadershipRole = ['SuperAdmin', 'PastorAdmin', 'AssistantPastor', 'MinistryLeader', 'Staff'].includes(u.role);
+      const isPastoralDesignation = Boolean(
+        u.designation && /pastor|minister|elder|reverend|bishop|leader|clergy|admin/i.test(u.designation)
+      );
+
+      if (isLeadershipRole || isPastoralDesignation) {
+        if (!seenIds.has(u.id)) {
+          seenIds.add(u.id);
+          leaders.push({
+            id: u.id,
+            name: u.name,
+            title: u.designation || (u.role === 'SuperAdmin' ? 'Super Administrator' : u.role === 'PastorAdmin' ? 'Senior Pastor' : u.role === 'AssistantPastor' ? 'Assistant Pastor' : u.role === 'MinistryLeader' ? 'Ministry Leader' : u.role || 'Pastoral Staff'),
+            role: u.role,
+            email: u.email,
+          });
+        }
+      }
+    });
+
+    // 2. Qualified Members
+    const members = getStoredMembers();
+    members.forEach((m) => {
+      if (churchId && m.churchId && m.churchId !== churchId && m.church_id !== churchId) {
+        return;
+      }
+      const isPastoralStatus = ['Pastor', 'Assistant Pastor', 'Leader', 'Clergy/Staff'].includes(m.status);
+      const hasPastoralTeams = Boolean(
+        m.ministryTeams && m.ministryTeams.some((t: string) => /pastor|leader|clergy|elder/i.test(t))
+      );
+
+      if (isPastoralStatus || hasPastoralTeams) {
+        if (!seenIds.has(m.id)) {
+          seenIds.add(m.id);
+          leaders.push({
+            id: m.id,
+            name: `${m.firstName} ${m.lastName}`.trim(),
+            title: m.status || 'Leader',
+            role: m.status,
+            email: m.email,
+          });
+        }
+      }
+    });
+
+    // 3. Fallback: logged in user
+    const session = getStoredAuthSession();
+    if (session?.user && !seenIds.has(session.user.id)) {
+      leaders.unshift({
+        id: session.user.id,
+        name: session.user.name,
+        title: session.user.designation || session.user.role || 'Staff',
+        role: session.user.role,
+        email: session.user.email,
+      });
+    }
+
+    return leaders;
+  }, [availableLeaders, churchId]);
+
+  const servicesList = useMemo<ChurchServiceOption[]>(() => {
+    if (availableServices && availableServices.length > 0) {
+      return availableServices;
+    }
+
+    const allSettings = getAllStoredChurchSettings();
+    const churchSettings = (churchId ? allSettings[churchId] : null) || getDefaultChurchSettings(churchId || 'church-1');
+    if (churchSettings?.services && churchSettings.services.length > 0) {
+      return churchSettings.services.map((s) => ({
+        id: s.id,
+        name: s.name,
+        time: s.startTime,
+      }));
+    }
+
+    return [
+      { id: 'st-1', name: 'Sunday Morning Worship Service', time: '08:30 AM' },
+      { id: 'st-2', name: 'Sunday Evening Service', time: '06:00 PM' },
+      { id: 'st-3', name: 'Wednesday Prayer & Bible Study', time: '07:00 PM' },
+      { id: 'st-4', name: 'Youth Fellowship', time: '07:30 PM' },
+    ];
+  }, [availableServices, churchId]);
+
   const [formData, setFormData] = useState<CreateVisitorPayload>({
     first_name: '',
     last_name: '',
@@ -37,7 +153,7 @@ export function VisitorFormDialog({
     state: '',
     postal_code: '',
     visit_date: new Date().toISOString().split('T')[0],
-    service_attended: DEMO_SETTINGS.service_timings[0]?.name || 'Sunday Morning Service',
+    service_attended: servicesList[0]?.name || 'Sunday Morning Worship Service',
     invited_by: '',
     heard_about: 'Friend / Family',
     family_size: 1,
@@ -86,21 +202,21 @@ export function VisitorFormDialog({
         state: '',
         postal_code: '',
         visit_date: new Date().toISOString().split('T')[0],
-        service_attended: DEMO_SETTINGS.service_timings[0]?.name || 'Sunday Morning Service',
+        service_attended: servicesList[0]?.name || 'Sunday Morning Worship Service',
         invited_by: '',
         heard_about: 'Friend / Family',
         family_size: 1,
         prayer_request: '',
         notes: '',
         status: 'new',
-        assigned_to: DEMO_USERS[1]?.id || '',
+        assigned_to: '',
         create_follow_up: true,
         follow_up_title: '',
         follow_up_due_date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3).toISOString().split('T')[0],
       });
     }
     setErrors({});
-  }, [initialData, isOpen]);
+  }, [initialData, isOpen, servicesList]);
 
   const handleChange = (field: keyof CreateVisitorPayload, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -235,24 +351,16 @@ export function VisitorFormDialog({
                   Service Attended
                 </label>
                 <Select
-                  value={formData.service_attended || 'default'}
+                  value={formData.service_attended || servicesList[0]?.name || 'Sunday Morning Worship Service'}
                   onValueChange={(val) => handleChange('service_attended', val)}
                 >
                   <SelectTrigger className={inputStyle}>
                     <SelectValue placeholder="Select service" />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-900 text-white border border-slate-800 shadow-xl">
-                    {(DEMO_SETTINGS.service_timings.length > 0
-                      ? DEMO_SETTINGS.service_timings
-                      : [
-                          { id: 'st-1', name: 'Sunday Morning Service', time: '09:00 AM' },
-                          { id: 'st-2', name: 'Sunday Evening Service', time: '06:00 PM' },
-                          { id: 'st-3', name: 'Wednesday Prayer & Bible Study', time: '07:00 PM' },
-                          { id: 'st-4', name: 'Youth Fellowship', time: '07:30 PM' },
-                        ]
-                    ).map((st) => (
+                  <SelectContent className="bg-slate-900 text-white border border-slate-800 shadow-xl max-h-60 overflow-y-auto">
+                    {servicesList.map((st) => (
                       <SelectItem key={st.id} value={st.name}>
-                        {st.name} ({st.time})
+                        {st.name} {st.time ? `(${st.time})` : ''}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -341,13 +449,18 @@ export function VisitorFormDialog({
                   <SelectTrigger className={inputStyle}>
                     <SelectValue placeholder="Select leader for follow-up" />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-900 text-white border border-slate-800 shadow-xl">
+                  <SelectContent className="bg-slate-900 text-white border border-slate-800 shadow-xl max-h-60 overflow-y-auto">
                     <SelectItem value="none">None / Unassigned</SelectItem>
-                    {DEMO_USERS.filter((u) => u.role !== 'member').map((u) => (
+                    {leadersList.map((u) => (
                       <SelectItem key={u.id} value={u.id}>
-                        {u.name} ({u.title})
+                        {u.name} {u.title ? `(${u.title})` : ''}
                       </SelectItem>
                     ))}
+                    {formData.assigned_to && formData.assigned_to !== 'none' && !leadersList.some((l) => l.id === formData.assigned_to) && (
+                      <SelectItem value={formData.assigned_to}>
+                        {initialData?.assigned_leader?.display_name || initialData?.assigned_to || formData.assigned_to}
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>

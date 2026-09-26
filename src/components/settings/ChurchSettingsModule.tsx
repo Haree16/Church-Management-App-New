@@ -7,7 +7,7 @@ import {
   Coffee, Music, Video, MessageSquare, Phone, Mail, MapPin, 
   Upload, Camera, Image as ImageIcon, ExternalLink, Calendar, 
   GraduationCap, Megaphone, Info, RefreshCw, CheckCheck, Landmark,
-  LayoutDashboard, BarChart3
+  LayoutDashboard, BarChart3, Sun, Moon, Monitor
 } from 'lucide-react';
 import { 
   ChurchTenant, SaaSUser, SaaSUserRole, Member,
@@ -18,6 +18,7 @@ import {
 import { canEditChurchSettings, canAccessChurchSettings, getRoleConfig, canManageSystemPreferences } from '../../utils/rbac';
 import { auditService } from '../../services/auditService';
 import { AdminNotificationSettingsModule } from '../notifications/AdminNotificationSettingsModule';
+import { applyChurchAccentTheme, applyThemeMode, getStoredThemePreference, ThemeMode } from '../../utils/themeUtils';
 
 export type SettingsSectionId = 
   | 'profile'
@@ -162,6 +163,15 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
     setValidationErrors({});
   }, [settings, currentChurch.id]);
 
+  // Clean up uncommitted accent and theme mode preview when navigating away from settings without saving
+  useEffect(() => {
+    return () => {
+      applyChurchAccentTheme(settings?.appearance?.accentColor || '#f59e0b');
+      const pref = getStoredThemePreference();
+      applyThemeMode(pref || settings?.appearance?.themeMode || 'dark');
+    };
+  }, [settings?.appearance?.accentColor, settings?.appearance?.themeMode]);
+
   // Helper to mark changes
   const updateSettingsState = (updater: (prev: CompleteChurchSettings) => CompleteChurchSettings) => {
     setFormData((prev) => {
@@ -270,6 +280,9 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
     };
 
     onSaveSettings(updated);
+    if (updated.appearance?.themeMode) {
+      applyThemeMode(updated.appearance.themeMode);
+    }
     setHasUnsavedChanges(false);
     setSaveSuccessToast(true);
     setTimeout(() => setSaveSuccessToast(false), 4000);
@@ -299,6 +312,9 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
       setFormData(JSON.parse(JSON.stringify(settings)));
       setHasUnsavedChanges(false);
       setValidationErrors({});
+      applyChurchAccentTheme(settings?.appearance?.accentColor || '#f59e0b');
+      const pref = getStoredThemePreference();
+      applyThemeMode(pref || settings?.appearance?.themeMode || 'dark');
     }
   };
 
@@ -378,15 +394,15 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
   const ActiveIcon = activeMeta.icon;
 
   return (
-    <div className="space-y-4 text-slate-100 w-full max-w-full overflow-hidden">
+    <div className="space-y-4 text-slate-900 dark:text-slate-100 w-full max-w-full overflow-hidden">
       {/* Top Banner with Active Church & Multi-Tenant Scope */}
-      <div className="bg-slate-900 text-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-800 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+      <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 transition-colors">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 p-1 flex items-center justify-center overflow-hidden shrink-0">
             <img
               src={formData.profile.logoUrl || currentChurch.logoUrl || '/church_logo.jpg'}
               alt={formData.profile.name}
-              className="w-full h-full object-cover rounded-xl bg-white"
+              className="w-full h-full object-cover rounded-xl bg-slate-100 dark:bg-slate-800"
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).src = '/church_logo.jpg';
               }}
@@ -394,13 +410,13 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-lg sm:text-xl font-black text-slate-100">{formData.profile.name}</h2>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30">
+              <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-slate-100">{formData.profile.name}</h2>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-600 dark:text-amber-300 border border-amber-400/30">
                 Tenant: {currentChurch.id}
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Church Settings & Module Control • Changes apply <strong className="text-amber-400">strictly to this church organization</strong>.
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Church Settings & Module Control • Changes apply <strong className="text-amber-600 dark:text-amber-400">strictly to this church organization</strong>.
             </p>
           </div>
         </div>
@@ -408,7 +424,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
         {/* Global Save / Cancel / Actions */}
         <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
           {!canEdit && (
-            <div className="flex items-center gap-1 text-xs text-amber-300 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/30">
+            <div className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-300 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/30">
               <Lock className="w-3.5 h-3.5" />
               <span>Read Only View</span>
             </div>
@@ -418,7 +434,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
             <button
               id="btn-settings-reset"
               onClick={handleResetToSaved}
-              className="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center gap-1.5 transition active:scale-95"
+              className="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 flex items-center gap-1.5 transition active:scale-95"
               title="Discard changes and reload saved settings"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -458,7 +474,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
 
       {/* Mobile Top Horizontal Section Navigator */}
       <div className="block lg:hidden overflow-x-auto pb-1 scrollbar-none">
-        <div className="flex items-center gap-1.5 min-w-max bg-slate-900 p-2 rounded-2xl border border-slate-800 shadow-xl">
+        <div className="flex items-center gap-1.5 min-w-max bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-xl">
           {visibleSections.map((sec) => {
             const Icon = sec.icon;
             const isSelected = activeSection === sec.id;
@@ -470,7 +486,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap shrink-0 ${
                   isSelected
                     ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
-                    : 'bg-slate-950 text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 border border-slate-200 dark:bg-slate-950 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white dark:border-slate-800'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -485,10 +501,10 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Desktop Sidebar Navigation */}
         <div className="hidden lg:block lg:col-span-4 space-y-2">
-          <div className="bg-white rounded-3xl p-3 border border-slate-200 shadow-sm space-y-1 sticky top-16">
-            <div className="px-3 py-2 border-b border-slate-100 mb-1">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Settings Sections</h3>
-              <p className="text-[11px] text-slate-500">Configure isolated church settings</p>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-3 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1 sticky top-16 text-slate-900 dark:text-white">
+            <div className="px-3 py-2 border-b border-slate-200 dark:border-slate-800 mb-1">
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">Settings Sections</h3>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500">Configure isolated church settings</p>
             </div>
 
             {visibleSections.map((sec) => {
@@ -502,23 +518,23 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                   onClick={() => setActiveSection(sec.id)}
                   className={`w-full text-left p-3 rounded-2xl flex items-start gap-3 transition ${
                     isSelected
-                      ? 'bg-slate-900 text-white shadow-md border-slate-900 font-bold'
-                      : 'hover:bg-slate-100 text-slate-700'
+                      ? 'bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 shadow-xs font-bold'
+                      : 'hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300'
                   }`}
                 >
                   <div className={`p-2 rounded-xl shrink-0 mt-0.5 ${
-                    isSelected ? 'bg-amber-500 text-slate-950' : 'bg-slate-100 text-slate-600'
+                    isSelected ? 'bg-amber-500 text-slate-950' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                   }`}>
                     <Icon className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <p className={`text-xs font-bold truncate ${isSelected ? 'text-amber-400' : 'text-slate-900'}`}>
+                      <p className={`text-xs font-bold truncate ${isSelected ? 'text-amber-700 dark:text-amber-400' : 'text-slate-900 dark:text-white'}`}>
                         {sec.label}
                       </p>
-                      {isSelected && <ChevronRight className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
+                      {isSelected && <ChevronRight className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0" />}
                     </div>
-                    <p className={`text-[10px] line-clamp-1 mt-0.5 ${isSelected ? 'text-slate-300' : 'text-slate-500'}`}>
+                    <p className={`text-[10px] line-clamp-1 mt-0.5 ${isSelected ? 'text-slate-600 dark:text-slate-300' : 'text-slate-500 dark:text-slate-400'}`}>
                       {sec.desc}
                     </p>
                   </div>
@@ -527,13 +543,13 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
             })}
 
             {/* Quick Multi-Tenant Scope Note */}
-            <div className="pt-2 border-t border-slate-100 mt-2">
-              <div className="bg-amber-50 rounded-2xl p-3 border border-amber-200/80 text-[11px] text-amber-900">
-                <p className="font-bold flex items-center gap-1 text-amber-800">
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-800 mt-2">
+              <div className="bg-amber-50 dark:bg-amber-950/60 rounded-2xl p-3 border border-amber-200 dark:border-amber-800/80 text-[11px] text-amber-900 dark:text-amber-200">
+                <p className="font-bold flex items-center gap-1 text-amber-700 dark:text-amber-400">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   Multi-Tenant Security
                 </p>
-                <p className="text-[10px] text-amber-700 mt-0.5 leading-snug">
+                <p className="text-[10px] text-amber-800 dark:text-amber-300 mt-0.5 leading-snug">
                   Settings here configure <strong>{formData.profile.name}</strong> exclusively. Other registered congregations have separate isolated data.
                 </p>
               </div>
@@ -543,16 +559,16 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
 
         {/* Right Settings Content Panel */}
         <div className="lg:col-span-8 space-y-4">
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 border border-slate-200 shadow-sm space-y-6">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6 text-slate-900 dark:text-white">
             {/* Section Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-2xl bg-amber-500/15 text-amber-600">
+                <div className="p-2.5 rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
                   <ActiveIcon className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-black text-slate-900">{activeMeta.label}</h3>
-                  <p className="text-xs text-slate-500">{activeMeta.desc}</p>
+                  <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">{activeMeta.label}</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{activeMeta.desc}</p>
                 </div>
               </div>
 
@@ -569,18 +585,18 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
             {activeSection === 'profile' && (
               <div className="space-y-6">
                 {/* Logo & Live Church Preview Box */}
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-4">
+                <div className="bg-slate-950 rounded-2xl p-4 border border-slate-800/80 space-y-4">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">Church Logo & Preview</h4>
+                    <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-300">Church Logo & Preview</h4>
                     <span className="text-[11px] text-slate-500">Live Branding Representation</span>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row items-center gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                  <div className="flex flex-col sm:flex-row items-center gap-4 bg-slate-950 p-4 rounded-2xl border border-slate-800 shadow-sm text-white">
                     <div className="relative group shrink-0">
                       <img
                         src={formData.profile.logoUrl || '/church_logo.jpg'}
                         alt="Church Logo"
-                        className="w-20 h-20 rounded-2xl object-cover border-2 border-amber-400/60 shadow-md bg-white"
+                        className="w-20 h-20 rounded-2xl object-cover border-2 border-amber-400/60 shadow-md bg-slate-800"
                         onError={(e) => {
                           (e.currentTarget as HTMLImageElement).src = '/church_logo.jpg';
                         }}
@@ -599,7 +615,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                     </div>
 
                     <div className="flex-1 min-w-0 text-center sm:text-left">
-                      <h4 className="text-base font-black text-slate-900 truncate">
+                      <h4 className="text-base font-black text-white truncate">
                         {formData.profile.name || 'Church Profile'}
                       </h4>
                       {formData.profile.tagline && (
@@ -647,7 +663,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                   {/* Logo Presets Picker */}
                   {canEdit && (
                     <div className="space-y-1.5 pt-1">
-                      <label className="text-[11px] font-bold text-slate-600">Quick Logo Presets</label>
+                      <label className="text-[11px] font-bold text-slate-300">Quick Logo Presets</label>
                       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
                         {LOGO_PRESETS.map((preset) => (
                           <button
@@ -662,8 +678,8 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                             }
                             className={`px-2.5 py-1.5 rounded-xl border text-[10px] font-bold flex items-center gap-1.5 shrink-0 transition ${
                               formData.profile.logoUrl === preset.url
-                                ? 'bg-amber-500/20 text-amber-800 border-amber-500/50 ring-1 ring-amber-400'
-                                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                                ? 'bg-amber-500/20 text-amber-400 border-amber-500/50 ring-1 ring-amber-400'
+                                : 'bg-slate-950 text-slate-300 border-slate-700 hover:bg-slate-800 hover:text-white'
                             }`}
                           >
                             <img src={preset.url} alt="" className="w-4 h-4 rounded-full object-cover" />
@@ -678,7 +694,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                 {/* Profile Fields Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5 sm:col-span-2">
-                    <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-300 flex items-center justify-between">
                       <span>Full Church Legal / Public Name *</span>
                       {validationErrors.name && <span className="text-rose-500 font-semibold">{validationErrors.name}</span>}
                     </label>
@@ -693,12 +709,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="e.g. New Creation Assembly Church"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Short Name / Abbreviation</label>
+                    <label className="text-xs font-bold text-slate-300">Short Name / Abbreviation</label>
                     <input
                       type="text"
                       value={formData.profile.shortName}
@@ -710,12 +726,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="e.g. NCA Church"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Denomination / Affiliation</label>
+                    <label className="text-xs font-bold text-slate-300">Denomination / Affiliation</label>
                     <input
                       type="text"
                       value={formData.profile.denomination || ''}
@@ -727,12 +743,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="e.g. Pentecostal / Charismatic"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   <div className="space-y-1.5 sm:col-span-2">
-                    <label className="text-xs font-bold text-slate-700">Tagline / Mission Motto</label>
+                    <label className="text-xs font-bold text-slate-300">Tagline / Mission Motto</label>
                     <input
                       type="text"
                       value={formData.profile.tagline}
@@ -744,12 +760,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="e.g. Building Families, Impacting Nations"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   <div className="space-y-1.5 sm:col-span-2">
-                    <label className="text-xs font-bold text-slate-700">Church Description & Bio</label>
+                    <label className="text-xs font-bold text-slate-300">Church Description & Bio</label>
                     <textarea
                       rows={2}
                       value={formData.profile.description || ''}
@@ -761,17 +777,17 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="Brief history, beliefs, and welcoming description..."
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   {/* Campus Address */}
-                  <div className="space-y-1.5 sm:col-span-2 pt-2 border-t border-slate-100">
-                    <h5 className="text-xs font-extrabold text-slate-800">Campus Location & Address</h5>
+                  <div className="space-y-1.5 sm:col-span-2 pt-2 border-t border-slate-800">
+                    <h5 className="text-xs font-extrabold text-slate-200">Campus Location & Address</h5>
                   </div>
 
                   <div className="space-y-1.5 sm:col-span-2">
-                    <label className="text-xs font-bold text-slate-700">Street Address</label>
+                    <label className="text-xs font-bold text-slate-300">Street Address</label>
                     <input
                       type="text"
                       value={formData.profile.address}
@@ -783,12 +799,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="No. 12, Mount Road, Anna Salai"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">City</label>
+                    <label className="text-xs font-bold text-slate-300">City</label>
                     <input
                       type="text"
                       value={formData.profile.city}
@@ -800,12 +816,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="Chennai"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">State / Province</label>
+                    <label className="text-xs font-bold text-slate-300">State / Province</label>
                     <input
                       type="text"
                       value={formData.profile.state}
@@ -817,12 +833,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="Tamil Nadu"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Postal / PIN Code</label>
+                    <label className="text-xs font-bold text-slate-300">Postal / PIN Code</label>
                     <input
                       type="text"
                       value={formData.profile.postalCode}
@@ -834,12 +850,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="600002"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Country</label>
+                    <label className="text-xs font-bold text-slate-300">Country</label>
                     <input
                       type="text"
                       value={formData.profile.country}
@@ -851,17 +867,17 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="India"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   {/* Contact Channels */}
-                  <div className="space-y-1.5 sm:col-span-2 pt-2 border-t border-slate-100">
-                    <h5 className="text-xs font-extrabold text-slate-800">Public & Administrative Contact Information</h5>
+                  <div className="space-y-1.5 sm:col-span-2 pt-2 border-t border-slate-800">
+                    <h5 className="text-xs font-extrabold text-slate-200">Public & Administrative Contact Information</h5>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Official Phone Number</label>
+                    <label className="text-xs font-bold text-slate-300">Official Phone Number</label>
                     <input
                       type="text"
                       value={formData.profile.phone}
@@ -873,12 +889,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="+91 98401 23456"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-300 flex items-center justify-between">
                       <span>Official Email</span>
                       {validationErrors.email && <span className="text-rose-500">{validationErrors.email}</span>}
                     </label>
@@ -893,12 +909,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="office@newcreation.org.in"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   <div className="space-y-1.5 sm:col-span-2">
-                    <label className="text-xs font-bold text-slate-700">Website URL</label>
+                    <label className="text-xs font-bold text-slate-300">Website URL</label>
                     <input
                       type="url"
                       value={formData.profile.website}
@@ -910,17 +926,17 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="https://newcreation.org.in"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   {/* Primary Pastoral Contact */}
-                  <div className="space-y-1.5 sm:col-span-2 pt-2 border-t border-slate-100">
-                    <h5 className="text-xs font-extrabold text-slate-800">Primary Pastoral / Admin Representative</h5>
+                  <div className="space-y-1.5 sm:col-span-2 pt-2 border-t border-slate-800">
+                    <h5 className="text-xs font-extrabold text-slate-200">Primary Pastoral / Admin Representative</h5>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Primary Contact Name</label>
+                    <label className="text-xs font-bold text-slate-300">Primary Contact Name</label>
                     <input
                       type="text"
                       value={formData.profile.primaryContactName}
@@ -932,12 +948,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="e.g. Senior Pastor / Church Admin"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Primary Contact Phone</label>
+                    <label className="text-xs font-bold text-slate-300">Primary Contact Phone</label>
                     <input
                       type="text"
                       value={formData.profile.primaryContactPhone}
@@ -949,12 +965,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="+91 98401 23456"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
 
                   <div className="space-y-1.5 sm:col-span-2">
-                    <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-300 flex items-center justify-between">
                       <span>Primary Contact Email</span>
                       {validationErrors.primaryContactEmail && (
                         <span className="text-rose-500">{validationErrors.primaryContactEmail}</span>
@@ -971,7 +987,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       }
                       disabled={!canEdit}
                       placeholder="pastor.samuel@newcreation.org.in"
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     />
                   </div>
                 </div>
@@ -985,7 +1001,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
-                    <h4 className="text-sm font-bold text-slate-900">Regular Church Services Schedule</h4>
+                    <h4 className="text-sm font-bold text-white">Regular Church Services Schedule</h4>
                     <p className="text-xs text-slate-500">
                       Configure weekly worship, prayer, youth, and study services used across Attendance, Roster, and Events.
                     </p>
@@ -1019,9 +1035,9 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                 {/* Services List */}
                 <div className="space-y-2.5 pt-2">
                   {formData.services.length === 0 ? (
-                    <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                    <div className="p-8 text-center bg-slate-950 rounded-2xl border border-dashed border-slate-300">
                       <Clock className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                      <p className="text-xs font-bold text-slate-700">No Services Configured</p>
+                      <p className="text-xs font-bold text-slate-300">No Services Configured</p>
                       <p className="text-[11px] text-slate-500 mt-0.5">Click "Add Service" to create regular weekly worship gatherings.</p>
                     </div>
                   ) : (
@@ -1030,8 +1046,8 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                         key={service.id}
                         className={`p-3.5 rounded-2xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
                           service.isActive
-                            ? 'bg-white border-slate-200 shadow-sm'
-                            : 'bg-slate-50 border-slate-200/60 opacity-60'
+                            ? 'bg-slate-950 border-slate-800 shadow-sm text-white'
+                            : 'bg-slate-950/60 border-slate-800/60 opacity-60 text-slate-400'
                         }`}
                       >
                         <div className="flex items-start gap-3">
@@ -1042,7 +1058,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                                   type="button"
                                   onClick={() => handleMoveServiceOrder(index, 'up')}
                                   disabled={index === 0}
-                                  className="p-1 hover:bg-slate-100 disabled:opacity-30 rounded text-slate-500"
+                                  className="p-1 hover:bg-slate-800 disabled:opacity-30 rounded text-slate-400 hover:text-white transition"
                                   title="Move Up"
                                 >
                                   <ChevronUp className="w-3.5 h-3.5" />
@@ -1051,7 +1067,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                                   type="button"
                                   onClick={() => handleMoveServiceOrder(index, 'down')}
                                   disabled={index === formData.services.length - 1}
-                                  className="p-1 hover:bg-slate-100 disabled:opacity-30 rounded text-slate-500"
+                                  className="p-1 hover:bg-slate-800 disabled:opacity-30 rounded text-slate-400 hover:text-white transition"
                                   title="Move Down"
                                 >
                                   <ChevronDown className="w-3.5 h-3.5" />
@@ -1060,22 +1076,22 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                             )}
                           </div>
 
-                          <div className="p-2.5 rounded-xl bg-amber-500/15 text-amber-700 shrink-0">
+                          <div className="p-2.5 rounded-xl bg-amber-500/15 text-amber-300 shrink-0">
                             <Clock className="w-4 h-4" />
                           </div>
 
                           <div>
                             <div className="flex items-center gap-2 flex-wrap">
-                              <h5 className="text-xs font-bold text-slate-900">{service.name}</h5>
-                              <span className="text-[10px] px-2 py-0.2 rounded-md font-extrabold bg-slate-100 text-slate-700 border border-slate-200">
+                              <h5 className="text-xs font-bold text-white">{service.name}</h5>
+                              <span className="text-[10px] px-2 py-0.5 rounded-md font-extrabold bg-slate-800 text-slate-200 border border-slate-700">
                                 {service.day}
                               </span>
-                              <span className="text-[10px] px-2 py-0.2 rounded-md font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              <span className="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-800">
                                 {service.startTime} {service.endTime ? `- ${service.endTime}` : ''}
                               </span>
                             </div>
-                            <p className="text-[11px] text-slate-500 mt-1">
-                              Location: <strong className="text-slate-700">{service.location}</strong>
+                            <p className="text-[11px] text-slate-400 mt-1">
+                              Location: <strong className="text-slate-200">{service.location}</strong>
                               {service.description ? ` • ${service.description}` : ''}
                             </p>
                           </div>
@@ -1088,8 +1104,8 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                               onClick={() => handleToggleServiceActive(service.id)}
                               className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border transition ${
                                 service.isActive
-                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-                                  : 'bg-slate-200 text-slate-600 border-slate-300 hover:bg-slate-300'
+                                  ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800 hover:bg-emerald-900'
+                                  : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700'
                               }`}
                             >
                               {service.isActive ? 'Active' : 'Disabled'}
@@ -1101,7 +1117,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                                 setEditingService(service);
                                 setIsServiceModalOpen(true);
                               }}
-                              className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
+                              className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition"
                               title="Edit service details"
                             >
                               <Edit2 className="w-3.5 h-3.5" />
@@ -1110,7 +1126,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                             <button
                               type="button"
                               onClick={() => handleDeleteService(service.id)}
-                              className="p-1.5 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg transition"
+                              className="p-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-950/60 rounded-lg transition"
                               title="Delete service"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -1131,7 +1147,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
-                    <h4 className="text-sm font-bold text-slate-900">Church Ministries & Department Teams</h4>
+                    <h4 className="text-sm font-bold text-white">Church Ministries & Department Teams</h4>
                     <p className="text-xs text-slate-500">
                       Configure church ministries, assign team leaders from member directories, and set colors.
                     </p>
@@ -1174,8 +1190,8 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                         key={ministry.id}
                         className={`p-4 rounded-2xl border transition flex flex-col justify-between gap-3 ${
                           ministry.isActive
-                            ? 'bg-white border-slate-200 shadow-sm'
-                            : 'bg-slate-50 border-slate-200/60 opacity-60'
+                            ? 'bg-slate-950 border-slate-800 shadow-sm text-white'
+                            : 'bg-slate-950/60 border-slate-800/60 opacity-60 text-slate-400'
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">
@@ -1187,8 +1203,8 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                               <IconComp className="w-4 h-4" />
                             </div>
                             <div>
-                              <h5 className="text-xs font-bold text-slate-900">{ministry.name}</h5>
-                              <p className="text-[10px] text-slate-500">Leader: <strong className="text-slate-800">{ministry.leaderName || 'Unassigned'}</strong></p>
+                              <h5 className="text-xs font-bold text-white">{ministry.name}</h5>
+                              <p className="text-[10px] text-slate-400">Leader: <strong className="text-slate-200">{ministry.leaderName || 'Unassigned'}</strong></p>
                             </div>
                           </div>
 
@@ -1199,7 +1215,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                                   type="button"
                                   onClick={() => handleToggleMinistryActive(ministry.id)}
                                   className={`text-[9px] font-bold px-2 py-0.5 rounded-md border ${
-                                    ministry.isActive ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-200 text-slate-600'
+                                    ministry.isActive ? 'bg-emerald-950/80 text-emerald-300 border-emerald-800' : 'bg-slate-800 text-slate-400 border-slate-700'
                                   }`}
                                 >
                                   {ministry.isActive ? 'Active' : 'Disabled'}
@@ -1210,14 +1226,14 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                                     setEditingMinistry(ministry);
                                     setIsMinistryModalOpen(true);
                                   }}
-                                  className="p-1 hover:bg-slate-100 rounded text-slate-500"
+                                  className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition"
                                 >
                                   <Edit2 className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteMinistry(ministry.id)}
-                                  className="p-1 hover:bg-rose-50 rounded text-rose-600"
+                                  className="p-1 hover:bg-rose-950/60 rounded text-rose-400 hover:text-rose-300 transition"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -1226,9 +1242,9 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           </div>
                         </div>
 
-                        <p className="text-[11px] text-slate-600 line-clamp-2">{ministry.description}</p>
+                        <p className="text-[11px] text-slate-300 line-clamp-2">{ministry.description}</p>
 
-                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500">
+                        <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
                           <span className="truncate">{ministry.meetingSchedule || 'Flexible schedule'}</span>
                           {ministry.leaderPhone && <span>{ministry.leaderPhone}</span>}
                         </div>
@@ -1245,7 +1261,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
             {activeSection === 'members' && (
               <div className="space-y-6">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Member Classification & Types</h4>
+                  <h4 className="text-sm font-bold text-white">Member Classification & Types</h4>
                   <p className="text-xs text-slate-500">
                     Enable or customize membership classifications and custom display names for your congregation.
                   </p>
@@ -1256,7 +1272,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                   {formData.memberSettings.memberTypes.map((mt, idx) => (
                     <div
                       key={mt.type}
-                      className="p-3 rounded-2xl border border-slate-200 bg-slate-50/60 flex items-center justify-between gap-3"
+                      className="p-3 rounded-2xl border border-slate-800 bg-slate-950/60 flex items-center justify-between gap-3"
                     >
                       <div className="flex items-center gap-3">
                         <input
@@ -1279,12 +1295,21 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                         />
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-slate-900">{mt.type}</span>
-                            <span className={`text-[10px] font-semibold px-2 py-0.2 rounded-md border ${mt.colorBadge || 'bg-slate-100'}`}>
+                            <span className="text-xs font-bold text-slate-900 dark:text-white">{mt.type}</span>
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${
+                              mt.type === 'Pastor' ? 'bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-800' :
+                              mt.type === 'Assistant Pastor' ? 'bg-blue-100 text-blue-900 border-blue-300 dark:bg-blue-950/80 dark:text-blue-300 dark:border-blue-800' :
+                              mt.type === 'Leader' ? 'bg-purple-100 text-purple-900 border-purple-300 dark:bg-purple-950/80 dark:text-purple-300 dark:border-purple-800' :
+                              mt.type === 'Clergy/Staff' ? 'bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800' :
+                              mt.type === 'Regular Attender' ? 'bg-teal-100 text-teal-900 border-teal-300 dark:bg-teal-950/80 dark:text-teal-300 dark:border-teal-800' :
+                              mt.type === 'Visitor' ? 'bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-950/80 dark:text-rose-300 dark:border-rose-800' :
+                              mt.type === 'Youth' ? 'bg-sky-100 text-sky-900 border-sky-300 dark:bg-sky-950/80 dark:text-sky-300 dark:border-sky-800' :
+                              'bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700'
+                            }`}>
                               Preview Badge
                             </span>
                           </div>
-                          <p className="text-[10px] text-slate-500">{mt.description || 'Congregational classification'}</p>
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">{mt.description || 'Congregational classification'}</div>
                         </div>
                       </div>
 
@@ -1306,7 +1331,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                             }));
                           }}
                           placeholder="Custom Display Title"
-                          className="w-full p-2 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                          className="w-full p-2 bg-slate-950 border border-slate-700 text-white rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                         />
                       </div>
                     </div>
@@ -1314,8 +1339,8 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                 </div>
 
                 {/* Optional Member Fields Toggles */}
-                <div className="pt-3 border-t border-slate-100 space-y-3">
-                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">Optional Member Fields</h4>
+                <div className="pt-3 border-t border-slate-800 space-y-3">
+                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-300">Optional Member Fields</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {[
                       { key: 'enableBirthdays' as const, label: 'Track Birthdates & Age' },
@@ -1327,7 +1352,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                     ].map((field) => (
                       <label
                         key={field.key}
-                        className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer text-xs font-semibold text-slate-800"
+                        className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-900 cursor-pointer text-xs font-semibold text-slate-200 transition"
                       >
                         <input
                           type="checkbox"
@@ -1356,7 +1381,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
             {activeSection === 'attendance' && (
               <div className="space-y-6">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Attendance Configuration</h4>
+                  <h4 className="text-sm font-bold text-white">Attendance Configuration</h4>
                   <p className="text-xs text-slate-500">
                     Configure attendance session types, statuses, guest headcounts, and default views.
                   </p>
@@ -1364,12 +1389,12 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
 
                 {/* Session Types */}
                 <div className="space-y-2">
-                  <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">Enabled Attendance Gathering Types</h5>
+                  <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-300">Enabled Attendance Gathering Types</h5>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {formData.attendanceSettings.attendanceTypes.map((type, idx) => (
                       <label
                         key={type.id}
-                        className="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-800 cursor-pointer"
+                        className="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-800 bg-slate-950 text-xs font-semibold text-slate-200 cursor-pointer"
                       >
                         <input
                           type="checkbox"
@@ -1396,10 +1421,10 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                 </div>
 
                 {/* Statuses and Options */}
-                <div className="pt-3 border-t border-slate-100 space-y-3">
-                  <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">Tracking Options</h5>
+                <div className="pt-3 border-t border-slate-800 space-y-3">
+                  <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-300">Tracking Options</h5>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800 cursor-pointer">
+                    <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-900 text-xs font-semibold text-slate-200 cursor-pointer transition">
                       <input
                         type="checkbox"
                         checked={formData.attendanceSettings.enableGuestTracking}
@@ -1416,7 +1441,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       <span>Track Visitor / First-Time Guest Count</span>
                     </label>
 
-                    <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800 cursor-pointer">
+                    <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-900 text-xs font-semibold text-slate-200 cursor-pointer transition">
                       <input
                         type="checkbox"
                         checked={formData.attendanceSettings.enableNotes}
@@ -1443,15 +1468,15 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
             {activeSection === 'notifications' && (
               <div className="space-y-6">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Church Notification Channels & Triggers</h4>
+                  <h4 className="text-sm font-bold text-white">Church Notification Channels & Triggers</h4>
                   <p className="text-xs text-slate-500">
                     Control which communication channels are active and select automated notification preferences.
                   </p>
                 </div>
 
                 {/* Channels Switches */}
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-3">
-                  <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">Active Communication Channels</h5>
+                <div className="bg-slate-950 rounded-2xl p-4 border border-slate-800/80 space-y-3">
+                  <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-300">Active Communication Channels</h5>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
                       { key: 'whatsapp' as const, label: 'WhatsApp', icon: MessageSquare, activeColor: 'bg-emerald-500 text-white' },
@@ -1481,19 +1506,19 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           }
                           className={`p-3 rounded-2xl border text-left flex flex-col justify-between gap-2 transition ${
                             isEnabled
-                              ? 'bg-white border-slate-300 shadow-md ring-1 ring-slate-300'
-                              : 'bg-slate-100 border-slate-200 opacity-60'
+                              ? 'bg-slate-900 border-amber-500/50 shadow-md ring-1 ring-amber-500/30 text-white'
+                              : 'bg-slate-950/70 border-slate-800 opacity-60 text-slate-400'
                           }`}
                         >
                           <div className="flex items-center justify-between">
-                            <Icon className={`w-4 h-4 ${isEnabled ? 'text-amber-500' : 'text-slate-400'}`} />
-                            <span className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded-md ${
-                              isEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'
+                            <Icon className={`w-4 h-4 ${isEnabled ? 'text-amber-400' : 'text-slate-500'}`} />
+                            <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-md border ${
+                              isEnabled ? 'bg-emerald-950/80 text-emerald-300 border-emerald-800' : 'bg-slate-800 text-slate-400 border-slate-700'
                             }`}>
                               {isEnabled ? 'ON' : 'OFF'}
                             </span>
                           </div>
-                          <span className="text-xs font-bold text-slate-900">{channel.label}</span>
+                          <span className="text-xs font-bold text-white">{channel.label}</span>
                         </button>
                       );
                     })}
@@ -1502,7 +1527,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
 
                 {/* Preference Triggers */}
                 <div className="space-y-3 pt-2">
-                  <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">Notification Triggers & Alerts</h5>
+                  <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-300">Notification Triggers & Alerts</h5>
                   <div className="space-y-2">
                     {[
                       { key: 'eventReminders' as const, label: 'Upcoming Worship & Event Reminders' },
@@ -1514,7 +1539,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                     ].map((pref) => (
                       <label
                         key={pref.key}
-                        className="flex items-center justify-between p-3 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer text-xs font-semibold text-slate-800"
+                        className="flex items-center justify-between p-3 rounded-2xl border border-slate-800 bg-slate-950 hover:bg-slate-900 cursor-pointer text-xs font-semibold text-slate-200 transition"
                       >
                         <span>{pref.label}</span>
                         <input
@@ -1542,7 +1567,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                 </div>
 
                 {/* Smart Notifications Rules & Administration */}
-                <div className="pt-4 border-t border-slate-200">
+                <div className="pt-4 border-t border-slate-800">
                   <AdminNotificationSettingsModule
                     currentChurch={currentChurch}
                     currentUser={currentUser}
@@ -1558,7 +1583,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
             {activeSection === 'localization' && (
               <div className="space-y-6">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Language, Currency & Time Zone</h4>
+                  <h4 className="text-sm font-bold text-white">Language, Currency & Time Zone</h4>
                   <p className="text-xs text-slate-500">
                     Configure local formatting respected across your congregation's bulletins and reports.
                   </p>
@@ -1567,7 +1592,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Language */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Primary Language</label>
+                    <label className="text-xs font-bold text-slate-300">Primary Language</label>
                     <select
                       value={formData.localization.language}
                       disabled={!canEdit}
@@ -1577,7 +1602,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           localization: { ...prev.localization, language: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       {LANGUAGES.map((lang) => (
                         <option key={lang.code} value={lang.code}>
@@ -1589,7 +1614,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
 
                   {/* Currency */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Default Currency</label>
+                    <label className="text-xs font-bold text-slate-300">Default Currency</label>
                     <select
                       value={formData.localization.currency}
                       disabled={!canEdit}
@@ -1605,7 +1630,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           },
                         }));
                       }}
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       {CURRENCIES.map((cur) => (
                         <option key={cur.code} value={cur.code}>
@@ -1617,7 +1642,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
 
                   {/* Timezone */}
                   <div className="space-y-1.5 sm:col-span-2">
-                    <label className="text-xs font-bold text-slate-700">Campus Time Zone</label>
+                    <label className="text-xs font-bold text-slate-300">Campus Time Zone</label>
                     <select
                       value={formData.localization.timezone}
                       disabled={!canEdit}
@@ -1627,7 +1652,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           localization: { ...prev.localization, timezone: e.target.value },
                         }))
                       }
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       {TIMEZONES.map((tz) => (
                         <option key={tz.value} value={tz.value}>
@@ -1639,7 +1664,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
 
                   {/* Date Format */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Date Format</label>
+                    <label className="text-xs font-bold text-slate-300">Date Format</label>
                     <select
                       value={formData.localization.dateFormat}
                       disabled={!canEdit}
@@ -1649,7 +1674,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           localization: { ...prev.localization, dateFormat: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="DD/MM/YYYY">DD/MM/YYYY (e.g. 26/08/2026 - Indian/UK Standard)</option>
                       <option value="MM/DD/YYYY">MM/DD/YYYY (e.g. 08/26/2026 - US Standard)</option>
@@ -1659,7 +1684,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
 
                   {/* Time Format */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Time Format</label>
+                    <label className="text-xs font-bold text-slate-300">Time Format</label>
                     <select
                       value={formData.localization.timeFormat}
                       disabled={!canEdit}
@@ -1669,7 +1694,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           localization: { ...prev.localization, timeFormat: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="12h">12-Hour AM/PM (e.g. 09:30 AM)</option>
                       <option value="24h">24-Hour Military (e.g. 09:30, 18:00)</option>
@@ -1685,15 +1710,93 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
             {activeSection === 'appearance' && (
               <div className="space-y-6">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Branding & Visual Consistency</h4>
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">Branding & Visual Consistency</h4>
                   <p className="text-xs text-slate-500">
-                    Customize branding accents while maintaining clean application UI consistency.
+                    Customize branding accents and interface appearance while maintaining clean visual consistency.
                   </p>
                 </div>
 
-                {/* Accent Color Palette */}
+                {/* Application Color Theme */}
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-700">Brand Accent Color</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Application Color Theme</label>
+                    <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                      Active: {formData.appearance.themeMode === 'light' ? 'Light' : formData.appearance.themeMode === 'system' ? 'System Preference' : 'Dark (Obsidian)'}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500">
+                    Switch between deep obsidian dark mode, crisp high-contrast light mode, or follow your OS device appearance.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    {[
+                      {
+                        id: 'dark' as ThemeMode,
+                        label: 'Dark Mode (Default)',
+                        desc: 'Deep slate surfaces with high-contrast readable text',
+                        icon: Moon,
+                      },
+                      {
+                        id: 'light' as ThemeMode,
+                        label: 'Light Mode',
+                        desc: 'Crisp paper surfaces with rich dark slate typography',
+                        icon: Sun,
+                      },
+                      {
+                        id: 'system' as ThemeMode,
+                        label: 'System Preference',
+                        desc: 'Automatically synchronizes with your device theme',
+                        icon: Monitor,
+                      },
+                    ].map((themeOpt) => {
+                      const Icon = themeOpt.icon;
+                      const isSelected = (formData.appearance.themeMode || 'dark') === themeOpt.id;
+                      return (
+                        <button
+                          key={themeOpt.id}
+                          id={`btn-theme-mode-${themeOpt.id}`}
+                          type="button"
+                          disabled={!canEdit}
+                          onClick={() => {
+                            updateSettingsState((prev) => ({
+                              ...prev,
+                              appearance: { ...prev.appearance, themeMode: themeOpt.id },
+                            }));
+                            applyThemeMode(themeOpt.id);
+                          }}
+                          className={`p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-3 ${
+                            isSelected
+                              ? 'bg-amber-500/10 dark:bg-slate-900 border-amber-500 shadow-md ring-1 ring-amber-500/50 text-slate-900 dark:text-white'
+                              : 'bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <div className={`p-2 rounded-xl ${
+                              isSelected
+                                ? 'bg-amber-500 text-slate-950'
+                                : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                            }`}>
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            {isSelected && (
+                              <div className="flex items-center gap-1 text-[11px] font-bold text-amber-600 dark:text-amber-400">
+                                <span>Active</span>
+                                <Check className="w-3.5 h-3.5" />
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-slate-900 dark:text-white">{themeOpt.label}</p>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{themeOpt.desc}</p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Accent Color Palette */}
+                <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Brand Accent Color</label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                     {COLOR_PALETTE.map((color) => {
                       const isSelected = formData.appearance.accentColor === color.hex;
@@ -1702,21 +1805,32 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           key={color.hex}
                           type="button"
                           disabled={!canEdit}
-                          onClick={() =>
+                          onClick={() => {
                             updateSettingsState((prev) => ({
                               ...prev,
                               appearance: { ...prev.appearance, accentColor: color.hex },
-                            }))
-                          }
+                            }));
+                            applyChurchAccentTheme(color.hex);
+                          }}
                           className={`p-2.5 rounded-2xl border text-xs font-bold flex items-center gap-2.5 transition ${
                             isSelected
-                              ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-amber-400'
-                              : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'
+                              ? 'bg-slate-900 text-white shadow-md'
+                              : 'bg-slate-950 text-slate-200 border-slate-800 hover:bg-slate-800'
                           }`}
+                          style={
+                            isSelected
+                              ? {
+                                  borderColor: color.hex,
+                                  boxShadow: `0 0 14px ${color.hex}40`,
+                                  outline: `2px solid ${color.hex}`,
+                                  outlineOffset: '1px',
+                                }
+                              : {}
+                          }
                         >
-                          <span className="w-4 h-4 rounded-full shadow-sm shrink-0" style={{ backgroundColor: color.hex }} />
+                          <span className="w-4 h-4 rounded-full shadow-sm shrink-0 border border-white/20" style={{ backgroundColor: color.hex }} />
                           <span className="truncate">{color.name}</span>
-                          {isSelected && <Check className="w-3.5 h-3.5 ml-auto text-amber-400 shrink-0" />}
+                          {isSelected && <Check className="w-3.5 h-3.5 ml-auto shrink-0" style={{ color: color.hex }} />}
                         </button>
                       );
                     })}
@@ -1724,8 +1838,8 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                 </div>
 
                 {/* Header Title Display Mode */}
-                <div className="space-y-2 pt-2 border-t border-slate-100">
-                  <label className="text-xs font-bold text-slate-700">Header Title Display Format</label>
+                <div className="space-y-2 pt-2 border-t border-slate-800">
+                  <label className="text-xs font-bold text-slate-300">Header Title Display Format</label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                     {[
                       { id: 'full' as const, label: 'Full Church Name', sample: formData.profile.name },
@@ -1745,7 +1859,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                         className={`p-3 rounded-2xl border text-left transition ${
                           formData.appearance.headerTitleDisplay === mode.id
                             ? 'bg-slate-900 text-white border-slate-900 shadow-md'
-                            : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'
+                            : 'bg-slate-950 text-slate-200 border-slate-800 hover:bg-slate-800'
                         }`}
                       >
                         <p className="text-xs font-bold leading-tight">{mode.label}</p>
@@ -1763,46 +1877,46 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
             {activeSection === 'security' && (
               <div className="space-y-6">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Security, Access & Directory Privacy</h4>
+                  <h4 className="text-sm font-bold text-white">Security, Access & Directory Privacy</h4>
                   <p className="text-xs text-slate-500">
                     Review role privileges and configure congregation privacy policies.
                   </p>
                 </div>
 
                 {/* Role Matrix Overview Card */}
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-3">
+                <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-200 dark:border-slate-800/80 space-y-3">
                   <div className="flex items-center justify-between">
-                    <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">Role Privilege Hierarchy</h5>
-                    <span className="text-[10px] text-slate-500">RBAC Engine</span>
+                    <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">Role Privilege Hierarchy</h5>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400">RBAC Engine</span>
                   </div>
 
                   <div className="space-y-2 text-xs">
-                    <div className="p-2.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-950 flex items-center justify-between">
+                    <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-purple-900 dark:text-purple-200 flex items-center justify-between">
                       <div>
-                        <strong>Platform Super Admin:</strong> Universal multi-church administration
+                        <strong className="text-purple-950 dark:text-purple-100 font-bold">Platform Super Admin:</strong> Universal multi-church administration
                       </div>
-                      <span className="font-mono text-[10px] font-bold bg-purple-200 px-2 py-0.5 rounded">All Churches</span>
+                      <span className="font-mono text-[10px] font-bold bg-purple-100 dark:bg-purple-900/80 text-purple-800 dark:text-purple-300 border border-purple-300 dark:border-purple-700 px-2 py-0.5 rounded-md">All Churches</span>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 flex items-center justify-between">
+                    <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 flex items-center justify-between">
                       <div>
-                        <strong>Senior Pastor / Church Admin:</strong> Full settings & operational control
+                        <strong className="text-amber-950 dark:text-amber-100 font-bold">Senior Pastor / Church Admin:</strong> Full settings & operational control
                       </div>
-                      <span className="font-mono text-[10px] font-bold bg-amber-200 px-2 py-0.5 rounded">This Church</span>
+                      <span className="font-mono text-[10px] font-bold bg-amber-100 dark:bg-amber-900/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 px-2 py-0.5 rounded-md">This Church</span>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-950 flex items-center justify-between">
+                    <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-900 dark:text-blue-200 flex items-center justify-between">
                       <div>
-                        <strong>Assistant Pastor:</strong> View and ministry management access
+                        <strong className="text-blue-950 dark:text-blue-100 font-bold">Assistant Pastor:</strong> View and ministry management access
                       </div>
-                      <span className="font-mono text-[10px] font-bold bg-blue-200 px-2 py-0.5 rounded">Ministry Scope</span>
+                      <span className="font-mono text-[10px] font-bold bg-blue-100 dark:bg-blue-900/80 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-700 px-2 py-0.5 rounded-md">Ministry Scope</span>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-between">
+                    <div className="p-2.5 rounded-xl bg-slate-100/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-300 flex items-center justify-between">
                       <div>
-                        <strong>Ministry Leader / Volunteer / Member:</strong> Restricted from admin settings
+                        <strong className="text-slate-950 dark:text-white font-bold">Ministry Leader / Volunteer / Member:</strong> Restricted from admin settings
                       </div>
-                      <span className="font-mono text-[10px] font-bold bg-slate-200 px-2 py-0.5 rounded">Restricted</span>
+                      <span className="font-mono text-[10px] font-bold bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-400 border border-slate-300 dark:border-slate-700 px-2 py-0.5 rounded-md">Restricted</span>
                     </div>
                   </div>
                 </div>
@@ -1810,7 +1924,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                 {/* Privacy Preferences */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Member Directory Visibility</label>
+                    <label className="text-xs font-bold text-slate-300">Member Directory Visibility</label>
                     <select
                       value={formData.security.directoryVisibility}
                       disabled={!canEdit}
@@ -1820,7 +1934,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           security: { ...prev.security, directoryVisibility: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="members_only">Registered Members Only (Recommended)</option>
                       <option value="leaders_only">Leaders & Pastoral Staff Only</option>
@@ -1829,7 +1943,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Prayer Request Moderation</label>
+                    <label className="text-xs font-bold text-slate-300">Prayer Request Moderation</label>
                     <select
                       value={formData.security.prayerModeration}
                       disabled={!canEdit}
@@ -1839,7 +1953,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           security: { ...prev.security, prayerModeration: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="auto_publish">Auto-Publish with Confidentiality Tags</option>
                       <option value="pastor_approval">Require Pastoral Staff Approval Before Wall Listing</option>
@@ -1847,7 +1961,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Roster Duty Visibility</label>
+                    <label className="text-xs font-bold text-slate-300">Roster Duty Visibility</label>
                     <select
                       value={formData.security.rosterVisibility}
                       disabled={!canEdit}
@@ -1857,7 +1971,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           security: { ...prev.security, rosterVisibility: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="all_members">Visible to All Church Members</option>
                       <option value="volunteers_only">Visible Only to Active Volunteers</option>
@@ -1865,7 +1979,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Session Lock Duration</label>
+                    <label className="text-xs font-bold text-slate-300">Session Lock Duration</label>
                     <select
                       value={formData.security.sessionTimeout}
                       disabled={!canEdit}
@@ -1875,7 +1989,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           security: { ...prev.security, sessionTimeout: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="1d">1 Day (Recommended for mobile)</option>
                       <option value="1h">1 Hour</option>
@@ -1893,7 +2007,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
             {activeSection === 'preferences' && isSuperAdmin && (
               <div className="space-y-6">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">System Preferences & Church Module Control</h4>
+                  <h4 className="text-sm font-bold text-white">System Preferences & Church Module Control</h4>
                   <p className="text-xs text-slate-500">
                     Enable or disable specific modules for <strong>{formData.profile.name}</strong>. Disabled modules are hidden from navigation and direct access while preserving all existing records safely.
                   </p>
@@ -2005,7 +2119,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                 {/* Default Preferences */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Default Landing Tab for Members</label>
+                    <label className="text-xs font-bold text-slate-300">Default Landing Tab for Members</label>
                     <select
                       value={formData.preferences.defaultLandingTab}
                       disabled={!canEdit}
@@ -2015,7 +2129,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           preferences: { ...prev.preferences, defaultLandingTab: e.target.value },
                         }))
                       }
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="directory">Members Directory</option>
                       <option value="prayers">Prayer Wall</option>
@@ -2026,7 +2140,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Default Member Sorting Order</label>
+                    <label className="text-xs font-bold text-slate-300">Default Member Sorting Order</label>
                     <select
                       value={formData.preferences.defaultMemberSort}
                       disabled={!canEdit}
@@ -2036,7 +2150,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                           preferences: { ...prev.preferences, defaultMemberSort: e.target.value as any },
                         }))
                       }
-                      className="w-full p-2.5 bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-xs"
                     >
                       <option value="name_asc">Member Name (A &rarr; Z)</option>
                       <option value="name_desc">Member Name (Z &rarr; A)</option>
@@ -2056,13 +2170,13 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
       {/* ========================================================= */}
       {isServiceModalOpen && editingService && (
         <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-3 animate-in fade-in">
-          <div className="bg-white border border-slate-200 w-full max-w-md rounded-3xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-white">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-amber-500/20 text-amber-700">
+                <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
                   <Clock className="w-4 h-4" />
                 </div>
-                <h4 className="font-black text-sm text-slate-900">
+                <h4 className="font-black text-sm text-white">
                   {editingService.name ? 'Edit Service Schedule' : 'Add New Service Timing'}
                 </h4>
               </div>
@@ -2072,7 +2186,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                   setIsServiceModalOpen(false);
                   setEditingService(null);
                 }}
-                className="p-1.5 hover:bg-slate-100 text-slate-400 hover:text-slate-700 rounded-xl"
+                className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-white rounded-xl transition"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2087,79 +2201,79 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
               className="space-y-3"
             >
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Service Name *</label>
+                <label className="text-xs font-bold text-slate-300">Service Name *</label>
                 <input
                   type="text"
                   required
                   value={editingService.name}
                   onChange={(e) => setEditingService({ ...editingService, name: e.target.value })}
                   placeholder="e.g. Sunday Morning Tamil Service"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-semibold text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Day of Week</label>
+                  <label className="text-xs font-bold text-slate-300">Day of Week</label>
                   <select
                     value={editingService.day}
                     onChange={(e) => setEditingService({ ...editingService, day: e.target.value as any })}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"
+                    className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-semibold text-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   >
                     {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((d) => (
-                      <option key={d} value={d}>{d}</option>
+                      <option key={d} value={d} className="bg-slate-900 text-white">{d}</option>
                     ))}
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Start Time</label>
+                  <label className="text-xs font-bold text-slate-300">Start Time</label>
                   <input
                     type="text"
                     value={editingService.startTime}
                     onChange={(e) => setEditingService({ ...editingService, startTime: e.target.value })}
                     placeholder="09:00 AM"
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"
+                    className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-semibold text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">End Time (Optional)</label>
+                  <label className="text-xs font-bold text-slate-300">End Time (Optional)</label>
                   <input
                     type="text"
                     value={editingService.endTime || ''}
                     onChange={(e) => setEditingService({ ...editingService, endTime: e.target.value })}
                     placeholder="10:45 AM"
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+                    className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Campus Location</label>
+                  <label className="text-xs font-bold text-slate-300">Campus Location</label>
                   <input
                     type="text"
                     value={editingService.location}
                     onChange={(e) => setEditingService({ ...editingService, location: e.target.value })}
                     placeholder="Main Sanctuary"
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+                    className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Service Description</label>
+                <label className="text-xs font-bold text-slate-300">Service Description</label>
                 <textarea
                   rows={2}
                   value={editingService.description || ''}
                   onChange={(e) => setEditingService({ ...editingService, description: e.target.value })}
                   placeholder="Congregational praise and Word ministry..."
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
 
-              <label className="flex items-center gap-2 pt-1 text-xs font-semibold text-slate-800 cursor-pointer">
+              <label className="flex items-center gap-2 pt-1 text-xs font-semibold text-slate-300 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={editingService.isActive}
@@ -2169,20 +2283,20 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                 <span>Active weekly service</span>
               </label>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => {
                     setIsServiceModalOpen(false);
                     setEditingService(null);
                   }}
-                  className="px-3 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 font-semibold rounded-xl text-xs"
+                  className="px-3 py-2 bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-semibold rounded-xl text-xs transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs shadow"
+                  className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs shadow transition"
                 >
                   Save Service
                 </button>
@@ -2197,13 +2311,13 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
       {/* ========================================================= */}
       {isMinistryModalOpen && editingMinistry && (
         <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-3 animate-in fade-in">
-          <div className="bg-white border border-slate-200 w-full max-w-md rounded-3xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-white">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-amber-500/20 text-amber-700">
+                <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
                   <HeartHandshake className="w-4 h-4" />
                 </div>
-                <h4 className="font-black text-sm text-slate-900">
+                <h4 className="font-black text-sm text-white">
                   {editingMinistry.name ? 'Edit Ministry Department' : 'Create New Ministry'}
                 </h4>
               </div>
@@ -2213,7 +2327,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                   setIsMinistryModalOpen(false);
                   setEditingMinistry(null);
                 }}
-                className="p-1.5 hover:bg-slate-100 text-slate-400 hover:text-slate-700 rounded-xl"
+                className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-white rounded-xl transition"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2228,20 +2342,20 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
               className="space-y-3"
             >
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Ministry Name *</label>
+                <label className="text-xs font-bold text-slate-300">Ministry Name *</label>
                 <input
                   type="text"
                   required
                   value={editingMinistry.name}
                   onChange={(e) => setEditingMinistry({ ...editingMinistry, name: e.target.value })}
                   placeholder="e.g. Media & Live Stream Team"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-semibold text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
 
               {/* Assign Leader from Member Directory */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Ministry Leader</label>
+                <label className="text-xs font-bold text-slate-300">Ministry Leader</label>
                 <select
                   value={editingMinistry.leaderMemberId || ''}
                   onChange={(e) => {
@@ -2262,11 +2376,11 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       });
                     }
                   }}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-semibold text-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 >
-                  <option value="">Select from Church Member Directory...</option>
+                  <option value="" className="bg-slate-900 text-white">Select from Church Member Directory...</option>
                   {members.map((m) => (
-                    <option key={m.id} value={m.id}>
+                    <option key={m.id} value={m.id} className="bg-slate-900 text-white">
                       {m.firstName} {m.lastName} ({m.status})
                     </option>
                   ))}
@@ -2275,30 +2389,30 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Leader Name (Manual)</label>
+                  <label className="text-xs font-bold text-slate-300">Leader Name (Manual)</label>
                   <input
                     type="text"
                     value={editingMinistry.leaderName}
                     onChange={(e) => setEditingMinistry({ ...editingMinistry, leaderName: e.target.value })}
                     placeholder="e.g. Ministry Coordinator"
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+                    className="w-full p-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Leader Phone</label>
+                  <label className="text-xs font-bold text-slate-300">Leader Phone</label>
                   <input
                     type="text"
                     value={editingMinistry.leaderPhone || ''}
                     onChange={(e) => setEditingMinistry({ ...editingMinistry, leaderPhone: e.target.value })}
                     placeholder="+91 98765 43210"
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+                    className="w-full p-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Ministry Color Palette */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Theme Color</label>
+                <label className="text-xs font-bold text-slate-300">Theme Color</label>
                 <div className="flex items-center gap-2 flex-wrap">
                   {COLOR_PALETTE.map((c) => (
                     <button
@@ -2306,7 +2420,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                       type="button"
                       onClick={() => setEditingMinistry({ ...editingMinistry, color: c.hex })}
                       className={`w-7 h-7 rounded-xl border-2 transition ${
-                        editingMinistry.color === c.hex ? 'border-slate-900 scale-110 shadow' : 'border-transparent'
+                        editingMinistry.color === c.hex ? 'border-amber-400 scale-110 shadow-lg' : 'border-transparent'
                       }`}
                       style={{ backgroundColor: c.hex }}
                       title={c.name}
@@ -2317,7 +2431,7 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
 
               {/* Icon Selector */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Ministry Icon</label>
+                <label className="text-xs font-bold text-slate-300">Ministry Icon</label>
                 <div className="grid grid-cols-5 gap-1.5">
                   {MINISTRY_ICON_OPTIONS.map((item) => {
                     const Icon = item.icon;
@@ -2329,8 +2443,8 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                         onClick={() => setEditingMinistry({ ...editingMinistry, icon: item.name })}
                         className={`p-2 rounded-xl border flex items-center justify-center transition ${
                           isSelected
-                            ? 'bg-slate-900 text-amber-400 border-slate-900'
-                            : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200'
+                            ? 'bg-amber-500/20 text-amber-400 border-amber-500/50 shadow-sm'
+                            : 'bg-slate-800 text-slate-300 hover:bg-slate-750 hover:text-white border-slate-700'
                         }`}
                         title={item.label}
                       >
@@ -2342,28 +2456,28 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Description</label>
+                <label className="text-xs font-bold text-slate-300">Description</label>
                 <textarea
                   rows={2}
                   value={editingMinistry.description}
                   onChange={(e) => setEditingMinistry({ ...editingMinistry, description: e.target.value })}
                   placeholder="Purpose, responsibilities, and team role..."
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700">Meeting / Practice Schedule</label>
+                <label className="text-xs font-bold text-slate-300">Meeting / Practice Schedule</label>
                 <input
                   type="text"
                   value={editingMinistry.meetingSchedule || ''}
                   onChange={(e) => setEditingMinistry({ ...editingMinistry, meetingSchedule: e.target.value })}
                   placeholder="e.g. Thursday Rehearsal 6:30 PM"
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+                  className="w-full p-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
 
-              <label className="flex items-center gap-2 pt-1 text-xs font-semibold text-slate-800 cursor-pointer">
+              <label className="flex items-center gap-2 pt-1 text-xs font-semibold text-slate-300 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={editingMinistry.isActive}
@@ -2373,20 +2487,20 @@ export const ChurchSettingsModule: React.FC<ChurchSettingsModuleProps> = ({
                 <span>Active church ministry department</span>
               </label>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => {
                     setIsMinistryModalOpen(false);
                     setEditingMinistry(null);
                   }}
-                  className="px-3 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 font-semibold rounded-xl text-xs"
+                  className="px-3 py-2 bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-semibold rounded-xl text-xs transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs shadow"
+                  className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs shadow transition"
                 >
                   Save Ministry
                 </button>

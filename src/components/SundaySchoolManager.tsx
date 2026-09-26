@@ -420,19 +420,29 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
   return (
     <div className="space-y-4">
       {/* Banner */}
-      <div className="bg-gradient-to-r from-purple-950 via-indigo-900 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl relative overflow-hidden">
+      <div 
+        data-theme-surface="dark"
+        data-preserve-dark="true"
+        className="dark-hero-panel bg-gradient-to-r from-purple-950 via-indigo-900 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl relative overflow-hidden border border-purple-800/40"
+      >
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold mb-3 border border-purple-500/30">
-              <GraduationCap className="w-3.5 h-3.5" />
-              Sunday School & Children's Ministry
+            <div 
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 text-[#e9d5ff] text-xs font-bold mb-3 border border-purple-500/30"
+              style={{ color: '#e9d5ff' }}
+            >
+              <GraduationCap className="w-3.5 h-3.5 text-[#c084fc]" style={{ color: '#c084fc' }} />
+              <span>Sunday School & Children's Ministry</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white" style={{ color: '#ffffff' }}>
               Nurturing Young Disciples in Christ
             </h2>
-            <p className="text-purple-100/80 text-sm mt-1 max-w-xl">
+            <div 
+              className="text-[#f3e8ff] text-sm mt-1 max-w-xl font-normal leading-relaxed"
+              style={{ color: '#f3e8ff' }}
+            >
               Track student attendance, roll-call weekly sessions, award spiritual badges, and update parents on WhatsApp.
-            </p>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 shrink-0">
@@ -468,14 +478,14 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
       </div>
 
       {/* Main View Switcher Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900 p-2 sm:p-2.5 rounded-2xl border border-slate-800 shadow-sm">
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scrollbar-none max-w-full pb-0.5">
           <button
             onClick={() => setActiveView('roster')}
             className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-2 whitespace-nowrap shrink-0 ${
               activeView === 'roster'
-                ? 'bg-purple-900 text-white shadow-sm'
-                : 'text-slate-600 hover:bg-slate-100'
+                ? 'bg-purple-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
             <Users className="w-4 h-4 shrink-0" />
@@ -486,8 +496,8 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
             onClick={() => setActiveView('history')}
             className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-2 whitespace-nowrap shrink-0 ${
               activeView === 'history'
-                ? 'bg-purple-900 text-white shadow-sm'
-                : 'text-slate-600 hover:bg-slate-100'
+                ? 'bg-purple-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
             <History className="w-4 h-4 shrink-0" />
@@ -498,7 +508,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
         {activeView === 'history' && canManageSundaySchool && (
           <button
             onClick={() => handleOpenTakeAttendanceModal()}
-            className="w-full sm:w-auto px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5 shrink-0"
+            className="w-full sm:w-auto px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5 shrink-0"
           >
             <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-white" />
             <span>+ Record Attendance</span>
@@ -517,12 +527,12 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
               onClick={() => setSelectedClassId(cls.id)}
               className={`px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition border flex items-center gap-2 ${
                 isSelected
-                  ? 'bg-purple-900 text-white border-purple-900 shadow-md'
-                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  ? 'bg-purple-600 text-white border-purple-500 shadow-md'
+                  : 'bg-slate-900 text-slate-300 border-slate-800 hover:bg-slate-800 hover:text-white'
               }`}
             >
               <span>{cls.className}</span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${isSelected ? 'bg-purple-800 text-purple-200' : 'bg-slate-100 text-slate-600'}`}>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${isSelected ? 'bg-purple-700 text-purple-100' : 'bg-slate-800 text-slate-400'}`}>
                 {clsStudentCount}
               </span>
             </button>
@@ -532,23 +542,23 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
 
       {/* VIEW 1: CLASS ROSTER & ENROLLED STUDENTS */}
       {activeView === 'roster' && activeClass && (
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+        <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase font-black tracking-wider text-purple-700 bg-purple-100 px-2.5 py-0.5 rounded-full">
+                <span className="text-[10px] uppercase font-black tracking-wider text-purple-300 bg-purple-950/80 border border-purple-800 px-2.5 py-0.5 rounded-full">
                   {activeClass.ageGroup} • {activeClass.roomNumber}
                 </span>
               </div>
 
               <div className="flex items-center gap-2 mt-1">
-                <h3 className="text-xl font-extrabold text-slate-900">{activeClass.className} Class</h3>
+                <h3 className="text-xl font-extrabold text-white">{activeClass.className} Class</h3>
 
                 {canManageSundaySchool && (
                   <button
                     type="button"
                     onClick={() => handleOpenEditClassModal(activeClass)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-purple-700 hover:bg-purple-50 transition"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-purple-400 hover:bg-slate-800 transition"
                     title="Edit Sunday School Class & Teacher Details"
                   >
                     <Edit3 className="w-4 h-4" />
@@ -559,7 +569,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                   <button
                     type="button"
                     onClick={() => setClassToDelete(activeClass)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 transition"
                     title="Delete Sunday School Class"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -569,8 +579,8 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
 
               {/* Teacher Contact Info */}
               <div className="flex flex-wrap items-center gap-2 mt-1">
-                <p className="text-xs text-slate-600">
-                  Teacher: <strong className="text-slate-900">{activeClass.teacherName}</strong>
+                <p className="text-xs text-slate-400">
+                  Teacher: <strong className="text-white font-bold">{activeClass.teacherName}</strong>
                 </p>
 
                 {activeClass.teacherPhone && (
@@ -578,10 +588,10 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                     href={`https://wa.me/${activeClass.teacherPhone.replace(/\D/g, '')}?text=Hello%20${encodeURIComponent(activeClass.teacherName)},%20Sunday%20School%20Update%20for%20${encodeURIComponent(activeClass.className)}:`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2 py-0.5 rounded-lg border border-emerald-200 transition"
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-300 bg-emerald-950/80 hover:bg-emerald-900/80 px-2 py-0.5 rounded-lg border border-emerald-800 transition"
                     title="WhatsApp / Call Class Teacher"
                   >
-                    <Phone className="w-3 h-3 text-emerald-600" />
+                    <Phone className="w-3 h-3 text-emerald-400" />
                     <span>{activeClass.teacherPhone}</span>
                   </a>
                 )}
@@ -590,33 +600,33 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
 
             {/* Quick Stats & Action Cards */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <div className="bg-purple-50 border border-purple-100 p-3.5 rounded-2xl max-w-sm">
+              <div className="bg-purple-950/40 border border-purple-900/60 p-3.5 rounded-2xl max-w-sm">
                 <div className="flex items-center justify-between gap-2 mb-1">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-purple-800 flex items-center gap-1">
-                    <BookOpen className="w-3 h-3 text-purple-600" /> Memory Verse of the Week
+                  <span className="text-[10px] font-black uppercase tracking-wider text-purple-300 flex items-center gap-1">
+                    <BookOpen className="w-3 h-3 text-purple-400" /> Memory Verse of the Week
                   </span>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleOpenSSWhatsAppModal(null, activeClass, 'verse_challenge')}
-                      className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-800 bg-emerald-100 hover:bg-emerald-200 px-2 py-0.5 rounded-lg border border-emerald-300 transition"
+                      className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-300 bg-emerald-950/80 hover:bg-emerald-900/80 px-2 py-0.5 rounded-lg border border-emerald-800 transition"
                       title="Broadcast this weekly memory verse to parents on WhatsApp"
                     >
-                      <MessageSquare className="w-3 h-3 text-emerald-700" />
+                      <MessageSquare className="w-3 h-3 text-emerald-400" />
                       <span>WhatsApp Verse</span>
                     </button>
 
                     {canManageSundaySchool && (
                       <button
                         onClick={() => handleOpenEditClassModal(activeClass)}
-                        className="text-[10px] font-bold text-purple-700 hover:text-purple-900 underline"
+                        className="text-[10px] font-bold text-purple-400 hover:text-purple-300 underline"
                       >
                         Edit Verse
                       </button>
                     )}
                   </div>
                 </div>
-                <p className="text-xs font-bold text-purple-950 mt-1 italic">"{activeClass.memoryVerse}"</p>
-                <p className="text-[10px] text-purple-700 mt-1 font-semibold">Lesson: {activeClass.currentLesson}</p>
+                <p className="text-xs font-bold text-purple-100 mt-1 italic">"{activeClass.memoryVerse}"</p>
+                <p className="text-[10px] text-purple-300 mt-1 font-semibold">Lesson: {activeClass.currentLesson}</p>
               </div>
 
               {canManageSundaySchool && (
@@ -634,17 +644,17 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
           {/* Student Roster */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-bold text-slate-900">Enrolled Students ({classStudents.length})</h4>
-              <span className="text-xs text-slate-500">Sorted by class age</span>
+              <h4 className="text-sm font-bold text-white">Enrolled Students ({classStudents.length})</h4>
+              <span className="text-xs text-slate-400">Sorted by class age</span>
             </div>
 
             {classStudents.length === 0 ? (
-              <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200 space-y-3">
-                <GraduationCap className="w-8 h-8 text-slate-400 mx-auto" />
-                <p className="text-xs text-slate-500 font-medium">No students enrolled in this class yet.</p>
+              <div className="text-center py-10 bg-slate-800/60 rounded-2xl border border-dashed border-slate-700 space-y-3">
+                <GraduationCap className="w-8 h-8 text-slate-500 mx-auto" />
+                <p className="text-xs text-slate-400 font-medium">No students enrolled in this class yet.</p>
                 <button
                   onClick={handleOpenAddStudentModal}
-                  className="px-4 py-2 bg-purple-700 text-white text-xs font-bold rounded-xl shadow transition"
+                  className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-xl shadow transition"
                 >
                   + Enroll First Student
                 </button>
@@ -652,23 +662,23 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {classStudents.map((stud) => (
-                  <div key={stud.id} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 hover:border-purple-200 transition">
+                  <div key={stud.id} className="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-3 hover:border-purple-500/50 transition">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <UserAvatar
                           name={stud.studentName}
                           size="md"
                           shape="rounded"
-                          border="border border-purple-200 shadow-2xs"
+                          border="border border-purple-800 shadow-2xs"
                         />
                         <div>
                           <div className="flex items-center gap-2">
-                            <h5 className="text-sm font-extrabold text-slate-900">{stud.studentName}</h5>
-                            <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[10px] font-black">
+                            <h5 className="text-sm font-extrabold text-white">{stud.studentName}</h5>
+                            <span className="px-2 py-0.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800 text-[10px] font-black">
                               {stud.attendancePresentCount || 0} Attended
                             </span>
                           </div>
-                          <p className="text-xs text-slate-500 mt-0.5">Age {stud.age} • Parent: {stud.parentName}</p>
+                          <p className="text-xs text-slate-400 mt-0.5">Age {stud.age} • Parent: {stud.parentName}</p>
                         </div>
                       </div>
 
@@ -677,7 +687,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                           href={`https://wa.me/${stud.parentPhone.replace(/\D/g, '')}?text=Hello%20${encodeURIComponent(stud.parentName)},%20Sunday%20School%20update%20from%20${encodeURIComponent(churchName)}%20for%20${encodeURIComponent(stud.studentName)}:`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-2 rounded-xl bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition"
+                          className="p-2 rounded-xl bg-emerald-950/80 text-emerald-300 hover:bg-emerald-900/80 border border-emerald-800 transition"
                           title="WhatsApp Parent"
                         >
                           <MessageSquare className="w-3.5 h-3.5" />
@@ -686,7 +696,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                         {canManageSundaySchool && (
                           <button
                             onClick={() => handleOpenEditStudentModal(stud)}
-                            className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-purple-700 hover:bg-purple-50 transition"
+                            className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-purple-300 hover:bg-slate-700 transition"
                             title="Edit Student & Parent Details"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
@@ -696,7 +706,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                         {onDeleteStudent && (
                           <button
                             onClick={() => setStudentToDelete(stud)}
-                            className="p-2 rounded-xl bg-slate-100 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                            className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 transition"
                             title="Remove / Delete Enrolled Student"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -706,9 +716,9 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                     </div>
 
                     {stud.allergiesMedicalNotes && (
-                      <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-start gap-2">
-                        <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
-                        <span><strong>Care Notes:</strong> {stud.allergiesMedicalNotes}</span>
+                      <div className="p-2.5 rounded-xl bg-amber-950/60 border border-amber-800 text-[11px] text-amber-200 flex items-start gap-2">
+                        <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                        <span><strong className="text-amber-100">Care Notes:</strong> {stud.allergiesMedicalNotes}</span>
                       </div>
                     )}
 
@@ -717,8 +727,8 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Badges & Honors</span>
                       <div className="flex flex-wrap gap-1.5 mb-2">
                         {(stud.badges || []).map((b, idx) => (
-                          <span key={idx} className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-purple-100 text-purple-900 px-2 py-0.5 rounded-full border border-purple-200">
-                            <Award className="w-3 h-3 text-purple-600" /> {b}
+                          <span key={idx} className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-purple-950/80 text-purple-300 px-2 py-0.5 rounded-full border border-purple-800">
+                            <Award className="w-3 h-3 text-purple-400" /> {b}
                           </span>
                         ))}
                       </div>
@@ -730,11 +740,11 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                           placeholder="Award new badge..."
                           value={newBadgeInput[stud.id] || ''}
                           onChange={(e) => setNewBadgeInput({ ...newBadgeInput, [stud.id]: e.target.value })}
-                          className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1 text-[11px] focus:outline-none"
+                          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1 text-[11px] text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                         />
                         <button
                           onClick={() => handleAddBadgeSubmit(stud.id)}
-                          className="px-3 py-1 bg-purple-700 hover:bg-purple-800 text-white text-[11px] font-bold rounded-xl shrink-0"
+                          className="px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white text-[11px] font-bold rounded-xl shrink-0"
                         >
                           Award
                         </button>
@@ -753,47 +763,47 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
         <div className="space-y-4">
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-              <span className="text-[11px] font-bold text-slate-500">Total Sessions</span>
-              <p className="text-xl font-black text-slate-900 mt-0.5">{filteredAttendance.length}</p>
+            <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-sm">
+              <span className="text-[11px] font-bold text-slate-400">Total Sessions</span>
+              <p className="text-xl font-black text-white mt-0.5">{filteredAttendance.length}</p>
             </div>
 
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-              <span className="text-[11px] font-bold text-emerald-600">Total Present Kids</span>
-              <p className="text-xl font-black text-emerald-700 mt-0.5">
+            <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-sm">
+              <span className="text-[11px] font-bold text-emerald-400">Total Present Kids</span>
+              <p className="text-xl font-black text-emerald-400 mt-0.5">
                 {filteredAttendance.reduce((acc, a) => acc + (a.presentStudentIds?.length || 0), 0)}
               </p>
             </div>
 
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-              <span className="text-[11px] font-bold text-indigo-600">Guest / Visitor Kids</span>
-              <p className="text-xl font-black text-indigo-700 mt-0.5">
+            <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-sm">
+              <span className="text-[11px] font-bold text-indigo-400">Guest / Visitor Kids</span>
+              <p className="text-xl font-black text-indigo-400 mt-0.5">
                 {filteredAttendance.reduce((acc, a) => acc + (a.guestCount || 0), 0)}
               </p>
             </div>
 
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-              <span className="text-[11px] font-bold text-purple-600">Active Class</span>
-              <p className="text-sm font-extrabold text-purple-900 mt-1 truncate">
+            <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-sm">
+              <span className="text-[11px] font-bold text-purple-400">Active Class</span>
+              <p className="text-sm font-extrabold text-white mt-1 truncate">
                 {activeClass?.className || 'All Classes'}
               </p>
             </div>
           </div>
 
           {/* Attendance Records List */}
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div>
-                <h3 className="text-base font-extrabold text-slate-900">
+                <h3 className="text-base font-extrabold text-white">
                   {activeClass ? `${activeClass.className} Attendance Log` : 'All Class Attendance Logs'}
                 </h3>
-                <p className="text-xs text-slate-500">Weekly session records and parent updates</p>
+                <p className="text-xs text-slate-400">Weekly session records and parent updates</p>
               </div>
 
               {canManageSundaySchool && (
                 <button
                   onClick={() => handleOpenTakeAttendanceModal(activeClass)}
-                  className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center gap-1.5"
+                  className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow transition flex items-center gap-1.5"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Take Attendance</span>
@@ -802,16 +812,16 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
             </div>
 
             {filteredAttendance.length === 0 ? (
-              <div className="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200 space-y-3">
-                <ClipboardCheck className="w-10 h-10 text-slate-400 mx-auto" />
-                <p className="text-sm font-bold text-slate-700">No attendance sessions recorded yet</p>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <div className="text-center py-12 bg-slate-800/60 rounded-2xl border border-dashed border-slate-700 space-y-3">
+                <ClipboardCheck className="w-10 h-10 text-slate-500 mx-auto" />
+                <p className="text-sm font-bold text-slate-300">No attendance sessions recorded yet</p>
+                <p className="text-xs text-slate-400 max-w-sm mx-auto">
                   Click "Take Attendance" above to record the roll-call for this Sunday's class.
                 </p>
                 {canManageSundaySchool && (
                   <button
                     onClick={() => handleOpenTakeAttendanceModal(activeClass)}
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition"
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow transition"
                   >
                     Take First Attendance
                   </button>
@@ -828,32 +838,32 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                   return (
                     <div
                       key={record.id}
-                      className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-purple-200 transition space-y-3"
+                      className="p-4 sm:p-5 rounded-2xl bg-slate-800/80 border border-slate-700 hover:border-purple-500/50 transition space-y-3"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-11 h-11 rounded-2xl bg-purple-100 text-purple-900 flex flex-col items-center justify-center font-black shrink-0">
+                          <div className="w-11 h-11 rounded-2xl bg-purple-950/80 text-purple-300 border border-purple-800 flex flex-col items-center justify-center font-black shrink-0">
                             <span className="text-xs uppercase">{new Date(record.date).toLocaleString('default', { month: 'short' })}</span>
                             <span className="text-sm leading-none">{new Date(record.date).getDate()}</span>
                           </div>
 
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-black text-slate-900">
+                              <span className="text-sm font-black text-white">
                                 {record.className} Class
                               </span>
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-950/80 text-emerald-300 border border-emerald-800">
                                 {presentCount} Present ({pct}%)
                               </span>
                               {record.guestCount > 0 && (
-                                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-100 text-indigo-800">
+                                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-950/80 text-indigo-300 border border-indigo-800">
                                   +{record.guestCount} Guests
                                 </span>
                               )}
                             </div>
 
-                            <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-2">
-                              <span>Recorded by: <strong>{record.recordedBy}</strong></span>
+                            <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-2">
+                              <span>Recorded by: <strong className="text-white font-bold">{record.recordedBy}</strong></span>
                               <span>•</span>
                               <span>Date: {record.date}</span>
                             </p>
@@ -872,7 +882,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
 
                           <button
                             onClick={() => setViewingAttendanceRecord(record)}
-                            className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold text-xs rounded-xl border border-purple-200 transition flex items-center gap-1"
+                            className="px-3 py-1.5 bg-purple-950/80 hover:bg-purple-900/80 text-purple-300 font-bold text-xs rounded-xl border border-purple-800 transition flex items-center gap-1"
                           >
                             <FileText className="w-3.5 h-3.5" />
                             <span>Roll-Call Details</span>
@@ -881,7 +891,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                           {onDeleteAttendance && canManageSundaySchool && (
                             <button
                               onClick={() => setAttendanceToDelete(record)}
-                              className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                              className="p-1.5 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-950/50 transition"
                               title="Delete Attendance Record"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -892,20 +902,20 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
 
                       {/* Lesson & Verse Chips */}
                       {(record.lessonTaught || record.memoryVerse) && (
-                        <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs space-y-1">
+                        <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs space-y-1">
                           {record.lessonTaught && (
-                            <p className="text-slate-800 font-medium">
-                              <strong>Lesson:</strong> {record.lessonTaught}
+                            <p className="text-slate-200 font-medium">
+                              <strong className="text-white">Lesson:</strong> {record.lessonTaught}
                             </p>
                           )}
                           {record.memoryVerse && (
-                            <p className="text-purple-900 italic font-semibold">
-                              <strong>Memory Verse:</strong> "{record.memoryVerse}"
+                            <p className="text-purple-300 italic font-semibold">
+                              <strong className="text-purple-200">Memory Verse:</strong> "{record.memoryVerse}"
                             </p>
                           )}
                           {record.notes && (
-                            <p className="text-slate-500 text-[11px] pt-1 border-t border-slate-100">
-                              <strong>Notes:</strong> {record.notes}
+                            <p className="text-slate-400 text-[11px] pt-1 border-t border-slate-800">
+                              <strong className="text-slate-300">Notes:</strong> {record.notes}
                             </p>
                           )}
                         </div>
@@ -922,21 +932,21 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
       {/* MODAL 1: TAKE ATTENDANCE / ROLL CALL */}
       {isAttendanceModalOpen && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 space-y-4 border border-slate-200 shadow-2xl max-h-[92vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+          <div className="bg-slate-900 text-white rounded-3xl max-w-xl w-full p-6 space-y-4 border border-slate-800 shadow-2xl max-h-[92vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold">
                   <ClipboardCheck className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold text-slate-900">Sunday School Roll-Call Sheet</h3>
-                  <p className="text-[11px] text-slate-500">Record attendance, visitor count & lesson details</p>
+                  <h3 className="text-base font-extrabold text-white">Sunday School Roll-Call Sheet</h3>
+                  <p className="text-[11px] text-slate-400">Record attendance, visitor count & lesson details</p>
                 </div>
               </div>
 
               <button
                 onClick={() => setIsAttendanceModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -946,14 +956,14 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
               {/* Session Meta */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Sunday School Class *</label>
+                  <label className="block text-xs font-semibold text-slate-200 mb-1">Sunday School Class *</label>
                   <select
                     value={attendanceClassId}
                     onChange={(e) => handleAttendanceClassChange(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none font-bold text-slate-900"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none font-bold text-white"
                   >
                     {safeClasses.map((c) => (
-                      <option key={c.id} value={c.id}>
+                      <option key={c.id} value={c.id} className="bg-slate-900 text-white">
                         {c.className} ({c.ageGroup})
                       </option>
                     ))}
@@ -961,13 +971,13 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Session Date *</label>
+                  <label className="block text-xs font-semibold text-slate-200 mb-1">Session Date *</label>
                   <input
                     type="date"
                     required
                     value={attendanceDate}
                     onChange={(e) => setAttendanceDate(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none font-bold"
+                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none font-bold [color-scheme:dark]"
                   />
                 </div>
               </div>
@@ -975,48 +985,48 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
               {/* Lesson & Memory Verse */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Lesson of the Day</label>
+                  <label className="block text-xs font-semibold text-slate-200 mb-1">Lesson of the Day</label>
                   <input
                     type="text"
                     value={lessonTaught}
                     onChange={(e) => setLessonTaught(e.target.value)}
                     placeholder="e.g. David & Goliath"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    className="w-full bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Memory Verse</label>
+                  <label className="block text-xs font-semibold text-slate-200 mb-1">Memory Verse</label>
                   <input
                     type="text"
                     value={attendanceMemoryVerse}
                     onChange={(e) => setAttendanceMemoryVerse(e.target.value)}
                     placeholder="e.g. 1 Samuel 17:45"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    className="w-full bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Guest Counter */}
-              <div className="flex items-center justify-between p-3 bg-purple-50 rounded-2xl border border-purple-100">
+              <div className="flex items-center justify-between p-3 bg-purple-950/40 rounded-2xl border border-purple-900/60">
                 <div>
-                  <span className="text-xs font-extrabold text-purple-900 block">First-Time Visitor / Guest Kids</span>
-                  <span className="text-[11px] text-purple-700">Children visiting without prior registration</span>
+                  <span className="text-xs font-extrabold text-purple-300 block">First-Time Visitor / Guest Kids</span>
+                  <span className="text-[11px] text-purple-400">Children visiting without prior registration</span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => setGuestCount(Math.max(0, guestCount - 1))}
-                    className="w-7 h-7 rounded-lg bg-white border border-purple-200 font-black text-purple-900 flex items-center justify-center hover:bg-purple-100"
+                    className="w-7 h-7 rounded-lg bg-slate-800 border border-purple-800 font-black text-purple-300 flex items-center justify-center hover:bg-slate-700 transition"
                   >
                     -
                   </button>
-                  <span className="text-sm font-black text-purple-950 w-6 text-center">{guestCount}</span>
+                  <span className="text-sm font-black text-purple-200 w-6 text-center">{guestCount}</span>
                   <button
                     type="button"
                     onClick={() => setGuestCount(guestCount + 1)}
-                    className="w-7 h-7 rounded-lg bg-white border border-purple-200 font-black text-purple-900 flex items-center justify-center hover:bg-purple-100"
+                    className="w-7 h-7 rounded-lg bg-slate-800 border border-purple-800 font-black text-purple-300 flex items-center justify-center hover:bg-slate-700 transition"
                   >
                     +
                   </button>
@@ -1026,7 +1036,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
               {/* Roll-Call Student Roster */}
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-xs font-bold text-slate-900">
+                  <span className="text-xs font-bold text-white">
                     Student Roll-Call ({modalPresentCount} Present • {modalAbsentCount} Absent)
                   </span>
 
@@ -1034,14 +1044,14 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                     <button
                       type="button"
                       onClick={handleMarkAllPresent}
-                      className="px-2.5 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-extrabold rounded-lg transition"
+                      className="px-2.5 py-1 bg-emerald-950/80 border border-emerald-800 hover:bg-emerald-900/90 text-emerald-300 text-[10px] font-extrabold rounded-lg transition"
                     >
                       ✓ All Present
                     </button>
                     <button
                       type="button"
                       onClick={handleMarkAllAbsent}
-                      className="px-2.5 py-1 bg-rose-100 hover:bg-rose-200 text-rose-800 text-[10px] font-extrabold rounded-lg transition"
+                      className="px-2.5 py-1 bg-rose-950/80 border border-rose-800 hover:bg-rose-900/90 text-rose-300 text-[10px] font-extrabold rounded-lg transition"
                     >
                       ✕ All Absent
                     </button>
@@ -1049,7 +1059,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                 </div>
 
                 {modalTargetStudents.length === 0 ? (
-                  <p className="text-xs text-slate-400 italic py-4 text-center bg-slate-50 rounded-xl">
+                  <p className="text-xs text-slate-400 italic py-4 text-center bg-slate-800/60 rounded-xl border border-slate-700">
                     No students currently enrolled in this class. You can log guests only or enroll students first.
                   </p>
                 ) : (
@@ -1062,26 +1072,26 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                           onClick={() => toggleStudentAttendance(stud.id)}
                           className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition select-none ${
                             isPresent
-                              ? 'bg-emerald-50/80 border-emerald-300'
-                              : 'bg-slate-50 border-slate-200 opacity-70'
+                              ? 'bg-emerald-950/40 border-emerald-800'
+                              : 'bg-slate-800/80 border-slate-700 opacity-70'
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
                             <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                              isPresent ? 'bg-emerald-600 text-white' : 'bg-slate-300 text-slate-700'
+                              isPresent ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-300'
                             }`}>
                               {isPresent ? '✓' : '✕'}
                             </div>
 
                             <div>
-                              <p className="text-xs font-extrabold text-slate-900">{stud.studentName}</p>
-                              <p className="text-[10px] text-slate-500">Age {stud.age} • Parent: {stud.parentName}</p>
+                              <p className="text-xs font-extrabold text-white">{stud.studentName}</p>
+                              <p className="text-[10px] text-slate-400">Age {stud.age} • Parent: {stud.parentName}</p>
                             </div>
                           </div>
 
                           <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                             <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${
-                              isPresent ? 'bg-emerald-200 text-emerald-900' : 'bg-slate-200 text-slate-700'
+                              isPresent ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800' : 'bg-slate-800 text-slate-300 border border-slate-700'
                             }`}>
                               {isPresent ? 'Present' : 'Absent'}
                             </span>
@@ -1095,7 +1105,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                               )}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-emerald-50 hover:text-emerald-700 text-slate-400 transition"
+                              className="p-1.5 rounded-lg bg-slate-800 border border-slate-700 hover:bg-emerald-950 hover:text-emerald-300 text-slate-400 transition"
                               title="Send WhatsApp Update to Parent"
                             >
                               <MessageSquare className="w-3.5 h-3.5" />
@@ -1110,29 +1120,29 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
 
               {/* Notes */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Session Highlights & Notes</label>
+                <label className="block text-xs font-semibold text-slate-200 mb-1">Session Highlights & Notes</label>
                 <textarea
                   rows={2}
                   value={attendanceNotes}
                   onChange={(e) => setAttendanceNotes(e.target.value)}
                   placeholder="e.g. 10 kids recited the memory verse, active participation during craft..."
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
                 />
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col-reverse sm:flex-row items-center gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
+              <div className="flex flex-col-reverse sm:flex-row items-center gap-2.5 sm:gap-3 pt-3 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsAttendanceModalOpen(false)}
-                  className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition text-center"
+                  className="w-full sm:w-auto px-5 py-2.5 bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-bold rounded-xl text-xs transition text-center"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="w-full sm:flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2"
+                  className="w-full sm:flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-lg transition flex items-center justify-center gap-2"
                 >
                   <Save className="w-4 h-4 shrink-0 text-white" />
                   <span className="truncate">Save & Complete Attendance</span>
@@ -1146,53 +1156,53 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
       {/* MODAL 2: VIEW ATTENDANCE SESSION DETAILS & ROLL CALL */}
       {viewingAttendanceRecord && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 border border-slate-200 shadow-2xl max-h-[92vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+          <div className="bg-slate-900 text-white rounded-3xl max-w-lg w-full p-6 space-y-4 border border-slate-800 shadow-2xl max-h-[92vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center font-bold">
                   <FileText className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold text-slate-900">
+                  <h3 className="text-base font-extrabold text-white">
                     {viewingAttendanceRecord.className} • {viewingAttendanceRecord.date}
                   </h3>
-                  <p className="text-[11px] text-slate-500">Recorded by: {viewingAttendanceRecord.recordedBy}</p>
+                  <p className="text-[11px] text-slate-400">Recorded by: {viewingAttendanceRecord.recordedBy}</p>
                 </div>
               </div>
 
               <button
                 onClick={() => setViewingAttendanceRecord(null)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
-                <span className="text-[10px] font-bold text-emerald-700 uppercase">Present</span>
-                <p className="text-base font-black text-emerald-900">{viewingAttendanceRecord.presentStudentIds?.length || 0}</p>
+              <div className="bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-800/80">
+                <span className="text-[10px] font-bold text-emerald-400 uppercase">Present</span>
+                <p className="text-base font-black text-emerald-300">{viewingAttendanceRecord.presentStudentIds?.length || 0}</p>
               </div>
-              <div className="bg-rose-50 p-2.5 rounded-xl border border-rose-100">
-                <span className="text-[10px] font-bold text-rose-700 uppercase">Absent</span>
-                <p className="text-base font-black text-rose-900">{viewingAttendanceRecord.absentStudentIds?.length || 0}</p>
+              <div className="bg-rose-950/40 p-2.5 rounded-xl border border-rose-800/80">
+                <span className="text-[10px] font-bold text-rose-400 uppercase">Absent</span>
+                <p className="text-base font-black text-rose-300">{viewingAttendanceRecord.absentStudentIds?.length || 0}</p>
               </div>
-              <div className="bg-indigo-50 p-2.5 rounded-xl border border-indigo-100">
-                <span className="text-[10px] font-bold text-indigo-700 uppercase">Guests</span>
-                <p className="text-base font-black text-indigo-900">{viewingAttendanceRecord.guestCount || 0}</p>
+              <div className="bg-indigo-950/40 p-2.5 rounded-xl border border-indigo-800/80">
+                <span className="text-[10px] font-bold text-indigo-400 uppercase">Guests</span>
+                <p className="text-base font-black text-indigo-300">{viewingAttendanceRecord.guestCount || 0}</p>
               </div>
             </div>
 
             {viewingAttendanceRecord.lessonTaught && (
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
-                <p><strong>Lesson:</strong> {viewingAttendanceRecord.lessonTaught}</p>
+              <div className="p-3 bg-slate-800 rounded-xl border border-slate-700 text-xs space-y-1">
+                <p className="text-slate-200"><strong>Lesson:</strong> {viewingAttendanceRecord.lessonTaught}</p>
                 {viewingAttendanceRecord.memoryVerse && (
-                  <p className="text-purple-900 italic font-semibold">
+                  <p className="text-purple-300 italic font-semibold">
                     <strong>Memory Verse:</strong> "{viewingAttendanceRecord.memoryVerse}"
                   </p>
                 )}
                 {viewingAttendanceRecord.notes && (
-                  <p className="text-slate-500 text-[11px] pt-1">
+                  <p className="text-slate-400 text-[11px] pt-1">
                     <strong>Notes:</strong> {viewingAttendanceRecord.notes}
                   </p>
                 )}
@@ -1201,8 +1211,8 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
 
             {/* Present Students */}
             <div className="space-y-2">
-              <span className="text-xs font-bold text-emerald-800 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Present Students ({viewingAttendanceRecord.presentStudentIds?.length || 0})
+              <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Present Students ({viewingAttendanceRecord.presentStudentIds?.length || 0})
               </span>
 
               <div className="space-y-1.5 max-h-40 overflow-y-auto">
@@ -1210,10 +1220,10 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                   const s = safeStudents.find((stud) => stud.id === id);
                   if (!s) return null;
                   return (
-                    <div key={id} className="p-2 rounded-xl bg-emerald-50/60 border border-emerald-100 flex items-center justify-between text-xs">
+                    <div key={id} className="p-2 rounded-xl bg-emerald-950/30 border border-emerald-900/60 flex items-center justify-between text-xs">
                       <div>
-                        <span className="font-extrabold text-slate-900">{s.studentName}</span>
-                        <span className="text-slate-500 text-[10px] ml-2">Parent: {s.parentName}</span>
+                        <span className="font-extrabold text-white">{s.studentName}</span>
+                        <span className="text-slate-400 text-[10px] ml-2">Parent: {s.parentName}</span>
                       </div>
                       <a
                         href={`https://wa.me/${s.parentPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
@@ -1221,7 +1231,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                         )}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-1 rounded-lg bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition"
+                        className="p-1 rounded-lg bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800 transition"
                         title="Send WhatsApp update"
                       >
                         <MessageSquare className="w-3 h-3" />
@@ -1235,8 +1245,8 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
             {/* Absent Students */}
             {viewingAttendanceRecord.absentStudentIds && viewingAttendanceRecord.absentStudentIds.length > 0 && (
               <div className="space-y-2">
-                <span className="text-xs font-bold text-rose-800 flex items-center gap-1">
-                  <XCircle className="w-3.5 h-3.5 text-rose-600" /> Absent Students ({viewingAttendanceRecord.absentStudentIds.length})
+                <span className="text-xs font-bold text-rose-400 flex items-center gap-1">
+                  <XCircle className="w-3.5 h-3.5 text-rose-400" /> Absent Students ({viewingAttendanceRecord.absentStudentIds.length})
                 </span>
 
                 <div className="space-y-1.5 max-h-40 overflow-y-auto">
@@ -1244,10 +1254,10 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                     const s = safeStudents.find((stud) => stud.id === id);
                     if (!s) return null;
                     return (
-                      <div key={id} className="p-2 rounded-xl bg-rose-50/60 border border-rose-100 flex items-center justify-between text-xs">
+                      <div key={id} className="p-2 rounded-xl bg-rose-950/30 border border-rose-900/60 flex items-center justify-between text-xs">
                         <div>
-                          <span className="font-extrabold text-slate-900">{s.studentName}</span>
-                          <span className="text-slate-500 text-[10px] ml-2">Parent: {s.parentName}</span>
+                          <span className="font-extrabold text-white">{s.studentName}</span>
+                          <span className="text-slate-400 text-[10px] ml-2">Parent: {s.parentName}</span>
                         </div>
                         <a
                           href={`https://wa.me/${s.parentPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
@@ -1255,7 +1265,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                           )}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-1 rounded-lg bg-rose-100 text-rose-800 hover:bg-rose-200 transition"
+                          className="p-1 rounded-lg bg-rose-900/60 text-rose-300 hover:bg-rose-800 transition"
                           title="Send Pastoral Care WhatsApp"
                         >
                           <MessageSquare className="w-3 h-3" />
@@ -1267,14 +1277,14 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-slate-100">
+            <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-slate-800">
               <button
                 onClick={() => {
                   const rec = viewingAttendanceRecord;
                   setViewingAttendanceRecord(null);
                   handleOpenSSWhatsAppModal(rec, undefined, 'full_summary');
                 }}
-                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-2"
               >
                 <MessageSquare className="w-4 h-4" />
                 <span>Broadcast Summary to WhatsApp</span>
@@ -1282,7 +1292,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
 
               <button
                 onClick={() => setViewingAttendanceRecord(null)}
-                className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition"
+                className="px-4 py-2.5 bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-bold rounded-xl text-xs transition"
               >
                 Close
               </button>
@@ -1294,17 +1304,17 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
       {/* MODAL 3: STUDENT MODAL (ADD & EDIT) */}
       {isAddStudentOpen && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 border border-slate-200 shadow-2xl max-h-[92vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 space-y-4 border border-slate-800 shadow-2xl max-h-[92vh] overflow-y-auto text-white">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-purple-950/70 border border-purple-800/50 text-purple-400 flex items-center justify-center font-bold">
                   {editingStudentId ? <Edit3 className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold text-slate-900">
+                  <h3 className="text-base font-extrabold text-white">
                     {editingStudentId ? 'Edit Student Details' : 'Enroll Student in Sunday School'}
                   </h3>
-                  <p className="text-[11px] text-slate-500">Manage student info, target class, and parent contacts</p>
+                  <p className="text-[11px] text-slate-400">Manage student info, target class, and parent contacts</p>
                 </div>
               </div>
 
@@ -1313,7 +1323,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                   setIsAddStudentOpen(false);
                   setEditingStudentId(null);
                 }} 
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-slate-400 hover:text-white p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1321,20 +1331,20 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
 
             <form onSubmit={handleSaveStudentSubmit} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Child's Name *</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Child's Name *</label>
                 <input
                   type="text"
                   required
                   value={studentName}
                   onChange={(e) => setStudentName(e.target.value)}
                   placeholder="e.g. Leo Kumar"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Age (Years) *</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Age (Years) *</label>
                   <input
                     type="number"
                     min="1"
@@ -1342,19 +1352,19 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                     required
                     value={age}
                     onChange={(e) => setAge(Number(e.target.value))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Assigned Class *</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Assigned Class *</label>
                   <select
                     value={studentClassId}
                     onChange={(e) => setStudentClassId(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none font-bold text-slate-900"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
                   >
                     {safeClasses.map((c) => (
-                      <option key={c.id} value={c.id}>
+                      <option key={c.id} value={c.id} className="bg-slate-900 text-white">
                         {c.className} ({c.ageGroup})
                       </option>
                     ))}
@@ -1363,35 +1373,35 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Parent Name(s)</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Parent Name(s)</label>
                 <input
                   type="text"
                   value={parentName}
                   onChange={(e) => setParentName(e.target.value)}
                   placeholder="e.g. Rajesh & Sunitha Kumar"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Parent WhatsApp Phone</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Parent WhatsApp Phone</label>
                 <input
                   type="tel"
                   value={parentPhone}
                   onChange={(e) => setParentPhone(e.target.value)}
                   placeholder="+91 98765 43210"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Allergies or Special Care Notes</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Allergies or Special Care Notes</label>
                 <input
                   type="text"
                   value={medicalNotes}
                   onChange={(e) => setMedicalNotes(e.target.value)}
                   placeholder="e.g. Peanut allergy, Asthma inhaler"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
                 />
               </div>
 
@@ -1402,14 +1412,14 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                     setIsAddStudentOpen(false);
                     setEditingStudentId(null);
                   }}
-                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition"
+                  className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-bold rounded-xl text-xs transition"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5"
+                  className="flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs rounded-xl shadow-lg transition flex items-center justify-center gap-1.5"
                 >
                   <Save className="w-3.5 h-3.5" />
                   {editingStudentId ? 'Save Changes' : 'Complete Enrollment'}
@@ -1423,17 +1433,17 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
       {/* MODAL 4: CLASS MODAL (CREATE & EDIT) */}
       {isClassModalOpen && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 border border-slate-200 shadow-2xl max-h-[92vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 space-y-4 border border-slate-800 shadow-2xl max-h-[92vh] overflow-y-auto text-white">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-purple-950/70 border border-purple-800/50 text-purple-400 flex items-center justify-center font-bold">
                   {editingClassId ? <Edit3 className="w-4 h-4" /> : <GraduationCap className="w-4 h-4" />}
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold text-slate-900">
+                  <h3 className="text-base font-extrabold text-white">
                     {editingClassId ? 'Edit Sunday School Class' : 'Create New Sunday School Class'}
                   </h3>
-                  <p className="text-[11px] text-slate-500">Configure class details, age group, teacher & lessons</p>
+                  <p className="text-[11px] text-slate-400">Configure class details, age group, teacher & lessons</p>
                 </div>
               </div>
 
@@ -1442,7 +1452,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                   setIsClassModalOpen(false);
                   setEditingClassId(null);
                 }} 
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-slate-400 hover:text-white p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1450,86 +1460,86 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
 
             <form onSubmit={handleSaveClassSubmit} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Class Name *</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Class Name *</label>
                 <input
                   type="text"
                   required
                   value={className}
                   onChange={(e) => setClassName(e.target.value)}
                   placeholder="e.g. Little Lambs / Faith Explorers"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Age Group</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Age Group</label>
                   <input
                     type="text"
                     value={ageGroup}
                     onChange={(e) => setAgeGroup(e.target.value)}
                     placeholder="e.g. Ages 4 - 7 yrs"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none text-white placeholder:text-slate-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Room / Hall</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Room / Hall</label>
                   <input
                     type="text"
                     value={roomNumber}
                     onChange={(e) => setRoomNumber(e.target.value)}
                     placeholder="e.g. Room 102 / Annex"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Teacher / Leader Name *</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Teacher / Leader Name *</label>
                   <input
                     type="text"
                     required
                     value={teacherName}
                     onChange={(e) => setTeacherName(e.target.value)}
                     placeholder="e.g. Sister Grace"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Teacher WhatsApp / Phone *</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Teacher WhatsApp / Phone *</label>
                   <input
                     type="tel"
                     required
                     value={teacherPhone}
                     onChange={(e) => setTeacherPhone(e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Current Lesson of the Week</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Current Lesson of the Week</label>
                 <input
                   type="text"
                   value={currentLesson}
                   onChange={(e) => setCurrentLesson(e.target.value)}
                   placeholder="e.g. David & Goliath - Courage in the Lord"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Memory Verse of the Week</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Memory Verse of the Week</label>
                 <textarea
                   rows={2}
                   value={memoryVerse}
                   onChange={(e) => setMemoryVerse(e.target.value)}
                   placeholder="e.g. Ephesians 6:11 - Put on the full armor of God..."
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
                 />
               </div>
 
@@ -1540,14 +1550,14 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                     setIsClassModalOpen(false);
                     setEditingClassId(null);
                   }}
-                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition"
+                  className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-bold rounded-xl text-xs transition"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5"
+                  className="flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs rounded-xl shadow-lg transition flex items-center justify-center gap-1.5"
                 >
                   <Save className="w-3.5 h-3.5" />
                   {editingClassId ? 'Save Changes' : 'Create Class'}
@@ -1562,15 +1572,15 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
       {/* Delete Student Modal */}
       {studentToDelete && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+          <div className="bg-slate-900 w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-800 space-y-4 text-white">
+            <div className="w-12 h-12 rounded-2xl bg-rose-950/60 border border-rose-800/40 text-rose-400 flex items-center justify-center mx-auto">
               <AlertTriangle className="w-6 h-6" />
             </div>
 
             <div className="text-center space-y-1">
-              <h3 className="text-base font-bold text-slate-900">Remove Enrolled Student?</h3>
-              <p className="text-xs text-slate-500">
-                Are you sure you want to delete <strong className="text-slate-800">{studentToDelete.studentName}</strong> (Age {studentToDelete.age}) from this Sunday School class?
+              <h3 className="text-base font-bold text-white">Remove Enrolled Student?</h3>
+              <p className="text-xs text-slate-400">
+                Are you sure you want to delete <strong className="text-white">{studentToDelete.studentName}</strong> (Age {studentToDelete.age}) from this Sunday School class?
               </p>
             </div>
 
@@ -1578,7 +1588,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
               <button
                 type="button"
                 onClick={() => setStudentToDelete(null)}
-                className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition"
+                className="py-2.5 px-4 bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-bold rounded-xl text-xs transition"
               >
                 Cancel
               </button>
@@ -1603,15 +1613,15 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
       {/* Delete Class Modal */}
       {classToDelete && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+          <div className="bg-slate-900 w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-800 space-y-4 text-white">
+            <div className="w-12 h-12 rounded-2xl bg-rose-950/60 border border-rose-800/40 text-rose-400 flex items-center justify-center mx-auto">
               <AlertTriangle className="w-6 h-6" />
             </div>
 
             <div className="text-center space-y-1">
-              <h3 className="text-base font-bold text-slate-900">Delete Sunday School Class?</h3>
-              <p className="text-xs text-slate-500">
-                Are you sure you want to delete <strong className="text-slate-800">{classToDelete.className}</strong>? Any enrolled students in this class will also be removed.
+              <h3 className="text-base font-bold text-white">Delete Sunday School Class?</h3>
+              <p className="text-xs text-slate-400">
+                Are you sure you want to delete <strong className="text-white">{classToDelete.className}</strong>? Any enrolled students in this class will also be removed.
               </p>
             </div>
 
@@ -1619,7 +1629,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
               <button
                 type="button"
                 onClick={() => setClassToDelete(null)}
-                className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition"
+                className="py-2.5 px-4 bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-bold rounded-xl text-xs transition"
               >
                 Cancel
               </button>
@@ -1644,15 +1654,15 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
       {/* Delete Attendance Session Modal */}
       {attendanceToDelete && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+          <div className="bg-slate-900 w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-800 space-y-4 text-white">
+            <div className="w-12 h-12 rounded-2xl bg-rose-950/60 border border-rose-800/40 text-rose-400 flex items-center justify-center mx-auto">
               <AlertTriangle className="w-6 h-6" />
             </div>
 
             <div className="text-center space-y-1">
-              <h3 className="text-base font-bold text-slate-900">Delete Attendance Session?</h3>
-              <p className="text-xs text-slate-500">
-                Are you sure you want to delete the attendance record for <strong className="text-slate-800">{attendanceToDelete.className}</strong> on <strong className="text-slate-800">{attendanceToDelete.date}</strong>?
+              <h3 className="text-base font-bold text-white">Delete Attendance Session?</h3>
+              <p className="text-xs text-slate-400">
+                Are you sure you want to delete the attendance record for <strong className="text-white">{attendanceToDelete.className}</strong> on <strong className="text-white">{attendanceToDelete.date}</strong>?
               </p>
             </div>
 
@@ -1660,7 +1670,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
               <button
                 type="button"
                 onClick={() => setAttendanceToDelete(null)}
-                className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition"
+                className="py-2.5 px-4 bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-bold rounded-xl text-xs transition"
               >
                 Cancel
               </button>
@@ -1685,17 +1695,17 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
       {/* MODAL: SUNDAY SCHOOL WHATSAPP SUMMARY & VERSE BROADCAST */}
       {isSSWhatsAppModalOpen && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 space-y-4 border border-slate-200 shadow-2xl max-h-[92vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+          <div className="bg-slate-900 rounded-3xl max-w-xl w-full p-6 space-y-4 border border-slate-800 shadow-2xl max-h-[92vh] overflow-y-auto text-white">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                <div className="w-9 h-9 rounded-2xl bg-emerald-950/70 border border-emerald-800/50 text-emerald-400 flex items-center justify-center font-bold">
                   <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold text-slate-900">
+                  <h3 className="text-base font-extrabold text-white">
                     Sunday School WhatsApp Summary & Verse Broadcast
                   </h3>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-slate-400">
                     Auto-formatted bulletin for {activeSummaryClass?.className || activeClass?.className || 'Sunday School'}
                   </p>
                 </div>
@@ -1703,21 +1713,21 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
 
               <button
                 onClick={() => setIsSSWhatsAppModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-slate-400 hover:text-white p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Mode Switcher Tabs */}
-            <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl text-xs font-bold">
+            <div className="flex items-center gap-1.5 bg-slate-800/80 border border-slate-700/60 p-1 rounded-2xl text-xs font-bold">
               <button
                 type="button"
                 onClick={() => handleSummaryModeChange('full_summary')}
                 className={`flex-1 py-2 px-2.5 rounded-xl transition flex items-center justify-center gap-1.5 text-center ${
                   ssSummaryMode === 'full_summary'
                     ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
@@ -1730,7 +1740,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                 className={`flex-1 py-2 px-2.5 rounded-xl transition flex items-center justify-center gap-1.5 text-center ${
                   ssSummaryMode === 'verse_challenge'
                     ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <BookOpen className="w-3.5 h-3.5 shrink-0" />
@@ -1743,7 +1753,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                 className={`flex-1 py-2 px-2.5 rounded-xl transition flex items-center justify-center gap-1.5 text-center ${
                   ssSummaryMode === 'absentee_care'
                     ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <HeartHandshake className="w-3.5 h-3.5 shrink-0" />
@@ -1753,16 +1763,16 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
 
             {/* Target WhatsApp Group */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">
                 Target Church WhatsApp Group Channel
               </label>
               <select
                 value={selectedTargetGroupId}
                 onChange={(e) => setSelectedTargetGroupId(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 {safeGroups.map((g) => (
-                  <option key={g.id} value={g.id}>
+                  <option key={g.id} value={g.id} className="bg-slate-900 text-white">
                     {g.name} ({g.category}) — {g.memberCount || 25} Members
                   </option>
                 ))}
@@ -1772,7 +1782,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
             {/* Formatted Message Preview / Editor */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-700">
+                <label className="text-xs font-bold text-slate-300">
                   Formatted WhatsApp Message
                 </label>
                 <button
@@ -1781,7 +1791,7 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                     const msg = generateSSBroadcastMessage(activeSummaryClass || activeClass, activeSummaryRecord, ssSummaryMode);
                     setSsWhatsAppText(msg);
                   }}
-                  className="text-[11px] font-bold text-rose-600 hover:underline"
+                  className="text-[11px] font-bold text-rose-400 hover:text-rose-300 hover:underline"
                 >
                   Reset Text
                 </button>
@@ -1791,12 +1801,12 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
                 rows={8}
                 value={ssWhatsAppText}
                 onChange={(e) => setSsWhatsAppText(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-xs text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500 leading-relaxed"
+                className="w-full bg-slate-800/90 border border-slate-700 rounded-2xl p-3.5 text-xs text-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500 leading-relaxed"
               />
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-2.5 pt-2 border-t border-slate-100">
+            <div className="flex flex-col sm:flex-row gap-2.5 pt-2 border-t border-slate-800">
               <button
                 type="button"
                 onClick={handleDispatchSSWhatsApp}
@@ -1809,16 +1819,16 @@ export const SundaySchoolManager: React.FC<SundaySchoolManagerProps> = ({
               <button
                 type="button"
                 onClick={handleCopySSWhatsAppText}
-                className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-200 flex items-center justify-center gap-2 transition"
+                className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold text-xs rounded-xl border border-slate-700 flex items-center justify-center gap-2 transition"
               >
-                {ssCopied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-600" />}
+                {ssCopied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-slate-400" />}
                 <span>{ssCopied ? 'Copied!' : 'Copy Text'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setIsSSWhatsAppModalOpen(false)}
-                className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-xl transition"
+                className="px-4 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl transition"
               >
                 Close
               </button>

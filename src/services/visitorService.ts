@@ -1,7 +1,7 @@
 import { db } from '@/lib/firebase';
 import { collection, doc, setDoc, getDocs, deleteDoc, query, where } from 'firebase/firestore';
-import { Visitor, VisitorStatus, VisitorVisit, ChurchMember } from '@/types/database';
-import { DEMO_USERS } from '@/lib/mockData';
+import { Visitor, VisitorStatus, VisitorVisit, ChurchMember, Profile } from '@/types/database';
+import { getStoredUsers, getStoredMembers } from '@/utils/storage';
 import { memberService, CreateMemberPayload } from './memberService';
 import { followUpService } from './followUpService';
 import { 
@@ -101,23 +101,50 @@ export const visitorService = {
     });
 
     const combined = Array.from(map.values());
-    return combined.map((v) => ({
-      ...v,
-      assigned_leader: v.assigned_leader || (DEMO_USERS.find((u) => u.id === v.assigned_to)
-        ? {
-            id: v.assigned_to!,
-            email: DEMO_USERS.find((u) => u.id === v.assigned_to)!.email,
-            first_name: DEMO_USERS.find((u) => u.id === v.assigned_to)!.name.split(' ')[0],
-            last_name: DEMO_USERS.find((u) => u.id === v.assigned_to)!.name.split(' ').slice(1).join(' '),
-            display_name: DEMO_USERS.find((u) => u.id === v.assigned_to)!.name,
-            phone: DEMO_USERS.find((u) => u.id === v.assigned_to)!.phone,
-            avatar_url: DEMO_USERS.find((u) => u.id === v.assigned_to)!.avatar,
-            is_super_admin: false,
-            created_at: new Date().toISOString(),
+    const storedUsers = getStoredUsers();
+    const storedMembers = getStoredMembers();
+
+    return combined.map((v) => {
+      let leaderProfile: Profile | null = v.assigned_leader || null;
+      if (!leaderProfile && v.assigned_to) {
+        const foundUser = storedUsers.find((u) => u.id === v.assigned_to);
+        if (foundUser) {
+          const parts = (foundUser.name || '').trim().split(' ');
+          leaderProfile = {
+            id: foundUser.id,
+            email: foundUser.email,
+            first_name: parts[0] || foundUser.name,
+            last_name: parts.slice(1).join(' ') || '',
+            display_name: `${foundUser.name}${foundUser.designation ? ` (${foundUser.designation})` : ''}`,
+            phone: foundUser.phone || null,
+            avatar_url: foundUser.avatarUrl || null,
+            is_super_admin: foundUser.role === 'SuperAdmin',
+            created_at: foundUser.createdAt || new Date().toISOString(),
             updated_at: new Date().toISOString(),
+          };
+        } else {
+          const foundMember = storedMembers.find((m) => m.id === v.assigned_to);
+          if (foundMember) {
+            leaderProfile = {
+              id: foundMember.id,
+              email: foundMember.email,
+              first_name: foundMember.firstName,
+              last_name: foundMember.lastName,
+              display_name: `${foundMember.firstName} ${foundMember.lastName}${foundMember.status ? ` (${foundMember.status})` : ''}`.trim(),
+              phone: foundMember.phone || null,
+              avatar_url: foundMember.avatarUrl || null,
+              is_super_admin: false,
+              created_at: foundMember.createdAt || new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
           }
-        : null),
-    }));
+        }
+      }
+      return {
+        ...v,
+        assigned_leader: leaderProfile,
+      };
+    });
   },
 
   async getVisitorById(churchId: string, visitorId: string): Promise<Visitor | null> {

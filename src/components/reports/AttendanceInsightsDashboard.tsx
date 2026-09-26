@@ -180,12 +180,12 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
 
   if (!hasAccess) {
     return (
-      <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm text-center max-w-2xl mx-auto space-y-4 my-8">
-        <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center mx-auto">
+      <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800 shadow-xl text-center max-w-2xl mx-auto space-y-4 my-8 text-white">
+        <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20">
           <ShieldAlert className="w-7 h-7" />
         </div>
-        <h2 className="text-xl font-black text-slate-900">Access Restricted</h2>
-        <p className="text-sm text-slate-600 leading-relaxed">
+        <h2 className="text-xl font-black text-white">Access Restricted</h2>
+        <p className="text-sm text-slate-300 leading-relaxed">
           Church-wide Attendance Insights are reserved for authorized church leadership (Pastors, Administrators, and Ministry Leaders).
         </p>
         <p className="text-xs text-slate-400">
@@ -194,9 +194,9 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
         {onNavigateTab && (
           <button
             onClick={() => onNavigateTab('my-attendance')}
-            className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl transition inline-flex items-center gap-2"
+            className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-2xl transition inline-flex items-center gap-2 shadow-md"
           >
-            <UserCheck className="w-4 h-4 text-emerald-400" />
+            <UserCheck className="w-4 h-4 text-slate-950" />
             <span>Go to My Attendance</span>
           </button>
         )}
@@ -261,13 +261,13 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
       </div>
 
       {/* 2. Date Range Filters */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+      <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm space-y-3 text-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-slate-400" />
-            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Date Period:</span>
+            <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Date Period:</span>
           </div>
-          <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+          <span className="text-xs font-black text-emerald-300 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800">
             {insightsData.dateRange.formattedRangeText}
           </span>
         </div>
@@ -280,7 +280,7 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
                 dateFilter === f
                   ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700'
               }`}
             >
               {f === 'this_week' && 'This Week'}
@@ -295,23 +295,23 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
         </div>
 
         {dateFilter === 'custom_range' && (
-          <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100 animate-in fade-in">
+          <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-800 animate-in fade-in">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-500">From:</span>
+              <span className="text-xs font-semibold text-slate-400">From:</span>
               <input
                 type="date"
                 value={customStart}
                 onChange={(e) => setCustomStart(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none"
+                className="px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white outline-none"
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-500">To:</span>
+              <span className="text-xs font-semibold text-slate-400">To:</span>
               <input
                 type="date"
                 value={customEnd}
                 onChange={(e) => setCustomEnd(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none"
+                className="px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white outline-none"
               />
             </div>
           </div>
@@ -327,8 +327,8 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
             onClick={() => setServiceTypeFilter(st)}
             className={`px-3 py-1.5 rounded-2xl text-xs font-bold transition shrink-0 ${
               serviceTypeFilter === st
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                ? 'bg-amber-500 text-slate-950 shadow-sm'
+                : 'bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white'
             }`}
           >
             {st === 'ALL' ? 'All Service Types' : st}
@@ -339,25 +339,25 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
       {/* 4. KPI Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Average Attendance Card */}
-        <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-2 relative overflow-hidden">
+        <div className="bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-800 shadow-sm space-y-2 relative overflow-hidden text-white">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Average Attendance</span>
-            <span className="p-2 bg-emerald-50 text-emerald-600 rounded-2xl border border-emerald-100">
+            <span className="p-2 bg-emerald-950/80 text-emerald-400 rounded-2xl border border-emerald-800">
               <UserCheck className="w-4 h-4" />
             </span>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl sm:text-4xl font-black text-slate-900">{metrics.averageAttendance}</span>
+            <span className="text-3xl sm:text-4xl font-black text-white">{metrics.averageAttendance}</span>
             <span className="text-xs text-slate-400 font-semibold">/ service</span>
           </div>
           {comparison.previousAvg > 0 && (
             <div className="flex items-center gap-1 text-xs font-bold">
               {comparison.differenceCount >= 0 ? (
-                <span className="text-emerald-600 flex items-center gap-0.5">
+                <span className="text-emerald-400 flex items-center gap-0.5">
                   <ArrowUpRight className="w-3.5 h-3.5" /> +{comparison.differenceCount} (+{comparison.percentageChange}%)
                 </span>
               ) : (
-                <span className="text-rose-600 flex items-center gap-0.5">
+                <span className="text-rose-400 flex items-center gap-0.5">
                   <ArrowDownRight className="w-3.5 h-3.5" /> {comparison.differenceCount} ({comparison.percentageChange}%)
                 </span>
               )}
@@ -367,55 +367,58 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
         </div>
 
         {/* Highest Attendance Card */}
-        <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-2">
+        <div className="bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-800 shadow-sm space-y-2 text-white">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Highest Attendance</span>
-            <span className="p-2 bg-amber-50 text-amber-600 rounded-2xl border border-amber-100">
+            <span className="p-2 bg-amber-950/80 text-amber-400 rounded-2xl border border-amber-800">
               <TrendingUp className="w-4 h-4" />
             </span>
           </div>
-          <div className="text-3xl sm:text-4xl font-black text-slate-900">
+          <div className="text-3xl sm:text-4xl font-black text-white">
             {metrics.highestRecord ? metrics.highestRecord.count : '—'}
           </div>
-          <p className="text-xs text-slate-500 font-medium truncate">
+          <p className="text-xs text-slate-400 font-medium truncate">
             {metrics.highestRecord ? `${metrics.highestRecord.date} • ${metrics.highestRecord.serviceName}` : 'No records logged'}
           </p>
         </div>
 
         {/* Lowest Attendance Card */}
-        <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-2">
+        <div className="bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-800 shadow-sm space-y-2 text-white">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Lowest Attendance</span>
-            <span className="p-2 bg-indigo-50 text-indigo-600 rounded-2xl border border-indigo-100">
+            <span className="p-2 bg-indigo-950/80 text-indigo-400 rounded-2xl border border-indigo-800">
               <Clock className="w-4 h-4" />
             </span>
           </div>
-          <div className="text-3xl sm:text-4xl font-black text-slate-900">
+          <div className="text-3xl sm:text-4xl font-black text-white">
             {metrics.lowestRecord ? metrics.lowestRecord.count : '—'}
           </div>
-          <p className="text-xs text-slate-500 font-medium truncate">
+          <p className="text-xs text-slate-400 font-medium truncate">
             {metrics.lowestRecord ? `${metrics.lowestRecord.date} • ${metrics.lowestRecord.serviceName}` : 'No records logged'}
           </p>
         </div>
 
         {/* Total Services Logged Card */}
-        <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-2">
+        <div className="bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-800 shadow-sm space-y-2 text-white">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Services</span>
-            <span className="p-2 bg-purple-50 text-purple-600 rounded-2xl border border-purple-100">
+            <span className="p-2 bg-purple-950/80 text-purple-400 rounded-2xl border border-purple-800">
               <Calendar className="w-4 h-4" />
             </span>
           </div>
-          <div className="text-3xl sm:text-4xl font-black text-slate-900">{metrics.totalServices}</div>
-          <p className="text-xs text-slate-500 font-medium">
-            Total Headcount: <strong>{metrics.totalHeadcount}</strong>
+          <div className="text-3xl sm:text-4xl font-black text-white">{metrics.totalServices}</div>
+          <p className="text-xs text-slate-400 font-medium">
+            Total Headcount: <strong className="text-slate-200">{metrics.totalHeadcount}</strong>
           </p>
         </div>
       </div>
 
       {/* 5. AI Executive Summary Banner (if generated) */}
       {aiSummary && (
-        <div className="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-5 border border-indigo-800/60 shadow-lg space-y-2 animate-in fade-in">
+        <div 
+          data-theme-surface="dark"
+          className="dark-hero-panel bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-5 border border-indigo-800/60 shadow-lg space-y-2 animate-in fade-in"
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-indigo-400 animate-pulse" />
@@ -432,20 +435,20 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
       )}
 
       {/* 6. Visual Attendance Trend Chart */}
-      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-800 shadow-sm space-y-4 text-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-emerald-600" />
+            <h3 className="font-bold text-white text-base flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-emerald-400" />
               <span>Attendance Trend</span>
             </h3>
             <p className="text-xs text-slate-400">Recorded turnout breakdown by service date</p>
           </div>
           <div className="flex items-center gap-4 text-xs font-bold">
-            <span className="flex items-center gap-1.5 text-slate-600">
+            <span className="flex items-center gap-1.5 text-slate-300">
               <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" /> Members
             </span>
-            <span className="flex items-center gap-1.5 text-slate-600">
+            <span className="flex items-center gap-1.5 text-slate-300">
               <span className="w-3 h-3 rounded-full bg-amber-400 inline-block" /> Guests
             </span>
           </div>
@@ -453,13 +456,13 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
 
         {trend.length === 0 ? (
           <div className="py-12 text-center text-slate-400 space-y-2">
-            <Calendar className="w-8 h-8 mx-auto stroke-1" />
-            <p className="text-xs font-bold">No attendance records are available for the selected period.</p>
+            <Calendar className="w-8 h-8 mx-auto stroke-1 text-slate-600" />
+            <p className="text-xs font-bold text-slate-400">No attendance records are available for the selected period.</p>
           </div>
         ) : (
           <div className="space-y-3">
             {/* SVG Visual Bar Chart */}
-            <div className="h-48 sm:h-56 w-full flex items-end justify-between gap-2 pt-6 pb-2 border-b border-slate-100 overflow-x-auto">
+            <div className="h-48 sm:h-56 w-full flex items-end justify-between gap-2 pt-6 pb-2 border-b border-slate-800 overflow-x-auto">
               {(() => {
                 const maxVal = Math.max(...trend.map(t => t.total), 1);
                 return trend.map((t) => {
@@ -470,19 +473,19 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
                   return (
                     <div key={t.id} className="flex-1 min-w-[36px] flex flex-col items-center gap-1.5 group relative">
                       {/* Tooltip on hover */}
-                      <div className="opacity-0 group-hover:opacity-100 transition duration-150 absolute -top-12 z-20 bg-slate-900 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-lg pointer-events-none whitespace-nowrap">
+                      <div className="opacity-0 group-hover:opacity-100 transition duration-150 absolute -top-12 z-20 bg-slate-950 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700 pointer-events-none whitespace-nowrap">
                         <div>{t.serviceName}</div>
                         <div>Total: {t.total} ({t.members} M, {t.guests} G)</div>
                         <div className="text-slate-400 font-normal">{t.date}</div>
                       </div>
 
                       {/* Total label above bar */}
-                      <span className={`text-[10px] font-black ${isPeak ? 'text-amber-600 font-black' : 'text-slate-700'}`}>
+                      <span className={`text-[10px] font-black ${isPeak ? 'text-amber-400 font-black' : 'text-slate-300'}`}>
                         {t.total}
                       </span>
 
                       {/* Stacked Bar Container */}
-                      <div className="w-full max-w-[28px] bg-slate-100 rounded-t-xl overflow-hidden flex flex-col justify-end h-full">
+                      <div className="w-full max-w-[28px] bg-slate-800 rounded-t-xl overflow-hidden flex flex-col justify-end h-full">
                         {t.guests > 0 && (
                           <div 
                             className="w-full bg-amber-400 transition-all duration-300" 
@@ -496,7 +499,7 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
                       </div>
 
                       {/* Date label */}
-                      <span className="text-[10px] font-bold text-slate-500 truncate w-full text-center">
+                      <span className="text-[10px] font-bold text-slate-400 truncate w-full text-center">
                         {t.label}
                       </span>
                     </div>
@@ -509,31 +512,31 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
       </div>
 
       {/* 7. Period Comparison Card */}
-      <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
-        <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-indigo-600" />
+      <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-3 text-white">
+        <h3 className="font-bold text-white text-sm flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-indigo-400" />
           <span>Period-over-Period Comparison</span>
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
+          <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 space-y-1">
             <span className="text-[11px] font-bold text-slate-400 uppercase">Selected Period</span>
-            <div className="text-base font-black text-slate-900">{comparison.currentPeriodLabel}</div>
-            <div className="text-xs text-slate-600">
-              Average: <strong className="text-slate-900">{comparison.currentAvg}</strong> attendees ({comparison.currentTotal} total)
+            <div className="text-base font-black text-white">{comparison.currentPeriodLabel}</div>
+            <div className="text-xs text-slate-300">
+              Average: <strong className="text-white">{comparison.currentAvg}</strong> attendees ({comparison.currentTotal} total)
             </div>
           </div>
 
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
+          <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 space-y-1">
             <span className="text-[11px] font-bold text-slate-400 uppercase">Previous Period</span>
-            <div className="text-base font-black text-slate-900">{comparison.previousPeriodLabel}</div>
-            <div className="text-xs text-slate-600">
-              Average: <strong className="text-slate-900">{comparison.previousAvg}</strong> attendees ({comparison.previousTotal} total)
+            <div className="text-base font-black text-white">{comparison.previousPeriodLabel}</div>
+            <div className="text-xs text-slate-300">
+              Average: <strong className="text-white">{comparison.previousAvg}</strong> attendees ({comparison.previousTotal} total)
             </div>
           </div>
         </div>
 
-        <div className="p-3 bg-emerald-50/60 rounded-2xl border border-emerald-200 text-xs font-semibold text-emerald-900">
+        <div className="p-3 bg-emerald-950/60 rounded-2xl border border-emerald-800 text-xs font-semibold text-emerald-300">
           {comparison.factualComparisonText}
         </div>
       </div>
@@ -541,15 +544,15 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
       {/* 8. Sub-Sections: Sunday School & Ministry Attendance */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Sunday School Insights Card */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-4">
+        <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-4 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="p-1.5 bg-blue-500/10 text-blue-600 rounded-xl">
+              <span className="p-1.5 bg-blue-500/20 text-blue-400 rounded-xl border border-blue-500/30">
                 <GraduationCap className="w-5 h-5" />
               </span>
-              <h3 className="font-bold text-slate-900 text-sm">Sunday School Attendance</h3>
+              <h3 className="font-bold text-white text-sm">Sunday School Attendance</h3>
             </div>
-            <span className="text-xs font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100">
+            <span className="text-xs font-black text-blue-300 bg-blue-950/80 px-2.5 py-1 rounded-full border border-blue-800">
               Avg: {metrics.sundaySchoolAvg}
             </span>
           </div>
@@ -559,13 +562,13 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
           ) : (
             <div className="space-y-2.5">
               {sundaySchoolStats.map((cls) => (
-                <div key={cls.classId} className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
+                <div key={cls.classId} className="p-3.5 bg-slate-800/80 rounded-2xl border border-slate-700 flex items-center justify-between gap-3">
                   <div>
-                    <div className="font-bold text-slate-900 text-xs">{cls.className}</div>
+                    <div className="font-bold text-white text-xs">{cls.className}</div>
                     <div className="text-[11px] text-slate-400">Teacher: {cls.teacherName} • {cls.enrolledStudentsCount} Enrolled</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-black text-blue-600">{cls.averageAttendance} avg</div>
+                    <div className="text-sm font-black text-blue-400">{cls.averageAttendance} avg</div>
                     <div className="text-[10px] text-slate-400">Peak: {cls.highestAttendance}</div>
                   </div>
                 </div>
@@ -575,15 +578,15 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
         </div>
 
         {/* Ministry Attendance Card */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-4">
+        <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-4 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="p-1.5 bg-amber-500/10 text-amber-600 rounded-xl">
+              <span className="p-1.5 bg-amber-500/20 text-amber-400 rounded-xl border border-amber-500/30">
                 <Landmark className="w-5 h-5" />
               </span>
-              <h3 className="font-bold text-slate-900 text-sm">Ministry Attendance Overview</h3>
+              <h3 className="font-bold text-white text-sm">Ministry Attendance Overview</h3>
             </div>
-            <span className="text-xs font-black text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-100">
+            <span className="text-xs font-black text-amber-300 bg-amber-950/80 px-2.5 py-1 rounded-full border border-amber-800">
               Avg: {metrics.ministryAttendanceAvg}
             </span>
           </div>
@@ -593,19 +596,19 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
           ) : (
             <div className="space-y-2.5">
               {ministryStats.map((min) => (
-                <div key={min.ministryId} className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
+                <div key={min.ministryId} className="p-3.5 bg-slate-800/80 rounded-2xl border border-slate-700 flex items-center justify-between gap-3">
                   <div>
-                    <div className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                    <div className="font-bold text-white text-xs flex items-center gap-1.5">
                       <span>{min.ministryName}</span>
                       {min.isUserAuthorizedLeader && (
-                        <span className="text-[9px] bg-amber-200 text-amber-900 font-extrabold px-1.5 py-0.5 rounded">Leader</span>
+                        <span className="text-[9px] bg-amber-500/20 text-amber-300 font-extrabold px-1.5 py-0.5 rounded border border-amber-500/30">Leader</span>
                       )}
                     </div>
                     <div className="text-[11px] text-slate-400">{min.totalMembers} Roster Members • {min.activitiesCount} Sessions</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-black text-amber-600">{min.averageAttendance} avg</div>
-                    <div className="text-[10px] text-slate-500 font-bold">{min.attendanceRate}% turnout</div>
+                    <div className="text-sm font-black text-amber-400">{min.averageAttendance} avg</div>
+                    <div className="text-[10px] text-slate-400 font-bold">{min.attendanceRate}% turnout</div>
                   </div>
                 </div>
               ))}
@@ -616,11 +619,11 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
 
       {/* 9. Individual Member Attendance Lookup (Pastor / Admin only) */}
       {insightsData.canAccessChurchWide && (
-        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+        <div className="bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-800 shadow-sm space-y-4 text-white">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <Users className="w-4 h-4 text-emerald-600" />
+              <h3 className="font-bold text-white text-sm flex items-center gap-2">
+                <Users className="w-4 h-4 text-emerald-400" />
                 <span>Individual Member Attendance Lookup</span>
               </h3>
               <p className="text-xs text-slate-400">Search and view neutral check-in history for any church member</p>
@@ -631,36 +634,36 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
               <select
                 value={selectedMemberLookupId}
                 onChange={(e) => setSelectedMemberLookupId(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 outline-none"
+                className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-2xl text-xs font-bold text-slate-100 outline-none focus:ring-2 focus:ring-amber-500"
               >
-                <option value="">Select Member to Inspect...</option>
+                <option value="" className="bg-slate-900 text-white">Select Member to Inspect...</option>
                 {members.map(m => (
-                  <option key={m.id} value={m.id}>{m.firstName} {m.lastName} ({m.status})</option>
+                  <option key={m.id} value={m.id} className="bg-slate-900 text-white">{m.firstName} {m.lastName} ({m.status})</option>
                 ))}
               </select>
             </div>
           </div>
 
           {memberLookupResult && (
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3 animate-in fade-in">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 pb-3">
+            <div className="p-4 bg-slate-800/80 rounded-2xl border border-slate-700 space-y-3 animate-in fade-in">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700/80 pb-3">
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">
+                  <h4 className="font-bold text-white text-sm">
                     {memberLookupResult.member.firstName} {memberLookupResult.member.lastName}
                   </h4>
-                  <p className="text-xs text-slate-500">{memberLookupResult.member.status} • Phone: {memberLookupResult.member.phone || 'N/A'}</p>
+                  <p className="text-xs text-slate-400">{memberLookupResult.member.status} • Phone: {memberLookupResult.member.phone || 'N/A'}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="text-center px-3 py-1.5 bg-white rounded-xl border border-slate-200 shadow-2xs">
-                    <div className="text-sm font-black text-emerald-600">{memberLookupResult.attendedCount}</div>
+                  <div className="text-center px-3 py-1.5 bg-slate-800 rounded-xl border border-slate-700 shadow-2xs">
+                    <div className="text-sm font-black text-emerald-400">{memberLookupResult.attendedCount}</div>
                     <div className="text-[10px] text-slate-400 uppercase font-bold">Attended</div>
                   </div>
-                  <div className="text-center px-3 py-1.5 bg-white rounded-xl border border-slate-200 shadow-2xs">
-                    <div className="text-sm font-black text-slate-600">{memberLookupResult.totalServicesLogged}</div>
+                  <div className="text-center px-3 py-1.5 bg-slate-800 rounded-xl border border-slate-700 shadow-2xs">
+                    <div className="text-sm font-black text-slate-200">{memberLookupResult.totalServicesLogged}</div>
                     <div className="text-[10px] text-slate-400 uppercase font-bold">Total Services</div>
                   </div>
-                  <div className="text-center px-3 py-1.5 bg-white rounded-xl border border-slate-200 shadow-2xs">
-                    <div className="text-sm font-black text-indigo-600">{memberLookupResult.turnoutPercentage}%</div>
+                  <div className="text-center px-3 py-1.5 bg-slate-800 rounded-xl border border-slate-700 shadow-2xs">
+                    <div className="text-sm font-black text-indigo-400">{memberLookupResult.turnoutPercentage}%</div>
                     <div className="text-[10px] text-slate-400 uppercase font-bold">Turnout Rate</div>
                   </div>
                 </div>
@@ -670,10 +673,10 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
               <div className="space-y-1.5 max-h-48 overflow-y-auto pt-1">
                 <span className="text-[10px] font-bold text-slate-400 uppercase">Factual Check-in Log:</span>
                 {memberLookupResult.history.slice(0, 10).map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between text-xs py-1.5 px-3 bg-white rounded-xl border border-slate-100">
-                    <span className="font-semibold text-slate-700">{item.date} — {item.serviceName}</span>
+                  <div key={idx} className="flex items-center justify-between text-xs py-1.5 px-3 bg-slate-800/90 rounded-xl border border-slate-700">
+                    <span className="font-semibold text-slate-200">{item.date} — {item.serviceName}</span>
                     {item.wasPresent ? (
-                      <span className="text-emerald-600 font-bold flex items-center gap-1">
+                      <span className="text-emerald-400 font-bold flex items-center gap-1">
                         <CheckCircle2 className="w-3.5 h-3.5" /> Present
                       </span>
                     ) : (
@@ -690,15 +693,15 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
       )}
 
       {/* 10. Factual Insights List Card */}
-      <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
-        <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+      <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-3 text-white">
+        <h3 className="font-bold text-white text-sm flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-emerald-400" />
           <span>Factual Insights Summary</span>
         </h3>
         <div className="space-y-2">
           {factualInsightsText.map((bullet, idx) => (
-            <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-700">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+            <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
               <span>{bullet}</span>
             </div>
           ))}
@@ -706,15 +709,15 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
       </div>
 
       {/* 11. Interactive AI Questions Panel */}
-      <div className="bg-slate-900 text-white rounded-3xl p-5 sm:p-6 border border-slate-800 shadow-xl space-y-4">
+      <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 bg-indigo-500/20 text-indigo-400 rounded-xl">
+            <span className="p-1.5 bg-indigo-50 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-xl border border-indigo-200/50 dark:border-indigo-500/30">
               <MessageSquare className="w-4 h-4" />
             </span>
-            <h3 className="font-extrabold text-sm text-white">Ask AI Attendance Assistant</h3>
+            <h3 className="font-extrabold text-sm text-slate-900 dark:text-white">Ask AI Attendance Assistant</h3>
           </div>
-          <span className="text-[10px] text-slate-400 font-semibold">Supports English & Tamil (தமிழ்)</span>
+          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">Supports English & Tamil (தமிழ்)</span>
         </div>
 
         {/* Quick Suggestion Pills */}
@@ -729,7 +732,7 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
             <button
               key={idx}
               onClick={() => handleAskAiQuestion(q)}
-              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition"
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition shadow-2xs"
             >
               {q}
             </button>
@@ -744,12 +747,12 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
             onChange={(e) => setUserQuestion(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAskAiQuestion()}
             placeholder="Ask a question about attendance (e.g. Compare August and September)..."
-            className="flex-1 px-4 py-2.5 bg-slate-950 rounded-2xl text-xs text-white placeholder:text-slate-500 border border-slate-800 outline-none focus:border-indigo-500 transition"
+            className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-slate-950 rounded-2xl text-xs text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 border border-slate-300 dark:border-slate-800 outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-950 transition"
           />
           <button
             onClick={() => handleAskAiQuestion()}
             disabled={isAiQuestionLoading || !userQuestion.trim()}
-            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold text-xs flex items-center gap-1.5 shadow-md transition disabled:opacity-50"
+            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold text-xs flex items-center gap-1.5 shadow-md transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
           >
             <Send className="w-3.5 h-3.5" />
             <span>Ask</span>
@@ -758,14 +761,14 @@ export const AttendanceInsightsDashboard: React.FC<AttendanceInsightsDashboardPr
 
         {/* AI Answer Card */}
         {aiAnswer && (
-          <div className="p-4 bg-slate-950 rounded-2xl border border-indigo-900/60 space-y-2 animate-in fade-in">
-            <div className="flex items-center justify-between text-[11px] font-bold text-indigo-400">
+          <div className="p-4 bg-indigo-50/80 dark:bg-slate-950 rounded-2xl border border-indigo-200 dark:border-indigo-900/60 space-y-2 animate-in fade-in">
+            <div className="flex items-center justify-between text-[11px] font-bold text-indigo-700 dark:text-indigo-400">
               <span className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-indigo-300" /> Response
+                <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-300" /> Response
               </span>
-              <span className="text-slate-500">{aiAnswer.source === 'gemini' ? 'Gemini 2.5 Flash' : 'Synthesizer'}</span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">{aiAnswer.source === 'gemini' ? 'Gemini 2.5 Flash' : 'Synthesizer'}</span>
             </div>
-            <p className="text-xs text-slate-200 leading-relaxed font-medium">
+            <p className="text-xs text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
               {aiAnswer.answer}
             </p>
           </div>

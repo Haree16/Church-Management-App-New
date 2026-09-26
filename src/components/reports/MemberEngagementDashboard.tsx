@@ -185,12 +185,12 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
   // Security Access Check
   if (!engagementData.isAuthorized) {
     return (
-      <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm text-center max-w-2xl mx-auto space-y-4 my-8">
-        <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center mx-auto">
+      <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800 shadow-sm text-center max-w-2xl mx-auto space-y-4 my-8 text-white">
+        <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20">
           <ShieldAlert className="w-7 h-7" />
         </div>
-        <h2 className="text-xl font-black text-slate-900">Access Restricted</h2>
-        <p className="text-sm text-slate-600 leading-relaxed">
+        <h2 className="text-xl font-black text-white">Access Restricted</h2>
+        <p className="text-sm text-slate-300 leading-relaxed">
           Member Engagement Insights are reserved for authorized church leadership (Pastors, Administrators, and Ministry Leaders).
         </p>
         <p className="text-xs text-slate-400">
@@ -199,9 +199,9 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
         {onNavigateTab && (
           <button
             onClick={() => onNavigateTab('my-attendance')}
-            className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl transition inline-flex items-center gap-2"
+            className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-2xl transition inline-flex items-center gap-2 shadow"
           >
-            <UserCheck className="w-4 h-4 text-emerald-400" />
+            <UserCheck className="w-4 h-4 text-slate-950" />
             <span>Go to My Attendance</span>
           </button>
         )}
@@ -266,24 +266,24 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
       </div>
 
       {/* 2. Mandatory Terminology & Scope Disclaimer Banner (Section 2 & 5) */}
-      <div className="bg-amber-50 border border-amber-200/80 rounded-2xl p-4 flex items-start gap-3 text-amber-900 shadow-2xs">
-        <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+      <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl p-4 flex items-start gap-3 shadow-2xs">
+        <Info className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
         <div className="text-xs space-y-1">
-          <span className="font-bold block">Important Data Disclaimer</span>
-          <p className="leading-relaxed">
+          <span className="font-bold text-amber-900 dark:text-amber-300 block">Important Data Disclaimer</span>
+          <p className="leading-relaxed text-amber-800 dark:text-amber-200/90 font-medium">
             These insights are based only on activities recorded in the Church Management App. They do not indicate a person's spiritual commitment or personal circumstances.
           </p>
         </div>
       </div>
 
       {/* 3. Date Range & Filters Bar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+      <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-sm space-y-3 text-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-slate-400" />
-            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Evaluation Period:</span>
+            <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Evaluation Period:</span>
           </div>
-          <span className="text-xs font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+          <span className="text-xs font-black text-indigo-300 bg-indigo-950/80 px-3 py-1 rounded-full border border-indigo-800">
             {engagementData.dateRange.formattedRangeText}
           </span>
         </div>
@@ -296,7 +296,7 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
                 dateFilter === f
                   ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700'
               }`}
             >
               {f === 'this_week' && 'This Week'}
@@ -312,23 +312,23 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
         </div>
 
         {dateFilter === 'custom_range' && (
-          <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100 animate-in fade-in">
+          <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-800 animate-in fade-in">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-500">From:</span>
+              <span className="text-xs font-semibold text-slate-400">From:</span>
               <input
                 type="date"
                 value={customStart}
                 onChange={(e) => setCustomStart(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none"
+                className="px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white outline-none"
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-500">To:</span>
+              <span className="text-xs font-semibold text-slate-400">To:</span>
               <input
                 type="date"
                 value={customEnd}
                 onChange={(e) => setCustomEnd(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none"
+                className="px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white outline-none"
               />
             </div>
           </div>
@@ -338,51 +338,54 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
       {/* 4. Summary Cards (Section 5) */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4">
         {/* Total Members */}
-        <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm space-y-1">
+        <div className="bg-slate-900 rounded-3xl p-4 border border-slate-800 shadow-sm space-y-1 text-white">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Members</span>
-          <div className="text-3xl font-black text-slate-900">{metrics.totalMembers}</div>
+          <div className="text-3xl font-black text-white">{metrics.totalMembers}</div>
           <span className="text-[10px] text-slate-400 font-semibold block">Evaluated set</span>
         </div>
 
         {/* Members With Recent Activity */}
-        <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm space-y-1 relative overflow-hidden">
-          <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider truncate block">Recent Activity</span>
-          <div className="text-3xl font-black text-emerald-600">{metrics.membersWithRecentActivity}</div>
-          <span className="text-[10px] text-emerald-700 font-bold block">{metrics.participationRatePercentage}% of members</span>
+        <div className="bg-slate-900 rounded-3xl p-4 border border-slate-800 shadow-sm space-y-1 relative overflow-hidden text-white">
+          <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider truncate block">Recent Activity</span>
+          <div className="text-3xl font-black text-emerald-400">{metrics.membersWithRecentActivity}</div>
+          <span className="text-[10px] text-emerald-400 font-bold block">{metrics.participationRatePercentage}% of members</span>
         </div>
 
         {/* Members With No Recent Activity */}
-        <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm space-y-1">
-          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider truncate block">No Recent Activity</span>
-          <div className="text-3xl font-black text-slate-700">{metrics.membersWithNoRecentActivity}</div>
+        <div className="bg-slate-900 rounded-3xl p-4 border border-slate-800 shadow-sm space-y-1 text-white">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate block">No Recent Activity</span>
+          <div className="text-3xl font-black text-slate-200">{metrics.membersWithNoRecentActivity}</div>
           <span className="text-[10px] text-slate-400 font-semibold block">No recorded logs</span>
         </div>
 
         {/* Recorded Attendance */}
-        <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm space-y-1">
-          <span className="text-[11px] font-bold text-blue-600 uppercase tracking-wider truncate block">Attendance</span>
-          <div className="text-3xl font-black text-blue-600">{metrics.attendanceParticipants}</div>
+        <div className="bg-slate-900 rounded-3xl p-4 border border-slate-800 shadow-sm space-y-1 text-white">
+          <span className="text-[11px] font-bold text-blue-400 uppercase tracking-wider truncate block">Attendance</span>
+          <div className="text-3xl font-black text-blue-400">{metrics.attendanceParticipants}</div>
           <span className="text-[10px] text-slate-400 font-semibold block">Attended service</span>
         </div>
 
         {/* Ministry Participants */}
-        <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm space-y-1">
-          <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider truncate block">Ministry</span>
-          <div className="text-3xl font-black text-amber-600">{metrics.ministryParticipants}</div>
+        <div className="bg-slate-900 rounded-3xl p-4 border border-slate-800 shadow-sm space-y-1 text-white">
+          <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider truncate block">Ministry</span>
+          <div className="text-3xl font-black text-amber-400">{metrics.ministryParticipants}</div>
           <span className="text-[10px] text-slate-400 font-semibold block">Participated</span>
         </div>
 
         {/* Event Participants */}
-        <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm space-y-1">
-          <span className="text-[11px] font-bold text-purple-600 uppercase tracking-wider truncate block">Events</span>
-          <div className="text-3xl font-black text-purple-600">{metrics.eventParticipants}</div>
+        <div className="bg-slate-900 rounded-3xl p-4 border border-slate-800 shadow-sm space-y-1 text-white">
+          <span className="text-[11px] font-bold text-purple-400 uppercase tracking-wider truncate block">Events</span>
+          <div className="text-3xl font-black text-purple-400">{metrics.eventParticipants}</div>
           <span className="text-[10px] text-slate-400 font-semibold block">RSVP / Attended</span>
         </div>
       </div>
 
       {/* 5. AI Executive Summary (if generated) */}
       {aiSummary && (
-        <div className="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-5 border border-indigo-800/60 shadow-lg space-y-2 animate-in fade-in">
+        <div 
+          data-theme-surface="dark"
+          className="dark-hero-panel bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-5 border border-indigo-800/60 shadow-lg space-y-2 animate-in fade-in"
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-indigo-400 animate-pulse" />
@@ -399,10 +402,10 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
       )}
 
       {/* 6. Activity Breakdown Cards (Section 16) */}
-      <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+      <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-3 text-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-indigo-600" />
+          <h3 className="font-bold text-white text-sm flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-indigo-400" />
             <span>Activity Breakdown by Category</span>
           </h3>
           <span className="text-[11px] text-slate-400 font-medium italic">
@@ -411,59 +414,59 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200">
-            <div className="text-xs font-bold text-slate-500 uppercase">Church Attendance</div>
-            <div className="text-xl font-black text-slate-900">{metrics.attendanceParticipants} <span className="text-xs text-slate-400 font-normal">members</span></div>
+          <div className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800">
+            <div className="text-xs font-bold text-slate-400 uppercase">Church Attendance</div>
+            <div className="text-xl font-black text-white">{metrics.attendanceParticipants} <span className="text-xs text-slate-400 font-normal">members</span></div>
           </div>
-          <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200">
-            <div className="text-xs font-bold text-slate-500 uppercase">Ministry Activities</div>
-            <div className="text-xl font-black text-slate-900">{metrics.ministryParticipants} <span className="text-xs text-slate-400 font-normal">members</span></div>
+          <div className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800">
+            <div className="text-xs font-bold text-slate-400 uppercase">Ministry Activities</div>
+            <div className="text-xl font-black text-white">{metrics.ministryParticipants} <span className="text-xs text-slate-400 font-normal">members</span></div>
           </div>
-          <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200">
-            <div className="text-xs font-bold text-slate-500 uppercase">Event Participation</div>
-            <div className="text-xl font-black text-slate-900">{metrics.eventParticipants} <span className="text-xs text-slate-400 font-normal">members</span></div>
+          <div className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800">
+            <div className="text-xs font-bold text-slate-400 uppercase">Event Participation</div>
+            <div className="text-xl font-black text-white">{metrics.eventParticipants} <span className="text-xs text-slate-400 font-normal">members</span></div>
           </div>
-          <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200">
-            <div className="text-xs font-bold text-slate-500 uppercase">Sunday School</div>
-            <div className="text-xl font-black text-slate-900">{metrics.sundaySchoolParticipants} <span className="text-xs text-slate-400 font-normal">members</span></div>
+          <div className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800">
+            <div className="text-xs font-bold text-slate-400 uppercase">Sunday School</div>
+            <div className="text-xl font-black text-white">{metrics.sundaySchoolParticipants} <span className="text-xs text-slate-400 font-normal">members</span></div>
           </div>
-          <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200">
-            <div className="text-xs font-bold text-slate-500 uppercase">Roster Assignments</div>
-            <div className="text-xl font-black text-slate-900">{metrics.assignmentParticipants} <span className="text-xs text-slate-400 font-normal">members</span></div>
+          <div className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800">
+            <div className="text-xs font-bold text-slate-400 uppercase">Roster Assignments</div>
+            <div className="text-xl font-black text-white">{metrics.assignmentParticipants} <span className="text-xs text-slate-400 font-normal">members</span></div>
           </div>
         </div>
       </div>
 
       {/* 7. Visual Activity Trend Chart (Section 14) */}
-      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-800 shadow-sm space-y-4 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-indigo-600" />
+            <h3 className="font-bold text-white text-base flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-indigo-400" />
               <span>Activity Trend Trajectory</span>
             </h3>
-            <p className="text-xs text-slate-400">Weekly trajectory of <strong>Members with recorded activity</strong></p>
+            <p className="text-xs text-slate-400">Weekly trajectory of <strong className="text-white">Members with recorded activity</strong></p>
           </div>
         </div>
 
         {trend.length === 0 ? (
           <p className="text-xs text-slate-400 text-center py-8">No activity data logged in selected range.</p>
         ) : (
-          <div className="h-44 w-full flex items-end justify-between gap-3 pt-6 pb-2 border-b border-slate-100">
+          <div className="h-44 w-full flex items-end justify-between gap-3 pt-6 pb-2 border-b border-slate-800">
             {(() => {
               const maxVal = Math.max(...trend.map(t => t.membersWithRecordedActivity), 1);
               return trend.map((t, idx) => {
                 const heightPct = Math.round((t.membersWithRecordedActivity / maxVal) * 100);
                 return (
                   <div key={idx} className="flex-1 flex flex-col items-center gap-2 group relative">
-                    <span className="text-xs font-black text-slate-800">{t.membersWithRecordedActivity}</span>
-                    <div className="w-full max-w-[40px] bg-indigo-100 rounded-t-xl overflow-hidden flex flex-col justify-end h-full">
+                    <span className="text-xs font-black text-slate-200">{t.membersWithRecordedActivity}</span>
+                    <div className="w-full max-w-[40px] bg-slate-800 rounded-t-xl overflow-hidden flex flex-col justify-end h-full">
                       <div 
-                        className="w-full bg-indigo-600 group-hover:bg-indigo-500 transition-all duration-300" 
+                        className="w-full bg-indigo-500 group-hover:bg-indigo-400 transition-all duration-300" 
                         style={{ height: `${heightPct}%` }}
                       />
                     </div>
-                    <span className="text-[10px] font-bold text-slate-500 truncate w-full text-center">
+                    <span className="text-[10px] font-bold text-slate-400 truncate w-full text-center">
                       {t.label}
                     </span>
                   </div>
@@ -475,41 +478,41 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
       </div>
 
       {/* 8. Period Comparison Panel (Section 15) */}
-      <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
-        <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-indigo-600" />
+      <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-3 text-white">
+        <h3 className="font-bold text-white text-sm flex items-center gap-2">
+          <Calendar className="w-4 h-4 text-indigo-400" />
           <span>Period-over-Period Engagement Comparison</span>
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
+          <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800 space-y-1">
             <span className="text-[11px] font-bold text-slate-400 uppercase">Selected Period</span>
-            <div className="text-base font-black text-slate-900">{comparison.currentPeriodLabel}</div>
-            <div className="text-xs text-slate-600">
-              Members with recorded activity: <strong className="text-slate-900">{comparison.currentEngagedCount}</strong>
+            <div className="text-base font-black text-white">{comparison.currentPeriodLabel}</div>
+            <div className="text-xs text-slate-300">
+              Members with recorded activity: <strong className="text-white">{comparison.currentEngagedCount}</strong>
             </div>
           </div>
 
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
+          <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800 space-y-1">
             <span className="text-[11px] font-bold text-slate-400 uppercase">Previous Period</span>
-            <div className="text-base font-black text-slate-900">{comparison.previousPeriodLabel}</div>
-            <div className="text-xs text-slate-600">
-              Members with recorded activity: <strong className="text-slate-900">{comparison.previousEngagedCount}</strong>
+            <div className="text-base font-black text-white">{comparison.previousPeriodLabel}</div>
+            <div className="text-xs text-slate-300">
+              Members with recorded activity: <strong className="text-white">{comparison.previousEngagedCount}</strong>
             </div>
           </div>
         </div>
 
-        <div className="p-3 bg-indigo-50/60 rounded-2xl border border-indigo-200 text-xs font-semibold text-indigo-900">
+        <div className="p-3 bg-indigo-950/60 rounded-2xl border border-indigo-800/80 text-xs font-semibold text-indigo-300">
           {comparison.factualComparisonText}
         </div>
       </div>
 
       {/* 9. Ministry Engagement Stats (Section 12 & 13) */}
-      <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-4 text-white">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Landmark className="w-5 h-5 text-amber-600" />
-            <h3 className="font-bold text-slate-900 text-sm">Ministry Recorded Participation</h3>
+            <Landmark className="w-5 h-5 text-amber-400" />
+            <h3 className="font-bold text-white text-sm">Ministry Recorded Participation</h3>
           </div>
           <span className="text-xs text-slate-400 font-medium">Factual participation counts</span>
         </div>
@@ -519,21 +522,21 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {ministryStats.map((min) => (
-              <div key={min.ministryId} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <div key={min.ministryId} className="p-4 bg-slate-950/60 rounded-2xl border border-slate-800 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-900 text-xs">{min.ministryName}</span>
-                  <span className="text-[10px] font-black bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">
+                  <span className="font-bold text-white text-xs">{min.ministryName}</span>
+                  <span className="text-[10px] font-black bg-amber-950/80 text-amber-300 border border-amber-800 px-2 py-0.5 rounded-full">
                     {min.activityRatePercentage}% rate
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-slate-200/60">
+                <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-slate-800">
                   <div>
                     <span className="text-[10px] text-slate-400 font-semibold uppercase block">With Activity</span>
-                    <span className="font-black text-emerald-600 text-sm">{min.membersWithRecentActivity}</span>
+                    <span className="font-black text-emerald-400 text-sm">{min.membersWithRecentActivity}</span>
                   </div>
                   <div>
                     <span className="text-[10px] text-slate-400 font-semibold uppercase block">No Activity</span>
-                    <span className="font-black text-slate-600 text-sm">{min.membersWithNoRecentActivity}</span>
+                    <span className="font-black text-slate-300 text-sm">{min.membersWithNoRecentActivity}</span>
                   </div>
                 </div>
               </div>
@@ -543,11 +546,11 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
       </div>
 
       {/* 10. Member Activity Table (Section 9 & 17) */}
-      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-800 shadow-sm space-y-4 text-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-              <Users className="w-5 h-5 text-indigo-600" />
+            <h3 className="font-bold text-white text-base flex items-center gap-2">
+              <Users className="w-5 h-5 text-indigo-400" />
               <span>Member Activity Records</span>
             </h3>
             <p className="text-xs text-slate-400">Detailed factual activity breakdown per member</p>
@@ -561,19 +564,19 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
               value={memberSearchQuery}
               onChange={(e) => setMemberSearchQuery(e.target.value)}
               placeholder="Search member by name..."
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 outline-none"
+              className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder:text-slate-400 outline-none focus:border-indigo-500"
             />
           </div>
         </div>
 
         {/* Filter Pills */}
-        <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+        <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
           <button
             onClick={() => setTableFilterTab('ALL')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
               tableFilterTab === 'ALL'
-                ? 'bg-slate-900 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-amber-500 text-slate-950 shadow-sm'
+                : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700'
             }`}
           >
             All Members ({engagementData.memberRows.length})
@@ -583,7 +586,7 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
               tableFilterTab === 'WITH_ACTIVITY'
                 ? 'bg-emerald-600 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700'
             }`}
           >
             Recent Recorded Activity ({metrics.membersWithRecentActivity})
@@ -592,8 +595,8 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
             onClick={() => setTableFilterTab('NO_ACTIVITY')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
               tableFilterTab === 'NO_ACTIVITY'
-                ? 'bg-slate-600 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-slate-700 text-white'
+                : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700'
             }`}
           >
             No Recent Activity ({metrics.membersWithNoRecentActivity})
@@ -604,7 +607,7 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 uppercase text-[10px]">
+              <tr className="bg-slate-950 text-slate-400 font-bold border-b border-slate-800 uppercase text-[10px]">
                 <th className="p-3">Member</th>
                 <th className="p-3">Attendance</th>
                 <th className="p-3">Ministries</th>
@@ -614,7 +617,7 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
                 <th className="p-3 text-right">Inspect</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+            <tbody className="divide-y divide-slate-800/80 font-medium text-slate-300">
               {displayedTableRows.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="p-6 text-center text-slate-400">
@@ -623,25 +626,25 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
                 </tr>
               ) : (
                 displayedTableRows.slice(0, 100).map((row) => (
-                  <tr key={row.memberId} className="hover:bg-slate-50/80 transition">
-                    <td className="p-3 font-bold text-slate-900">{row.memberName}</td>
-                    <td className="p-3 font-semibold text-blue-600">{row.attendanceCount} sessions</td>
-                    <td className="p-3 text-slate-600 truncate max-w-[140px]">{row.assignedMinistries.join(', ') || '—'}</td>
-                    <td className="p-3 text-purple-600 font-semibold">{row.eventsCount} events</td>
-                    <td className="p-3 text-amber-600 font-semibold">{row.assignmentsCount} shifts</td>
+                  <tr key={row.memberId} className="hover:bg-slate-800/50 transition">
+                    <td className="p-3 font-bold text-white">{row.memberName}</td>
+                    <td className="p-3 font-semibold text-blue-400">{row.attendanceCount} sessions</td>
+                    <td className="p-3 text-slate-300 truncate max-w-[140px]">{row.assignedMinistries.join(', ') || '—'}</td>
+                    <td className="p-3 text-purple-400 font-semibold">{row.eventsCount} events</td>
+                    <td className="p-3 text-amber-400 font-semibold">{row.assignmentsCount} shifts</td>
                     <td className="p-3">
                       {row.lastActivityDate ? (
-                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 font-bold rounded-lg border border-emerald-200/60">
+                        <span className="px-2 py-0.5 bg-emerald-950/80 text-emerald-300 font-bold rounded-lg border border-emerald-800">
                           {row.lastActivityDate}
                         </span>
                       ) : (
-                        <span className="text-slate-400 italic">No activity logged</span>
+                        <span className="text-slate-500 italic">No activity logged</span>
                       )}
                     </td>
                     <td className="p-3 text-right">
                       <button
                         onClick={() => setSelectedMemberDetail(row)}
-                        className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition text-[11px]"
+                        className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold rounded-xl transition text-[11px] border border-slate-700"
                       >
                         Inspect
                       </button>
@@ -655,24 +658,24 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
       </div>
 
       {/* 11. "Members With No Recent Recorded Activity" Section (Section 11 & 24) */}
-      <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-4 text-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <UserX className="w-4 h-4 text-slate-500" />
+            <h3 className="font-bold text-white text-sm flex items-center gap-2">
+              <UserX className="w-4 h-4 text-slate-400" />
               <span>Members With No Recent Recorded Activity</span>
             </h3>
             <p className="text-xs text-slate-400">
               No recorded church, ministry, or event activity during the selected period ({engagementData.dateRange.formattedRangeText}).
             </p>
           </div>
-          <span className="text-xs font-black text-slate-600 bg-slate-100 px-3 py-1 rounded-full">
+          <span className="text-xs font-black text-slate-200 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
             {membersWithoutActivity.length} members
           </span>
         </div>
 
         {membersWithoutActivity.length === 0 ? (
-          <p className="text-xs text-emerald-600 font-semibold bg-emerald-50 p-3 rounded-2xl border border-emerald-200">
+          <p className="text-xs text-emerald-300 font-semibold bg-emerald-950/60 p-3 rounded-2xl border border-emerald-800">
             All evaluated members have recorded activity during this period!
           </p>
         ) : (
@@ -680,15 +683,15 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
             {membersWithoutActivity.slice(0, 15).map((row) => {
               const fullMemberObj = members.find(m => m.id === row.memberId);
               return (
-                <div key={row.memberId} className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
+                <div key={row.memberId} className="p-3.5 bg-slate-950/60 rounded-2xl border border-slate-800 flex items-center justify-between gap-3">
                   <div>
-                    <div className="font-bold text-slate-900 text-xs">{row.memberName}</div>
+                    <div className="font-bold text-white text-xs">{row.memberName}</div>
                     <div className="text-[11px] text-slate-400">No activity logged in period</div>
                   </div>
                   {onCreateFollowUp && fullMemberObj && (
                     <button
                       onClick={() => onCreateFollowUp(fullMemberObj)}
-                      className="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-[11px] rounded-xl transition border border-indigo-200 shrink-0"
+                      className="px-2.5 py-1.5 bg-indigo-950/80 hover:bg-indigo-900/80 text-indigo-300 font-bold text-[11px] rounded-xl transition border border-indigo-800 shrink-0"
                     >
                       + Follow-up
                     </button>
@@ -701,15 +704,15 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
       </div>
 
       {/* 12. Factual Insights Summary List */}
-      <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
-        <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+      <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-3 text-white">
+        <h3 className="font-bold text-white text-sm flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-emerald-400" />
           <span>Factual Participation Bulletins</span>
         </h3>
         <div className="space-y-2">
           {factualInsightsBullets.map((bullet, idx) => (
-            <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-700">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0" />
+            <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1.5 shrink-0" />
               <span>{bullet}</span>
             </div>
           ))}
@@ -786,52 +789,52 @@ export const MemberEngagementDashboard: React.FC<MemberEngagementDashboardProps>
 
       {/* 14. Member Detail Modal (Section 10) */}
       {selectedMemberDetail && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-slate-200 relative">
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-slate-800 relative text-white">
             <button
               onClick={() => setSelectedMemberDetail(null)}
-              className="absolute right-5 top-5 text-slate-400 hover:text-slate-600"
+              className="absolute right-5 top-5 text-slate-400 hover:text-white transition"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div>
-              <span className="text-[10px] font-extrabold uppercase text-indigo-600 tracking-wider">Member Activity Profile</span>
-              <h3 className="text-xl font-black text-slate-900">{selectedMemberDetail.memberName}</h3>
-              <p className="text-xs text-slate-500">Status: {selectedMemberDetail.status} • Phone: {selectedMemberDetail.phone || 'N/A'}</p>
+              <span className="text-[10px] font-extrabold uppercase text-indigo-400 tracking-wider">Member Activity Profile</span>
+              <h3 className="text-xl font-black text-white">{selectedMemberDetail.memberName}</h3>
+              <p className="text-xs text-slate-400">Status: {selectedMemberDetail.status} • Phone: {selectedMemberDetail.phone || 'N/A'}</p>
             </div>
 
-            <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs">
-              <div className="flex items-center justify-between py-1 border-b border-slate-200">
-                <span className="text-slate-500">Church Attendance:</span>
-                <strong className="text-blue-600 font-bold">{selectedMemberDetail.attendanceCount} sessions</strong>
+            <div className="space-y-3 bg-slate-800/80 p-4 rounded-2xl border border-slate-700 text-xs">
+              <div className="flex items-center justify-between py-1 border-b border-slate-700/80">
+                <span className="text-slate-400">Church Attendance:</span>
+                <strong className="text-blue-400 font-bold">{selectedMemberDetail.attendanceCount} sessions</strong>
               </div>
-              <div className="flex items-center justify-between py-1 border-b border-slate-200">
-                <span className="text-slate-500">Assigned Ministries:</span>
-                <strong className="text-slate-800 font-bold">{selectedMemberDetail.assignedMinistries.join(', ') || 'None'}</strong>
+              <div className="flex items-center justify-between py-1 border-b border-slate-700/80">
+                <span className="text-slate-400">Assigned Ministries:</span>
+                <strong className="text-slate-200 font-bold">{selectedMemberDetail.assignedMinistries.join(', ') || 'None'}</strong>
               </div>
-              <div className="flex items-center justify-between py-1 border-b border-slate-200">
-                <span className="text-slate-500">Ministry Activities:</span>
-                <strong className="text-amber-600 font-bold">{selectedMemberDetail.ministryActivityCount} recorded activities</strong>
+              <div className="flex items-center justify-between py-1 border-b border-slate-700/80">
+                <span className="text-slate-400">Ministry Activities:</span>
+                <strong className="text-amber-400 font-bold">{selectedMemberDetail.ministryActivityCount} recorded activities</strong>
               </div>
-              <div className="flex items-center justify-between py-1 border-b border-slate-200">
-                <span className="text-slate-500">Events Participation:</span>
-                <strong className="text-purple-600 font-bold">{selectedMemberDetail.eventsCount} recorded events</strong>
+              <div className="flex items-center justify-between py-1 border-b border-slate-700/80">
+                <span className="text-slate-400">Events Participation:</span>
+                <strong className="text-purple-400 font-bold">{selectedMemberDetail.eventsCount} recorded events</strong>
               </div>
-              <div className="flex items-center justify-between py-1 border-b border-slate-200">
-                <span className="text-slate-500">Duty Roster Shifts:</span>
-                <strong className="text-emerald-600 font-bold">{selectedMemberDetail.assignmentsCount} assignments</strong>
+              <div className="flex items-center justify-between py-1 border-b border-slate-700/80">
+                <span className="text-slate-400">Duty Roster Shifts:</span>
+                <strong className="text-emerald-400 font-bold">{selectedMemberDetail.assignmentsCount} assignments</strong>
               </div>
               <div className="flex items-center justify-between py-1">
-                <span className="text-slate-500 font-semibold">Last Recorded Activity Date:</span>
-                <strong className="text-slate-900 font-bold">{selectedMemberDetail.lastActivityDate || 'No recorded activity'}</strong>
+                <span className="text-slate-400 font-semibold">Last Recorded Activity Date:</span>
+                <strong className="text-white font-bold">{selectedMemberDetail.lastActivityDate || 'No recorded activity'}</strong>
               </div>
             </div>
 
             <div className="text-right">
               <button
                 onClick={() => setSelectedMemberDetail(null)}
-                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition"
+                className="px-5 py-2.5 bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 hover:text-white font-bold text-xs rounded-xl transition"
               >
                 Close Profile
               </button>

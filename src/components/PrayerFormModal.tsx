@@ -149,18 +149,18 @@ export const PrayerFormModal: React.FC<PrayerFormModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 overflow-hidden max-h-[92vh] flex flex-col my-auto">
+      <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[92vh] flex flex-col my-auto">
         {/* Header */}
-        <div className="bg-slate-900 text-white p-5 flex items-center justify-between shrink-0">
+        <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white p-5 flex items-center justify-between shrink-0 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center space-x-2">
-            <Heart className="w-5 h-5 text-rose-400 fill-current" />
+            <Heart className="w-5 h-5 text-rose-500 fill-current" />
             <h2 className="text-lg font-bold">
               {prayerToEdit ? 'Edit Prayer Request' : 'Submit Prayer Request'}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1.5 rounded-full hover:bg-slate-800 transition"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -171,9 +171,9 @@ export const PrayerFormModal: React.FC<PrayerFormModalProps> = ({
           {/* Associated Member / Requester */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block font-semibold text-slate-700">Requested By (Church Member)</label>
+              <label className="block font-semibold text-slate-200">Requested By (Church Member)</label>
               {!canSelectRequester && (
-                <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1 bg-slate-800 px-2 py-0.5 rounded-md border border-slate-700">
                   <Lock className="w-3 h-3 text-slate-400" />
                   Locked to your account
                 </span>
@@ -186,13 +186,13 @@ export const PrayerFormModal: React.FC<PrayerFormModalProps> = ({
                 setSelectedMemberId(e.target.value);
                 if (e.target.value) setGuestName('');
               }}
-              className={`w-full p-2.5 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none ${
-                !canSelectRequester ? 'bg-slate-100 opacity-80 cursor-not-allowed text-slate-600' : 'bg-slate-50'
+              className={`w-full p-2.5 border border-slate-700 rounded-xl font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none text-white ${
+                !canSelectRequester ? 'bg-slate-850/60 opacity-80 cursor-not-allowed text-slate-400' : 'bg-slate-800'
               }`}
             >
-              <option value="">-- Guest or General Request --</option>
+              <option value="" className="bg-slate-900 text-white">-- Guest or General Request --</option>
               {safeMembers.map(m => (
-                <option key={m.id} value={m.id}>{m.firstName} {m.lastName} ({m.status})</option>
+                <option key={m.id} value={m.id} className="bg-slate-900 text-white">{m.firstName} {m.lastName} ({m.status})</option>
               ))}
             </select>
 
@@ -204,8 +204,8 @@ export const PrayerFormModal: React.FC<PrayerFormModalProps> = ({
                   placeholder="Or enter requester name (e.g. Mary Watson)"
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
-                  className={`w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none text-xs ${
-                    !canSelectRequester ? 'bg-slate-100 opacity-80 cursor-not-allowed text-slate-600' : 'bg-slate-50'
+                  className={`w-full p-2.5 border border-slate-700 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none text-xs text-white placeholder:text-slate-500 ${
+                    !canSelectRequester ? 'bg-slate-850/60 opacity-80 cursor-not-allowed text-slate-400' : 'bg-slate-800'
                   }`}
                 />
               </div>
@@ -214,82 +214,82 @@ export const PrayerFormModal: React.FC<PrayerFormModalProps> = ({
 
           {/* Title */}
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Prayer Title *</label>
+            <label className="block font-semibold text-slate-200 mb-1">Prayer Title *</label>
             <input
               type="text"
               required
               placeholder="e.g. Upcoming Knee Surgery, Traveling Mercies"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none"
+              className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none"
             />
           </div>
 
           {/* Category & Urgency */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Category</label>
+              <label className="block font-semibold text-slate-200 mb-1">Category</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as PrayerCategory)}
-                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none"
+                className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none"
               >
                 {CATEGORIES.map(c => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c} className="bg-slate-900 text-white">{c}</option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Urgency Status</label>
+              <label className="block font-semibold text-slate-200 mb-1">Urgency Status</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as PrayerStatus)}
-                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none"
+                className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white rounded-xl font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none"
               >
-                <option value="Active">Active</option>
-                <option value="Urgent">⚠️ Urgent Need</option>
-                <option value="Ongoing">Ongoing Care</option>
+                <option value="Active" className="bg-slate-900 text-white">Active</option>
+                <option value="Urgent" className="bg-slate-900 text-white">⚠️ Urgent Need</option>
+                <option value="Ongoing" className="bg-slate-900 text-white">Ongoing Care</option>
               </select>
             </div>
           </div>
 
           {/* Confidentiality */}
           <div>
-            <label className="block font-semibold text-slate-700 mb-1 flex items-center gap-1">
+            <label className="block font-semibold text-slate-200 mb-1 flex items-center gap-1">
               <ShieldAlert className="w-4 h-4 text-amber-500" />
               <span>Confidentiality & Access</span>
             </label>
             <select
               value={confidentiality}
               onChange={(e) => setConfidentiality(e.target.value as ConfidentialityLevel)}
-              className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none"
+              className="w-full p-2.5 bg-slate-800 border border-slate-700 text-white rounded-xl font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none"
             >
-              <option value="Public Congregation">Public (Visible to full church wall)</option>
-              <option value="Prayer Team Only">Prayer Team Only (Intercessors)</option>
-              <option value="Pastoral Staff Only">Pastoral Staff Only (Confidential)</option>
+              <option value="Public Congregation" className="bg-slate-900 text-white">Public (Visible to full church wall)</option>
+              <option value="Prayer Team Only" className="bg-slate-900 text-white">Prayer Team Only (Intercessors)</option>
+              <option value="Pastoral Staff Only" className="bg-slate-900 text-white">Pastoral Staff Only (Confidential)</option>
             </select>
           </div>
 
           {/* Description */}
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Prayer Details *</label>
+            <label className="block font-semibold text-slate-700 dark:text-slate-200 mb-1">Prayer Details *</label>
             <textarea
               rows={4}
               required
               placeholder="Describe the situation and how we can pray specifically..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none"
+              className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none"
             />
           </div>
 
           {/* Footer */}
-          <div className="pt-3 border-t border-slate-200 flex items-center justify-end space-x-2">
+          <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end space-x-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-slate-600 font-semibold hover:bg-slate-100 rounded-xl"
+              className="px-4 py-2 font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-xl transition"
             >
               Cancel
             </button>

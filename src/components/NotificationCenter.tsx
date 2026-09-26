@@ -161,42 +161,52 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   const getCategoryBadgeStyle = (cat: string) => {
     switch (cat) {
       case 'Ministry':
-        return 'bg-purple-100 text-purple-900 border border-purple-300 font-bold';
+        return 'bg-purple-950/80 text-purple-300 border border-purple-800 font-bold';
       case 'Roster':
-        return 'bg-amber-100 text-amber-900 border border-amber-300 font-bold';
+        return 'bg-amber-950/80 text-amber-300 border border-amber-800 font-bold';
       case 'Activity':
-        return 'bg-teal-100 text-teal-900 border border-teal-300 font-bold';
+        return 'bg-teal-950/80 text-teal-300 border border-teal-800 font-bold';
       case 'Event':
-        return 'bg-orange-100 text-orange-900 border border-orange-300';
+        return 'bg-orange-950/80 text-orange-300 border border-orange-800 font-bold';
       case 'Prayer':
-        return 'bg-indigo-100 text-indigo-900 border border-indigo-300';
+        return 'bg-indigo-950/80 text-indigo-300 border border-indigo-800 font-bold';
       case 'Emergency':
-        return 'bg-rose-100 text-rose-900 border border-rose-300 font-black animate-pulse';
+        return 'bg-rose-950/80 text-rose-300 border border-rose-800 font-black animate-pulse';
       case 'Announcement':
-        return 'bg-blue-100 text-blue-900 border border-blue-300';
+        return 'bg-sky-950/80 text-sky-300 border border-sky-800 font-bold';
       case 'Devotional':
-        return 'bg-emerald-100 text-emerald-900 border border-emerald-300';
+        return 'bg-emerald-950/80 text-emerald-300 border border-emerald-800 font-bold';
       default:
-        return 'bg-slate-100 text-slate-800 border border-slate-300';
+        return 'bg-slate-800 text-slate-300 border border-slate-700 font-semibold';
     }
   };
 
   return (
     <div className="space-y-4">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl relative overflow-hidden">
+      <div 
+        data-theme-surface="dark"
+        data-preserve-dark="true"
+        className="dark-hero-panel bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl relative overflow-hidden border border-blue-800/40"
+      >
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-amber-400 text-xs font-semibold mb-3 border border-blue-500/30">
-              <ChurchCrossIcon className="w-3.5 h-3.5 text-amber-400" />
-              Church Broadcasts & Push Notifications
+            <div 
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-[#fbbf24] text-xs font-semibold mb-3 border border-blue-500/30"
+              style={{ color: '#fbbf24' }}
+            >
+              <ChurchCrossIcon className="w-3.5 h-3.5 text-[#fbbf24]" />
+              <span>Church Broadcasts & Push Notifications</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white" style={{ color: '#ffffff' }}>
               Member Notification Center
             </h2>
-            <p className="text-blue-100/80 text-sm mt-1 max-w-xl">
+            <div 
+              className="text-[#dbeafe] text-sm mt-1 max-w-xl font-normal leading-relaxed"
+              style={{ color: '#dbeafe' }}
+            >
               Real-time alerts for urgent prayer requests, pastoral bulletins, upcoming service events, and ministry updates. Visible to all congregation members until all have seen them.
-            </p>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -251,7 +261,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
 
       {/* Filter and Unread Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2.5 bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 bg-slate-900 p-3 sm:p-3.5 rounded-2xl border border-slate-800 shadow-sm">
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scrollbar-none py-0.5 max-w-full">
           {['All', 'Ministry', 'Activity', 'Roster', 'Announcement', 'Prayer', 'Event', 'Emergency', 'Devotional'].map((cat) => (
             <button
@@ -259,8 +269,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               onClick={() => setFilterCategory(cat)}
               className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 transition ${
                 filterCategory === cat
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'bg-amber-500 text-slate-950 font-extrabold shadow-sm'
+                  : 'bg-slate-800 text-slate-300 border border-slate-700/60 hover:bg-slate-750 hover:text-white'
               }`}
             >
               {cat}
@@ -269,14 +279,14 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         </div>
 
         <div className="flex items-center gap-2 text-xs font-bold">
-          <span className="text-slate-600 mr-1">Unread for you: <strong className="text-blue-600">{unreadCount}</strong></span>
+          <span className="text-slate-400 mr-1">Unread for you: <strong className="text-amber-400 font-extrabold">{unreadCount}</strong></span>
           {notifications.length > 0 && (
             <div className="flex items-center gap-1.5">
               {onMarkAllRead && unreadCount > 0 && (
                 <button
                   type="button"
                   onClick={onMarkAllRead}
-                  className="text-blue-700 hover:text-blue-800 px-2.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 transition flex items-center gap-1.5 active:scale-95"
+                  className="text-sky-300 hover:text-sky-200 px-2.5 py-1.5 rounded-xl bg-sky-950/60 hover:bg-sky-900/60 border border-sky-800 transition flex items-center gap-1.5 active:scale-95"
                   title="Mark all unread alerts as seen"
                 >
                   <CheckCheck className="w-3.5 h-3.5" />
@@ -287,10 +297,10 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 <button
                   type="button"
                   onClick={onClearAll}
-                  className="text-slate-500 hover:text-rose-600 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 transition flex items-center gap-1.5 active:scale-95"
+                  className="text-slate-400 hover:text-rose-300 px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-rose-950/60 border border-slate-700 hover:border-rose-800 transition flex items-center gap-1.5 active:scale-95"
                   title="Clear all alerts for this church"
                 >
-                  <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                  <Trash2 className="w-3.5 h-3.5 text-rose-400" />
                   <span>Clear All Alerts</span>
                 </button>
               )}
@@ -302,7 +312,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       {/* Notifications List */}
       <div className="space-y-3">
         {filtered.length === 0 ? (
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 text-center text-slate-500 text-sm">
+          <div className="bg-slate-900 p-8 rounded-3xl border border-slate-800 text-center text-slate-400 text-sm">
             No active notifications in this category. (All notifications have been seen by all users or none exist).
           </div>
         ) : (
@@ -317,8 +327,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 key={n.id}
                 className={`p-4 sm:p-5 rounded-2xl border transition space-y-3 ${
                   hasSeenByMe 
-                    ? 'bg-white border-slate-200 opacity-90' 
-                    : 'bg-blue-50/70 border-blue-200 shadow-sm'
+                    ? 'bg-slate-900 border-slate-800' 
+                    : 'bg-slate-800/90 border-amber-500/50 shadow-sm'
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -328,33 +338,33 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                         {n.category}
                       </span>
                       {n.category === 'Ministry' && (
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-50 text-purple-800 border border-purple-200 flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-950/80 text-purple-300 border border-purple-800 flex items-center gap-1">
                           🎯 Team Membership Alert
                         </span>
                       )}
                       {n.category === 'Activity' && (
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200 flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-teal-950/80 text-teal-300 border border-teal-800 flex items-center gap-1">
                           👥 Scheduled Team Activity
                         </span>
                       )}
                       {n.category === 'Roster' && (
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-900 border border-amber-200 flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-800 flex items-center gap-1">
                           📋 Volunteer Roster Alert
                         </span>
                       )}
                       <span className="text-xs text-slate-400 font-semibold">{n.date}</span>
                       {!hasSeenByMe && (
-                        <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
                       )}
                     </div>
 
-                    <h4 className="text-sm font-bold text-slate-900 pt-0.5">{n.title}</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">{n.message}</p>
+                    <h4 className="text-sm sm:text-base font-bold text-white pt-0.5">{n.title}</h4>
+                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{n.message}</p>
 
                     {n.linkTab && onNavigateTab && (
                       <button
                         onClick={() => onNavigateTab(n.linkTab!)}
-                        className="mt-1 text-xs font-bold text-blue-700 hover:underline flex items-center gap-1"
+                        className="mt-1 text-xs font-bold text-amber-400 hover:text-amber-300 hover:underline flex items-center gap-1"
                       >
                         View in {n.linkTab.toUpperCase()} module &rarr;
                       </button>
@@ -365,14 +375,14 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                     {!hasSeenByMe ? (
                       <button
                         onClick={() => onMarkRead(n.id)}
-                        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95"
+                        className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 shadow-sm active:scale-95"
                         title="Mark as seen by you"
                       >
-                        <Check className="w-3.5 h-3.5" />
+                        <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                         <span>Mark Seen</span>
                       </button>
                     ) : (
-                      <div className="p-1.5 text-emerald-600 bg-emerald-50 rounded-xl border border-emerald-200 shrink-0" title="Seen by you">
+                      <div className="p-1.5 text-emerald-400 bg-emerald-950/60 rounded-xl border border-emerald-800 shrink-0" title="Seen by you">
                         <CheckCheck className="w-4 h-4" />
                       </div>
                     )}
@@ -381,7 +391,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                       <button
                         type="button"
                         onClick={() => onDeleteNotification(n.id)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-transparent hover:border-rose-200 transition"
+                        className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-xl border border-transparent hover:border-rose-800 transition"
                         title="Delete alert"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -391,17 +401,17 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 </div>
 
                 {/* Seen Progress Bar across Church Users */}
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 gap-2">
+                <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400 gap-2">
                   <div className="flex items-center gap-1.5">
                     <Users className="w-3.5 h-3.5 text-slate-400" />
-                    <span>Seen by <strong>{seenCount}</strong> of <strong>{totalChurchUsers}</strong> members</span>
+                    <span>Seen by <strong className="text-white font-bold">{seenCount}</strong> of <strong className="text-white font-bold">{totalChurchUsers}</strong> members</span>
                   </div>
                   {hasSeenByMe ? (
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 flex items-center gap-1">
-                      <Check className="w-3 h-3 text-emerald-600" /> Seen by you
+                    <span className="text-[10px] font-bold text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-800 flex items-center gap-1">
+                      <Check className="w-3 h-3 text-emerald-400" /> Seen by you
                     </span>
                   ) : (
-                    <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
+                    <span className="text-[10px] font-bold text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded-md border border-amber-800">
                       Unread for you
                     </span>
                   )}
@@ -414,64 +424,64 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
       {/* Send Broadcast Modal */}
       {showSendModal && canSendBroadcast && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
-            <h3 className="text-lg font-bold text-slate-900">Send New Church Broadcast</h3>
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-800 space-y-4 text-white">
+            <h3 className="text-lg font-bold text-white">Send New Church Broadcast</h3>
 
             <form onSubmit={handleSendPush} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Broadcast Title</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Broadcast Title</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Service Time Adjustment"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Category</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Category</label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value as any)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="Announcement">Announcement</option>
-                    <option value="Prayer">Prayer</option>
-                    <option value="Event">Event</option>
-                    <option value="Emergency">Emergency</option>
-                    <option value="Devotional">Devotional</option>
+                    <option value="Announcement" className="bg-slate-900 text-white">Announcement</option>
+                    <option value="Prayer" className="bg-slate-900 text-white">Prayer</option>
+                    <option value="Event" className="bg-slate-900 text-white">Event</option>
+                    <option value="Emergency" className="bg-slate-900 text-white">Emergency</option>
+                    <option value="Devotional" className="bg-slate-900 text-white">Devotional</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Navigate Module</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Navigate Module</label>
                   <select
                     value={linkTab}
                     onChange={(e) => setLinkTab(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="announcements">Announcements</option>
-                    <option value="prayers">Prayers</option>
-                    <option value="calendar">Calendar</option>
-                    <option value="giving">Giving</option>
-                    <option value="live">Live Stream</option>
+                    <option value="announcements" className="bg-slate-900 text-white">Announcements</option>
+                    <option value="prayers" className="bg-slate-900 text-white">Prayers</option>
+                    <option value="calendar" className="bg-slate-900 text-white">Calendar</option>
+                    <option value="giving" className="bg-slate-900 text-white">Giving</option>
+                    <option value="live" className="bg-slate-900 text-white">Live Stream</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Message Content</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Message Content</label>
                 <textarea
                   rows={3}
                   required
                   placeholder="Enter broadcast message details..."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -479,13 +489,13 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowSendModal(false)}
-                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs"
+                  className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-bold rounded-xl text-xs transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow-md"
+                  className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow-md transition"
                 >
                   Publish Broadcast
                 </button>

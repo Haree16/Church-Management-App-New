@@ -332,7 +332,10 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
       )}
 
       {/* Hero Banner */}
-      <div className="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-slate-800 relative overflow-hidden">
+      <div 
+        data-theme-surface="dark"
+        className="dark-hero-panel bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-slate-800 relative overflow-hidden"
+      >
         <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -398,7 +401,7 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
       </div>
 
       {/* Toolbar: Search, Filters, and View Switcher */}
-      <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+      <div className="bg-slate-900 p-4 sm:p-5 rounded-3xl border border-slate-800 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         {/* Search */}
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -407,12 +410,12 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by name, username, email, designation, or branch..."
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm focus:ring-2 focus:ring-amber-500 focus:bg-white focus:outline-none transition"
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-2xl text-xs sm:text-sm text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-amber-500 focus:outline-none transition"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs font-bold"
             >
               ✕
             </button>
@@ -423,59 +426,59 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Church Filter (SuperAdmin Only) */}
           {isSuperAdmin && (
-            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-1.5 text-xs">
-              <Building2 className="w-3.5 h-3.5 text-slate-500" />
+            <div className="flex items-center gap-1.5 bg-slate-800 border border-slate-700 rounded-2xl px-3 py-1.5 text-xs">
+              <Building2 className="w-3.5 h-3.5 text-slate-400" />
               <select
                 value={selectedChurchFilter}
                 onChange={(e) => setSelectedChurchFilter(e.target.value)}
-                className="bg-transparent font-bold text-slate-800 focus:outline-none cursor-pointer"
+                className="bg-transparent font-bold text-slate-100 focus:outline-none cursor-pointer"
               >
-                <option value="ALL">All Churches ({safeChurches.length})</option>
+                <option value="ALL" className="bg-slate-900 text-white">All Churches ({safeChurches.length})</option>
                 {safeChurches.map(c => (
-                  <option key={c.id} value={c.id}>{c.name} ({c.city})</option>
+                  <option key={c.id} value={c.id} className="bg-slate-900 text-white">{c.name} ({c.city})</option>
                 ))}
               </select>
             </div>
           )}
 
           {/* Role Filter */}
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-1.5 text-xs">
-            <Shield className="w-3.5 h-3.5 text-slate-500" />
+          <div className="flex items-center gap-1.5 bg-slate-800 border border-slate-700 rounded-2xl px-3 py-1.5 text-xs">
+            <Shield className="w-3.5 h-3.5 text-slate-400" />
             <select
               value={selectedRoleFilter}
               onChange={(e) => setSelectedRoleFilter(e.target.value)}
-              className="bg-transparent font-bold text-slate-800 focus:outline-none cursor-pointer"
+              className="bg-transparent font-bold text-slate-100 focus:outline-none cursor-pointer"
             >
-              <option value="ALL">All Roles</option>
-              {isSuperAdmin && <option value="SuperAdmin">SuperAdmin</option>}
-              <option value="PastorAdmin">PastorAdmin</option>
-              <option value="AssistantPastor">Assistant Pastor</option>
-              <option value="TreasurerStaff">TreasurerStaff</option>
-              <option value="MinistryLeader">MinistryLeader</option>
-              <option value="CellGroupLeader">Cell Group Leader</option>
-              <option value="SundaySchoolTeacher">SundaySchoolTeacher</option>
-              <option value="Member">Member</option>
-              <option value="Volunteer">Volunteer</option>
+              <option value="ALL" className="bg-slate-900 text-white">All Roles</option>
+              {isSuperAdmin && <option value="SuperAdmin" className="bg-slate-900 text-white">SuperAdmin</option>}
+              <option value="PastorAdmin" className="bg-slate-900 text-white">PastorAdmin</option>
+              <option value="AssistantPastor" className="bg-slate-900 text-white">Assistant Pastor</option>
+              <option value="TreasurerStaff" className="bg-slate-900 text-white">TreasurerStaff</option>
+              <option value="MinistryLeader" className="bg-slate-900 text-white">MinistryLeader</option>
+              <option value="CellGroupLeader" className="bg-slate-900 text-white">Cell Group Leader</option>
+              <option value="SundaySchoolTeacher" className="bg-slate-900 text-white">SundaySchoolTeacher</option>
+              <option value="Member" className="bg-slate-900 text-white">Member</option>
+              <option value="Volunteer" className="bg-slate-900 text-white">Volunteer</option>
             </select>
           </div>
 
           {/* View Mode Toggle */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs">
+          <div className="flex items-center bg-slate-800 p-1 rounded-2xl border border-slate-700 text-xs">
             <button
               onClick={() => setViewMode('cards')}
-              className={`px-3 py-1 rounded-xl font-bold transition ${viewMode === 'cards' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-3 py-1 rounded-xl font-bold transition ${viewMode === 'cards' ? 'bg-amber-500 text-slate-950 shadow-sm' : 'text-slate-300 hover:text-white'}`}
             >
               Cards
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`px-3 py-1 rounded-xl font-bold transition ${viewMode === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-3 py-1 rounded-xl font-bold transition ${viewMode === 'table' ? 'bg-amber-500 text-slate-950 shadow-sm' : 'text-slate-300 hover:text-white'}`}
             >
               Table
             </button>
             <button
               onClick={() => setViewMode('matrix')}
-              className={`px-3 py-1 rounded-xl font-bold transition ${viewMode === 'matrix' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-3 py-1 rounded-xl font-bold transition ${viewMode === 'matrix' ? 'bg-amber-500 text-slate-950 shadow-sm' : 'text-slate-300 hover:text-white'}`}
             >
               Role Matrix
             </button>
@@ -485,48 +488,48 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
 
       {/* Role Permission Matrix View */}
       {viewMode === 'matrix' && (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden p-6 space-y-6">
+        <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-sm overflow-hidden p-6 space-y-6">
           <div>
-            <h3 className="text-lg font-extrabold text-slate-900">Interactive RBAC Role & Permission Matrix</h3>
-            <p className="text-xs text-slate-500">Overview of capabilities granted to each user role across the church platform:</p>
+            <h3 className="text-lg font-extrabold text-white">Interactive RBAC Role & Permission Matrix</h3>
+            <p className="text-xs text-slate-400">Overview of capabilities granted to each user role across the church platform:</p>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="p-3.5 font-bold text-slate-700">Role & Scope</th>
-                  <th className="p-3.5 font-bold text-slate-700 text-center">Multi-Church</th>
-                  <th className="p-3.5 font-bold text-slate-700 text-center">Directory</th>
-                  <th className="p-3.5 font-bold text-slate-700 text-center">Prayers</th>
-                  <th className="p-3.5 font-bold text-slate-700 text-center">Attendance</th>
-                  <th className="p-3.5 font-bold text-slate-700 text-center">Sunday School</th>
-                  <th className="p-3.5 font-bold text-slate-700 text-center">Roster / Vol</th>
-                  <th className="p-3.5 font-bold text-slate-700 text-center">WhatsApp</th>
-                  <th className="p-3.5 font-bold text-slate-700 text-center">Bulletins</th>
+                <tr className="bg-slate-800 border-b border-slate-700">
+                  <th className="p-3.5 font-bold text-slate-200">Role & Scope</th>
+                  <th className="p-3.5 font-bold text-slate-200 text-center">Multi-Church</th>
+                  <th className="p-3.5 font-bold text-slate-200 text-center">Directory</th>
+                  <th className="p-3.5 font-bold text-slate-200 text-center">Prayers</th>
+                  <th className="p-3.5 font-bold text-slate-200 text-center">Attendance</th>
+                  <th className="p-3.5 font-bold text-slate-200 text-center">Sunday School</th>
+                  <th className="p-3.5 font-bold text-slate-200 text-center">Roster / Vol</th>
+                  <th className="p-3.5 font-bold text-slate-200 text-center">WhatsApp</th>
+                  <th className="p-3.5 font-bold text-slate-200 text-center">Bulletins</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-800">
                 {(['SuperAdmin', 'PastorAdmin', 'AssistantPastor', 'TreasurerStaff', 'MinistryLeader', 'CellGroupLeader', 'SundaySchoolTeacher', 'Volunteer', 'Member'] as SaaSUserRole[]).map(r => {
                   const cfg = ROLE_CONFIGS[r];
                   return (
-                    <tr key={r} className="hover:bg-slate-50/80 transition">
+                    <tr key={r} className="hover:bg-slate-800/50 transition">
                       <td className="p-3.5">
                         <div className="flex items-center gap-2">
                           <span className={`px-2 py-0.5 rounded-md font-bold text-[10px] border ${cfg.badgeColor}`}>
                             {cfg.label.split('(')[0].trim()}
                           </span>
                         </div>
-                        <p className="text-[10px] text-slate-500 mt-1 max-w-xs">{cfg.description}</p>
+                        <p className="text-[10px] text-slate-400 mt-1 max-w-xs">{cfg.description}</p>
                       </td>
-                      <td className="p-3.5 text-center">{cfg.canSwitchChurch ? <span className="text-emerald-600 font-bold">✓ Universal</span> : <span className="text-slate-400">Single</span>}</td>
-                      <td className="p-3.5 text-center">{cfg.canManageMembers ? <span className="text-emerald-600 font-bold">✓ Full</span> : <span className="text-slate-300">—</span>}</td>
-                      <td className="p-3.5 text-center">{cfg.canManagePrayers ? <span className="text-emerald-600 font-bold">✓ Full</span> : <span className="text-slate-400">View/Post</span>}</td>
-                      <td className="p-3.5 text-center">{cfg.canRecordAttendance ? <span className="text-emerald-600 font-bold">✓ Record</span> : <span className="text-slate-300">—</span>}</td>
-                      <td className="p-3.5 text-center">{cfg.canManageSundaySchool ? <span className="text-emerald-600 font-bold">✓ Full</span> : <span className="text-slate-300">—</span>}</td>
-                      <td className="p-3.5 text-center">{cfg.canManageRoster ? <span className="text-emerald-600 font-bold">✓ Manage</span> : <span className="text-slate-300">—</span>}</td>
-                      <td className="p-3.5 text-center">{cfg.canSendWhatsApp ? <span className="text-emerald-600 font-bold">✓ Broadcast</span> : <span className="text-slate-300">—</span>}</td>
-                      <td className="p-3.5 text-center">{cfg.canPublishAnnouncements ? <span className="text-emerald-600 font-bold">✓ Publish</span> : <span className="text-slate-400">Read</span>}</td>
+                      <td className="p-3.5 text-center">{cfg.canSwitchChurch ? <span className="text-emerald-400 font-bold">✓ Universal</span> : <span className="text-slate-500">Single</span>}</td>
+                      <td className="p-3.5 text-center">{cfg.canManageMembers ? <span className="text-emerald-400 font-bold">✓ Full</span> : <span className="text-slate-600">—</span>}</td>
+                      <td className="p-3.5 text-center">{cfg.canManagePrayers ? <span className="text-emerald-400 font-bold">✓ Full</span> : <span className="text-slate-400">View/Post</span>}</td>
+                      <td className="p-3.5 text-center">{cfg.canRecordAttendance ? <span className="text-emerald-400 font-bold">✓ Record</span> : <span className="text-slate-600">—</span>}</td>
+                      <td className="p-3.5 text-center">{cfg.canManageSundaySchool ? <span className="text-emerald-400 font-bold">✓ Full</span> : <span className="text-slate-600">—</span>}</td>
+                      <td className="p-3.5 text-center">{cfg.canManageRoster ? <span className="text-emerald-400 font-bold">✓ Manage</span> : <span className="text-slate-600">—</span>}</td>
+                      <td className="p-3.5 text-center">{cfg.canSendWhatsApp ? <span className="text-emerald-400 font-bold">✓ Broadcast</span> : <span className="text-slate-600">—</span>}</td>
+                      <td className="p-3.5 text-center">{cfg.canPublishAnnouncements ? <span className="text-emerald-400 font-bold">✓ Publish</span> : <span className="text-slate-400">Read</span>}</td>
                     </tr>
                   );
                 })}
@@ -549,10 +552,10 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
               <div
                 key={user.id}
                 id={`card-saas-user-${user.username}`}
-                className={`bg-white rounded-3xl p-5 border transition flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md ${
+                className={`bg-slate-900 rounded-3xl p-5 border transition flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md ${
                   isCurrentUser
-                    ? 'border-indigo-500 ring-2 ring-indigo-500/20 bg-gradient-to-b from-indigo-50/30 to-white'
-                    : 'border-slate-200'
+                    ? 'border-indigo-500 ring-2 ring-indigo-500/20 bg-gradient-to-b from-indigo-950/30 to-slate-900'
+                    : 'border-slate-800 hover:border-slate-700'
                 }`}
               >
                 {/* Header Profile */}
@@ -564,24 +567,24 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                         avatarUrl={user.avatarUrl}
                         size="lg"
                         shape="rounded"
-                        border="border-2 border-white shadow-sm"
+                        border="border border-slate-700 shadow-sm"
                         indicator={
                           isCurrentUser ? (
-                            <span className="w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full block"></span>
+                            <span className="w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-900 rounded-full block"></span>
                           ) : undefined
                         }
                       />
 
                       <div className="overflow-hidden">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <h4 className="text-sm font-extrabold text-slate-900 truncate">{user.name}</h4>
+                          <h4 className="text-sm font-extrabold text-white truncate">{user.name}</h4>
                           {isCurrentUser && (
                             <span className="text-[9px] font-black bg-indigo-600 text-white px-1.5 py-0.2 rounded-full">
                               You
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-slate-500 truncate">{user.designation || roleConfig.label}</p>
+                        <p className="text-xs text-slate-400 truncate">{user.designation || roleConfig.label}</p>
                       </div>
                     </div>
 
@@ -589,7 +592,7 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                       <button
                         title="Edit User & Role"
                         onClick={() => handleOpenEditModal(user)}
-                        className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 rounded-xl transition"
+                        className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-slate-800 rounded-xl transition"
                       >
                         <Edit3 className="w-4 h-4" />
                       </button>
@@ -597,7 +600,7 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                         <button
                           title="Delete User"
                           onClick={() => setDeleteConfirmUser(user)}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
+                          className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 rounded-xl transition"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -611,7 +614,7 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                       {roleConfig.label}
                     </span>
 
-                    <span className="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
+                    <span className="text-[10px] font-medium bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full border border-slate-700 flex items-center gap-1">
                       <Building2 className="w-2.5 h-2.5 text-slate-400" />
                       {userChurch?.city || 'Local'}
                     </span>
@@ -619,26 +622,26 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                 </div>
 
                 {/* Credentials & Details Box */}
-                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-xs space-y-2">
+                <div className="p-3 bg-slate-800/70 rounded-2xl border border-slate-700/80 text-xs space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-500 flex items-center gap-1.5">
+                    <span className="text-slate-400 flex items-center gap-1.5">
                       <UserCheck className="w-3.5 h-3.5 text-slate-400" /> Username:
                     </span>
-                    <span className="font-mono font-bold text-slate-900">{user.username}</span>
+                    <span className="font-mono font-bold text-slate-100">{user.username}</span>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-500 flex items-center gap-1.5">
+                    <span className="text-slate-400 flex items-center gap-1.5">
                       <Lock className="w-3.5 h-3.5 text-slate-400" /> Password:
                     </span>
                     <div className="flex items-center gap-1.5">
-                      <span className="font-mono font-bold text-slate-900">
+                      <span className="font-mono font-bold text-slate-100">
                         {isPasswordVisible ? (user.password || 'admin123') : '••••••••'}
                       </span>
                       <button
                         type="button"
                         onClick={() => togglePasswordVisibility(user.id)}
-                        className="text-slate-400 hover:text-slate-600"
+                        className="text-slate-400 hover:text-slate-200"
                       >
                         {isPasswordVisible ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                       </button>
@@ -646,9 +649,9 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                   </div>
 
                   {user.email && (
-                    <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[11px]">
-                      <span className="text-slate-500 truncate flex items-center gap-1">
-                        <Mail className="w-3 h-3 text-slate-400 shrink-0" /> {user.email}
+                    <div className="flex items-center justify-between pt-1 border-t border-slate-700/60 text-[11px]">
+                      <span className="text-slate-400 truncate flex items-center gap-1">
+                        <Mail className="w-3 h-3 text-slate-500 shrink-0" /> {user.email}
                       </span>
                     </div>
                   )}
@@ -658,22 +661,20 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                 <div className="flex items-center gap-2 pt-1">
                   <button
                     onClick={() => handleCopyCredentials(user)}
-                    className="px-3 py-2 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center justify-center gap-1.5 flex-1"
+                    className="px-3 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center justify-center gap-1.5 flex-1"
                   >
                     {copiedUserId === user.id ? (
                       <>
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        <span className="text-emerald-700 font-bold">Copied</span>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-400 font-bold">Copied</span>
                       </>
                     ) : (
                       <>
-                        <Copy className="w-3.5 h-3.5 text-slate-500" />
+                        <Copy className="w-3.5 h-3.5 text-slate-400" />
                         <span>Copy Login</span>
                       </>
                     )}
                   </button>
-
-
                 </div>
               </div>
             );
@@ -683,19 +684,19 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
 
       {/* Table View */}
       {viewMode === 'table' && (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="p-4 font-bold text-slate-700">User Profile</th>
-                  <th className="p-4 font-bold text-slate-700">Role & Security</th>
-                  <th className="p-4 font-bold text-slate-700">Assigned Branch</th>
-                  <th className="p-4 font-bold text-slate-700">Username & Password</th>
-                  <th className="p-4 font-bold text-slate-700 text-right">Actions</th>
+                <tr className="bg-slate-800 border-b border-slate-700">
+                  <th className="p-4 font-bold text-slate-200">User Profile</th>
+                  <th className="p-4 font-bold text-slate-200">Role & Security</th>
+                  <th className="p-4 font-bold text-slate-200">Assigned Branch</th>
+                  <th className="p-4 font-bold text-slate-200">Username & Password</th>
+                  <th className="p-4 font-bold text-slate-200 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-800">
                 {filteredUsers.map((user) => {
                   const isCurrentUser = user.id === currentUser?.id;
                   const roleConfig = ROLE_CONFIGS[user.role] || ROLE_CONFIGS.Member;
@@ -703,7 +704,7 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                   const isPasswordVisible = visiblePasswords[user.id] || false;
 
                   return (
-                    <tr key={user.id} className="hover:bg-slate-50/80 transition">
+                    <tr key={user.id} className="hover:bg-slate-800/50 transition">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
                           <UserAvatar
@@ -711,18 +712,18 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                             avatarUrl={user.avatarUrl}
                             size="md"
                             shape="rounded"
-                            border="border border-slate-200"
+                            border="border border-slate-700"
                           />
                           <div>
                             <div className="flex items-center gap-1.5">
-                              <span className="font-extrabold text-slate-900">{user.name}</span>
+                              <span className="font-extrabold text-white">{user.name}</span>
                               {isCurrentUser && (
-                                <span className="text-[9px] font-black bg-indigo-100 text-indigo-800 px-1.5 py-0.2 rounded-full">
+                                <span className="text-[9px] font-black bg-indigo-950/80 text-indigo-300 px-1.5 py-0.2 rounded-full border border-indigo-700">
                                   You
                                 </span>
                               )}
                             </div>
-                            <p className="text-[11px] text-slate-500">{user.email || user.phone}</p>
+                            <p className="text-[11px] text-slate-400">{user.email || user.phone}</p>
                           </div>
                         </div>
                       </td>
@@ -731,22 +732,22 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                         <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border ${roleConfig.badgeColor}`}>
                           {roleConfig.label}
                         </span>
-                        <p className="text-[10px] text-slate-500 mt-0.5">{user.designation || 'Staff'}</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">{user.designation || 'Staff'}</p>
                       </td>
 
                       <td className="p-4">
-                        <div className="font-bold text-slate-800">{userChurch?.name || 'Main Church'}</div>
-                        <p className="text-[10px] text-slate-500">{userChurch?.city}, {userChurch?.state}</p>
+                        <div className="font-bold text-slate-200">{userChurch?.name || 'Main Church'}</div>
+                        <p className="text-[10px] text-slate-400">{userChurch?.city}, {userChurch?.state}</p>
                       </td>
 
                       <td className="p-4 font-mono">
-                        <div className="text-slate-900 font-bold">{user.username}</div>
-                        <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
+                        <div className="text-white font-bold">{user.username}</div>
+                        <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
                           <span>{isPasswordVisible ? (user.password || 'admin123') : '••••••'}</span>
                           <button
                             type="button"
                             onClick={() => togglePasswordVisibility(user.id)}
-                            className="text-slate-400 hover:text-slate-600"
+                            className="text-slate-400 hover:text-slate-200"
                           >
                             {isPasswordVisible ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                           </button>
@@ -758,18 +759,17 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                           <button
                             onClick={() => handleCopyCredentials(user)}
                             title="Copy Login Credentials"
-                            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl"
+                            className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-xl"
                           >
                             <Copy className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleOpenEditModal(user)}
                             title="Edit Role & Permissions"
-                            className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl"
+                            className="p-2 text-slate-400 hover:text-indigo-400 hover:bg-slate-800 rounded-xl"
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
-
                         </div>
                       </td>
                     </tr>
@@ -784,18 +784,18 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
       {/* Create / Edit User Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 space-y-5 border border-slate-200 shadow-2xl my-6 max-h-[92vh] overflow-y-auto">
+          <div className="bg-slate-900 text-white rounded-3xl max-w-xl w-full p-6 sm:p-7 space-y-5 border border-slate-800 shadow-2xl my-6 max-h-[92vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3.5">
               <div className="flex items-center gap-2.5">
-                <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-600">
+                <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-400">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-extrabold text-slate-900">
+                  <h3 className="text-lg font-extrabold text-white">
                     {editingUserId ? 'Edit Church User & Role Assignment' : 'Create New Church User'}
                   </h3>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-400">
                     SuperAdmin role management with cross-church scope
                   </p>
                 </div>
@@ -803,15 +803,15 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
 
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition"
+                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {formError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-700 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+              <div className="p-3 bg-rose-950/50 border border-rose-800 rounded-2xl text-xs text-rose-300 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
                 <span>{formError}</span>
               </div>
             )}
@@ -819,8 +819,8 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
             <form onSubmit={handleSaveForm} className="space-y-4 text-xs">
               {/* Church Branch Selection */}
               <div>
-                <label className="block font-bold text-slate-800 mb-1">
-                  Assigned Church Branch <span className="text-rose-500">*</span>
+                <label className="block font-bold text-slate-200 mb-1">
+                  Assigned Church Branch <span className="text-rose-400">*</span>
                 </label>
                 {isSuperAdmin ? (
                   <div className="relative">
@@ -828,22 +828,22 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                     <select
                       value={formChurchId}
                       onChange={(e) => setFormChurchId(e.target.value)}
-                      className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full pl-9 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-2xl font-bold text-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                     >
                       {safeChurches.map((church) => (
-                        <option key={church.id} value={church.id}>
+                        <option key={church.id} value={church.id} className="bg-slate-900 text-white">
                           {church.name} ({church.city}, {church.state}) — {church.subscriptionPlan}
                         </option>
                       ))}
                     </select>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2.5 p-3 bg-slate-100 border border-slate-200 rounded-2xl text-slate-900 font-bold">
-                    <Building2 className="w-4 h-4 text-amber-600 shrink-0" />
+                  <div className="flex items-center gap-2.5 p-3 bg-slate-800 border border-slate-700 rounded-2xl text-white font-bold">
+                    <Building2 className="w-4 h-4 text-amber-400 shrink-0" />
                     <span>{currentChurch?.name} ({currentChurch?.city}, {currentChurch?.state})</span>
                   </div>
                 )}
-                <p className="text-[11px] text-slate-500 mt-1">
+                <p className="text-[11px] text-slate-400 mt-1">
                   {isSuperAdmin 
                     ? 'User will belong to this church tenant and access records for this congregation.'
                     : `User will belong to ${currentChurch?.name || 'this church'} and will not have access to other churches.`
@@ -854,8 +854,8 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
               {/* Personal Information */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-800 mb-1">
-                    Full Name <span className="text-rose-500">*</span>
+                  <label className="block font-bold text-slate-200 mb-1">
+                    Full Name <span className="text-rose-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -863,12 +863,12 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                     value={formName}
                     onChange={(e) => handleNameChange(e.target.value)}
                     placeholder="e.g. Pastor Paul Varghese"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-2xl text-xs font-semibold text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-800 mb-1">
+                  <label className="block font-bold text-slate-200 mb-1">
                     Designation / Title
                   </label>
                   <input
@@ -876,15 +876,15 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                     value={formDesignation}
                     onChange={(e) => setFormDesignation(e.target.value)}
                     placeholder="e.g. Associate Pastor / Youth Lead"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-2xl text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Role Selection Matrix */}
               <div>
-                <label className="block font-bold text-slate-800 mb-1">
-                  Security Role & Access Permission <span className="text-rose-500">*</span>
+                <label className="block font-bold text-slate-200 mb-1">
+                  Security Role & Access Permission <span className="text-rose-400">*</span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-52 overflow-y-auto p-1">
                   {(['SuperAdmin', 'PastorAdmin', 'AssistantPastor', 'TreasurerStaff', 'MinistryLeader', 'CellGroupLeader', 'SundaySchoolTeacher', 'Member', 'Volunteer'] as SaaSUserRole[])
@@ -899,17 +899,17 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                         onClick={() => setFormRole(roleKey)}
                         className={`p-3 rounded-2xl border cursor-pointer transition flex flex-col justify-between text-left ${
                           isSelected
-                            ? 'bg-amber-500/10 border-amber-500 ring-2 ring-amber-500/30'
-                            : 'bg-slate-50 hover:bg-slate-100 border-slate-200'
+                            ? 'bg-amber-950/40 border-amber-500 ring-2 ring-amber-500/30'
+                            : 'bg-slate-800/80 hover:bg-slate-750 border-slate-700'
                         }`}
                       >
                         <div className="flex items-center justify-between">
                           <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md border ${cfg.badgeColor}`}>
                             {cfg.label.split('(')[0].trim()}
                           </span>
-                          {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />}
+                          {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />}
                         </div>
-                        <p className="text-[10px] text-slate-500 mt-1.5 leading-snug">{cfg.description}</p>
+                        <p className="text-[10px] text-slate-400 mt-1.5 leading-snug">{cfg.description}</p>
                       </div>
                     );
                   })}
@@ -917,15 +917,15 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
               </div>
 
               {/* Credentials Section */}
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+              <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                    <Key className="w-3.5 h-3.5 text-amber-600" /> Login Credentials
+                  <span className="font-bold text-slate-200 flex items-center gap-1.5">
+                    <Key className="w-3.5 h-3.5 text-amber-400" /> Login Credentials
                   </span>
                   <button
                     type="button"
                     onClick={() => setFormPassword(generateRandomPassword())}
-                    className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                    className="text-[11px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1"
                   >
                     <RefreshCw className="w-3 h-3" /> Generate Password
                   </button>
@@ -933,8 +933,8 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                      Username <span className="text-rose-500">*</span>
+                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">
+                      Username <span className="text-rose-400">*</span>
                     </label>
                     <input
                       type="text"
@@ -942,13 +942,13 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                       value={formUsername}
                       onChange={(e) => setFormUsername(e.target.value.toLowerCase())}
                       placeholder="e.g. paul.varghese"
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-mono text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl font-mono text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                      Password <span className="text-rose-500">*</span>
+                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">
+                      Password <span className="text-rose-400">*</span>
                     </label>
                     <div className="relative">
                       <input
@@ -957,12 +957,12 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                         value={formPassword}
                         onChange={(e) => setFormPassword(e.target.value)}
                         placeholder="Password"
-                        className="w-full pl-3 pr-8 py-2 bg-white border border-slate-200 rounded-xl font-mono text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                        className="w-full pl-3 pr-8 py-2 bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl font-mono text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                       />
                       <button
                         type="button"
                         onClick={() => setShowFormPassword(!showFormPassword)}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
                       >
                         {showFormPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                       </button>
@@ -972,24 +972,24 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">Email Address</label>
+                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Email Address</label>
                     <input
                       type="email"
                       value={formEmail}
                       onChange={(e) => setFormEmail(e.target.value)}
                       placeholder="paul@church.org"
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">Contact Phone</label>
+                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Contact Phone</label>
                     <input
                       type="tel"
                       value={formPhone}
                       onChange={(e) => setFormPhone(e.target.value)}
                       placeholder="+91 98765 00000"
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -998,11 +998,11 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
               {/* Avatar Selector */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block font-bold text-slate-800">Profile Photo Avatar</label>
+                  <label className="block font-bold text-slate-200">Profile Photo Avatar</label>
                   <button
                     type="button"
                     onClick={() => userFileInputRef.current?.click()}
-                    className="text-[11px] font-bold text-amber-700 hover:text-amber-800 flex items-center gap-1 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded-lg border border-amber-200"
+                    className="text-[11px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 bg-amber-950/40 hover:bg-amber-900/50 px-2 py-0.5 rounded-lg border border-amber-800"
                   >
                     <Upload className="w-3 h-3" />
                     <span>Upload Custom Photo</span>
@@ -1016,7 +1016,7 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                   />
                 </div>
 
-                <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                <div className="flex items-center gap-3 bg-slate-800/80 p-3 rounded-2xl border border-slate-700">
                   <div className="relative shrink-0">
                     <UserAvatar
                       name={formName || 'User'}
@@ -1026,19 +1026,19 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                       border="border-2 border-amber-500 shadow-sm"
                     />
                     {isUploadingUserPhoto && (
-                      <div className="absolute inset-0 bg-slate-900/60 rounded-2xl flex items-center justify-center">
+                      <div className="absolute inset-0 bg-slate-950/70 rounded-2xl flex items-center justify-center">
                         <RefreshCw className="w-4 h-4 text-white animate-spin" />
                       </div>
                     )}
                   </div>
 
-                  <div className="flex-1 text-xs text-slate-600 flex items-center justify-between">
+                  <div className="flex-1 text-xs text-slate-300 flex items-center justify-between">
                     <span>{formAvatarUrl?.trim() ? 'Custom photo attached' : 'Default initials avatar will be generated'}</span>
                     {formAvatarUrl?.trim() && (
                       <button
                         type="button"
                         onClick={() => setFormAvatarUrl('')}
-                        className="px-2 py-1 text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-lg text-xs font-semibold"
+                        className="px-2 py-1 text-rose-400 hover:text-rose-300 hover:bg-rose-950/50 border border-rose-800 rounded-lg text-xs font-semibold"
                       >
                         Remove Photo
                       </button>
@@ -1052,7 +1052,7 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="w-1/3 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl transition"
+                  className="w-1/3 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white font-bold rounded-2xl transition"
                 >
                   Cancel
                 </button>
@@ -1072,27 +1072,27 @@ export const UserManagementModule: React.FC<UserManagementModuleProps> = ({
       {/* Delete Confirmation Modal */}
       {deleteConfirmUser && (
         <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 space-y-4 border border-slate-200 shadow-2xl text-center">
-            <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+          <div className="bg-slate-900 text-white rounded-3xl max-w-sm w-full p-6 space-y-4 border border-slate-800 shadow-2xl text-center">
+            <div className="w-12 h-12 rounded-2xl bg-rose-950/50 border border-rose-800/80 text-rose-400 flex items-center justify-center mx-auto">
               <Trash2 className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-base font-extrabold text-slate-900">Delete User Account?</h3>
-              <p className="text-xs text-slate-500 mt-1">
-                Are you sure you want to delete user <strong className="text-slate-800 font-mono">@{deleteConfirmUser.username}</strong> ({deleteConfirmUser.name})? This user will no longer be able to log in.
+              <h3 className="text-base font-extrabold text-white">Delete User Account?</h3>
+              <p className="text-xs text-slate-400 mt-1">
+                Are you sure you want to delete user <strong className="text-amber-400 font-mono">@{deleteConfirmUser.username}</strong> ({deleteConfirmUser.name})? This user will no longer be able to log in.
               </p>
             </div>
 
             <div className="flex items-center gap-2 pt-2">
               <button
                 onClick={() => setDeleteConfirmUser(null)}
-                className="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl"
+                className="w-1/2 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteUser}
-                className="w-1/2 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow"
+                className="w-1/2 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl shadow transition"
               >
                 Confirm Delete
               </button>

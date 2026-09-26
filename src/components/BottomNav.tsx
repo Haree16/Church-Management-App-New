@@ -167,18 +167,18 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       {/* Overflow Modules Drawer */}
       {showMoreMenu && hasMoreMenu && (
         <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-40 flex items-end sm:items-center justify-center p-2 sm:p-4 animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-3xl p-5 shadow-2xl text-white space-y-4 max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-lg rounded-3xl p-5 shadow-2xl text-slate-900 dark:text-white space-y-4 max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
+                  <div className="p-2 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
                     <Menu className="w-4 h-4" />
                   </div>
-                  <h3 className="font-extrabold text-base text-white">
+                  <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
                     {isMinistryMember ? 'Ministry Member Menu' : 'Member Menu'}
                   </h3>
                 </div>
-                <p className="text-[11px] text-slate-400 mt-0.5">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                   {isMinistryMember
                     ? 'Includes your assigned ministry screens, roster assignments & attendance'
                     : 'Church bulletins, prayer requests & member portal'}
@@ -188,7 +188,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               <button
                 id="btn-close-more-menu"
                 onClick={() => setShowMoreMenu(false)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition"
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -212,11 +212,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                     }}
                     className={`p-3 rounded-2xl border text-left transition flex items-start gap-3 ${
                       isActive
-                        ? 'bg-amber-500/20 border-amber-500/40 text-amber-300'
-                        : 'bg-slate-800/60 border-slate-700/50 hover:bg-slate-800 text-slate-200'
+                        ? 'bg-amber-500/15 border-amber-500/40 text-amber-600 dark:text-amber-300'
+                        : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'
                     }`}
                   >
-                    <Icon className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                    <Icon className="w-5 h-5 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
                     <div>
                       <div className="flex items-center gap-1.5">
                         <p className="text-xs font-bold leading-snug">{mod.label}</p>
@@ -226,7 +226,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                           </span>
                         )}
                       </div>
-                      <p className="text-[10px] text-slate-400 mt-0.5">{mod.desc}</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{mod.desc}</p>
                     </div>
                   </button>
                 );
@@ -237,7 +237,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       )}
 
       {/* Main Bottom Nav Bar */}
-      <nav className="bg-slate-950/95 backdrop-blur-md border-t border-slate-800/80 text-slate-400 fixed bottom-0 left-0 right-0 z-30 px-2 py-1.5 shadow-2xl">
+      <nav className="bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800/80 text-slate-600 dark:text-slate-400 fixed bottom-0 left-0 right-0 z-30 px-2 py-1.5 shadow-2xl">
         <div className="max-w-md mx-auto flex items-center justify-around">
           {primaryTabs.map((tab) => {
             const Icon = tab.icon;
@@ -250,8 +250,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 onClick={() => setActiveTab(tab.id)}
                 className={`relative flex flex-col items-center justify-center py-1.5 px-2.5 rounded-2xl transition-all ${
                   isActive
-                    ? 'text-amber-400 font-extrabold bg-amber-500/15'
-                    : 'hover:text-slate-200 hover:bg-slate-900'
+                    ? 'text-amber-600 dark:text-amber-400 font-extrabold bg-amber-500/15'
+                    : 'hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900'
                 }`}
               >
                 <div className="relative">
@@ -276,12 +276,12 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 onClick={() => setShowMoreMenu(true)}
                 className={`relative flex flex-col items-center justify-center py-1.5 px-2.5 rounded-2xl transition-all ${
                   isOverflowActive
-                    ? 'text-amber-400 font-extrabold bg-amber-500/15'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                    ? 'text-amber-600 dark:text-amber-400 font-extrabold bg-amber-500/15'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
                 }`}
               >
-                <Menu className={`w-5 h-5 ${isOverflowActive ? 'stroke-[2.5] text-amber-400' : 'stroke-2 text-amber-400'}`} />
-                <span className="text-[10px] mt-1 tracking-tight font-bold text-amber-400 truncate max-w-[65px]">
+                <Menu className={`w-5 h-5 ${isOverflowActive ? 'stroke-[2.5] text-amber-500 dark:text-amber-400' : 'stroke-2 text-amber-500 dark:text-amber-400'}`} />
+                <span className="text-[10px] mt-1 tracking-tight font-bold text-amber-600 dark:text-amber-400 truncate max-w-[65px]">
                   {isOverflowActive ? activeOverflowMod?.label : `More (${overflowTabs.length})`}
                 </span>
               </button>

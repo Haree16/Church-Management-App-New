@@ -111,49 +111,49 @@ export const MyAttendanceView: React.FC<MyAttendanceViewProps> = ({
 
       {/* KPI Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+        <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-sky-500/20 text-sky-400 border border-sky-500/30 flex items-center justify-center shrink-0">
             <Calendar className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-2xl font-black text-slate-900">{totalSessions}</div>
+            <div className="text-2xl font-black text-white">{totalSessions}</div>
             <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Sessions</div>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+        <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-2xl font-black text-slate-900">{attendedSessions}</div>
+            <div className="text-2xl font-black text-white">{attendedSessions}</div>
             <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Sessions Attended</div>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+        <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
             <BarChart3 className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-2xl font-black text-slate-900">{attendanceRate}%</div>
+            <div className="text-2xl font-black text-white">{attendanceRate}%</div>
             <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Participation Rate</div>
           </div>
         </div>
       </div>
 
       {/* Attendance History Log */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+      <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800 shadow-sm space-y-4 text-white">
         <div className="flex items-center justify-between">
-          <h2 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-            <Clock className="w-4.5 h-4.5 text-emerald-600" />
+          <h2 className="font-bold text-white text-sm flex items-center gap-2">
+            <Clock className="w-4.5 h-4.5 text-emerald-400" />
             <span>Attendance Log</span>
           </h2>
           <span className="text-xs text-slate-400 font-medium">Read-Only Member View</span>
         </div>
 
         {myAttendanceLog.length === 0 ? (
-          <div className="p-8 text-center text-xs text-slate-400 border border-dashed border-slate-200 rounded-2xl">
+          <div className="p-8 text-center text-xs text-slate-400 border border-dashed border-slate-800 rounded-2xl">
             No attendance records found for your account yet.
           </div>
         ) : (
@@ -161,19 +161,19 @@ export const MyAttendanceView: React.FC<MyAttendanceViewProps> = ({
             {myAttendanceLog.map((rec) => (
               <div
                 key={rec.id}
-                className="p-3.5 rounded-2xl border border-slate-200/80 bg-slate-50/60 flex items-center justify-between gap-3 text-xs"
+                className="p-3.5 rounded-2xl border border-slate-800 bg-slate-800/80 flex items-center justify-between gap-3 text-xs"
               >
                 <div className="space-y-0.5">
-                  <div className="font-bold text-slate-900">{rec.title}</div>
-                  <div className="text-[11px] text-slate-500">{rec.date} • {rec.type}</div>
+                  <div className="font-bold text-white">{rec.title}</div>
+                  <div className="text-[11px] text-slate-400">{rec.date} • {rec.type}</div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <span
                     className={`px-3 py-1 rounded-xl text-xs font-extrabold flex items-center gap-1 ${
                       rec.status === 'Present'
-                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                        : 'bg-rose-100 text-rose-800 border border-rose-300'
+                        ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800'
+                        : 'bg-rose-950/80 text-rose-300 border border-rose-800'
                     }`}
                   >
                     {rec.status === 'Present' ? (
@@ -189,7 +189,7 @@ export const MyAttendanceView: React.FC<MyAttendanceViewProps> = ({
           </div>
         )}
 
-        <div className="p-3 bg-slate-100/70 rounded-2xl text-[11px] text-slate-500 flex items-center gap-2">
+        <div className="p-3 bg-slate-800/60 border border-slate-700/60 rounded-2xl text-[11px] text-slate-400 flex items-center gap-2">
           <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
           <span>Attendance records are officially managed and verified by authorized church leaders.</span>
         </div>

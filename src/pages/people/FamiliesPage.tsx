@@ -148,8 +148,8 @@ export function FamiliesPage() {
             className="h-9 text-xs"
           />
         </div>
-        <div className="text-xs text-slate-500">
-          Showing <span className="font-semibold text-slate-900 dark:text-slate-100">{filteredFamilies.length}</span> households
+        <div className="text-xs text-slate-400">
+          Showing <span className="font-bold text-white">{filteredFamilies.length}</span> households
         </div>
       </div>
 

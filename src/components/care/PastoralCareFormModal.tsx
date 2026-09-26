@@ -157,18 +157,18 @@ export const PastoralCareFormModal: React.FC<PastoralCareFormModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white text-slate-900 border border-slate-200 p-6 rounded-2xl shadow-2xl dark:bg-white dark:text-slate-900 dark:border-slate-200">
-        <DialogHeader className="border-b border-slate-200 pb-4">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-slate-900 text-white border border-slate-800 p-6 rounded-3xl shadow-2xl dark:bg-slate-900 dark:text-white dark:border-slate-800">
+        <DialogHeader className="border-b border-slate-800 pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="p-2.5 rounded-xl bg-purple-100 text-purple-700">
+            <div className="p-2.5 rounded-xl bg-purple-950/70 border border-purple-800/50 text-purple-400">
               <HeartHandshake className="w-5 h-5" />
             </div>
             <div>
-              <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2 dark:text-slate-900">
+              <DialogTitle className="text-lg font-bold text-white flex items-center gap-2 dark:text-white">
                 {mode === 'create' ? 'Open Pastoral Care Case' : 'Edit Pastoral Care Record'}
-                <Lock className="w-4 h-4 text-purple-600" />
+                <Lock className="w-4 h-4 text-purple-400" />
               </DialogTitle>
-              <DialogDescription className="text-xs text-slate-500 dark:text-slate-500">
+              <DialogDescription className="text-xs text-slate-400 dark:text-slate-400">
                 Confidential pastoral record. Access is strictly restricted to authorized pastoral caregivers.
               </DialogDescription>
             </div>
@@ -177,57 +177,57 @@ export const PastoralCareFormModal: React.FC<PastoralCareFormModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           {/* Safeguarding Alert Reminder Banner */}
-          <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3 text-xs text-amber-900">
-            <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="p-3.5 bg-amber-950/50 border border-amber-800/60 rounded-xl flex items-start gap-3 text-xs text-amber-200">
+            <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             <p>
-              <strong className="text-amber-900">Pastoral Care & Safeguarding Reminder:</strong> Please record objective pastoral summaries. If there is immediate harm or legal risk, activate the Safeguarding Flag below.
+              <strong className="text-amber-300">Pastoral Care & Safeguarding Reminder:</strong> Please record objective pastoral summaries. If there is immediate harm or legal risk, activate the Safeguarding Flag below.
             </p>
           </div>
 
           {/* Person Details */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-800 font-semibold block">Person Name *</label>
+              <label className="text-xs text-slate-300 font-semibold block">Person Name *</label>
               <Input
                 value={personName}
                 onChange={(e) => setPersonName(e.target.value)}
                 placeholder="e.g. Brother John Doe"
-                className="bg-slate-50 border-slate-300 text-slate-900 text-xs focus:bg-white focus:ring-2 focus:ring-purple-500"
+                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-xs focus:ring-2 focus:ring-purple-500"
                 required
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-800 font-semibold block">Person Type</label>
+              <label className="text-xs text-slate-300 font-semibold block">Person Type</label>
               <Select value={personType} onValueChange={(val: 'member' | 'visitor') => setPersonType(val)}>
-                <SelectTrigger className="bg-slate-50 border-slate-300 text-slate-900 text-xs focus:bg-white focus:ring-2 focus:ring-purple-500">
+                <SelectTrigger className="bg-slate-800 border-slate-700 text-white text-xs focus:ring-2 focus:ring-purple-500">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-slate-200 text-slate-900">
-                  <SelectItem value="member">Church Member</SelectItem>
-                  <SelectItem value="visitor">Church Visitor</SelectItem>
+                <SelectContent className="bg-slate-900 border-slate-800 text-white">
+                  <SelectItem value="member" className="focus:bg-slate-800 focus:text-white">Church Member</SelectItem>
+                  <SelectItem value="visitor" className="focus:bg-slate-800 focus:text-white">Church Visitor</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-800 font-semibold block">Contact Email</label>
+              <label className="text-xs text-slate-300 font-semibold block">Contact Email</label>
               <Input
                 type="email"
                 value={personEmail}
                 onChange={(e) => setPersonEmail(e.target.value)}
                 placeholder="john.doe@example.com"
-                className="bg-slate-50 border-slate-300 text-slate-900 text-xs focus:bg-white focus:ring-2 focus:ring-purple-500"
+                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-xs focus:ring-2 focus:ring-purple-500"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-800 font-semibold block">Contact Phone</label>
+              <label className="text-xs text-slate-300 font-semibold block">Contact Phone</label>
               <Input
                 value={personPhone}
                 onChange={(e) => setPersonPhone(e.target.value)}
                 placeholder="+1 (555) 000-0000"
-                className="bg-slate-50 border-slate-300 text-slate-900 text-xs focus:bg-white focus:ring-2 focus:ring-purple-500"
+                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-xs focus:ring-2 focus:ring-purple-500"
               />
             </div>
           </div>
@@ -235,14 +235,14 @@ export const PastoralCareFormModal: React.FC<PastoralCareFormModalProps> = ({
           {/* Care Type & Confidentiality */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-800 font-semibold block">Care Type</label>
+              <label className="text-xs text-slate-300 font-semibold block">Care Type</label>
               <Select value={careType} onValueChange={(val: PastoralCareType) => setCareType(val)}>
-                <SelectTrigger className="bg-slate-50 border-slate-300 text-slate-900 text-xs focus:bg-white focus:ring-2 focus:ring-purple-500">
+                <SelectTrigger className="bg-slate-800 border-slate-700 text-white text-xs focus:ring-2 focus:ring-purple-500">
                   <SelectValue placeholder="Select care type" />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-slate-200 text-slate-900">
+                <SelectContent className="bg-slate-900 border-slate-800 text-white">
                   {PASTORAL_CARE_TYPES.map((t) => (
-                    <SelectItem key={t.value} value={t.value}>
+                    <SelectItem key={t.value} value={t.value} className="focus:bg-slate-800 focus:text-white">
                       {t.label}
                     </SelectItem>
                   ))}
@@ -251,17 +251,17 @@ export const PastoralCareFormModal: React.FC<PastoralCareFormModalProps> = ({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-800 font-semibold block">Confidentiality Level</label>
+              <label className="text-xs text-slate-300 font-semibold block">Confidentiality Level</label>
               <Select
                 value={confidentialityLevel}
                 onValueChange={(val: PastoralCareConfidentiality) => setConfidentialityLevel(val)}
               >
-                <SelectTrigger className="bg-slate-50 border-slate-300 text-slate-900 text-xs focus:bg-white focus:ring-2 focus:ring-purple-500">
+                <SelectTrigger className="bg-slate-800 border-slate-700 text-white text-xs focus:ring-2 focus:ring-purple-500">
                   <SelectValue placeholder="Select confidentiality" />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-slate-200 text-slate-900">
+                <SelectContent className="bg-slate-900 border-slate-800 text-white">
                   {CONFIDENTIALITY_LEVELS.map((c) => (
-                    <SelectItem key={c.value} value={c.value}>
+                    <SelectItem key={c.value} value={c.value} className="focus:bg-slate-800 focus:text-white">
                       {c.label}
                     </SelectItem>
                   ))}
@@ -273,14 +273,14 @@ export const PastoralCareFormModal: React.FC<PastoralCareFormModalProps> = ({
           {/* Stage, Priority, Assignee & Due Date */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-800 font-semibold block">Care Stage</label>
+              <label className="text-xs text-slate-300 font-semibold block">Care Stage</label>
               <Select value={stage} onValueChange={(val: PastoralCareStage) => setStage(val)}>
-                <SelectTrigger className="bg-slate-50 border-slate-300 text-slate-900 text-xs focus:bg-white focus:ring-2 focus:ring-purple-500">
+                <SelectTrigger className="bg-slate-800 border-slate-700 text-white text-xs focus:ring-2 focus:ring-purple-500">
                   <SelectValue placeholder="Stage" />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-slate-200 text-slate-900">
+                <SelectContent className="bg-slate-900 border-slate-800 text-white">
                   {PASTORAL_STAGES.map((s) => (
-                    <SelectItem key={s.value} value={s.value}>
+                    <SelectItem key={s.value} value={s.value} className="focus:bg-slate-800 focus:text-white">
                       {s.label}
                     </SelectItem>
                   ))}
@@ -289,77 +289,77 @@ export const PastoralCareFormModal: React.FC<PastoralCareFormModalProps> = ({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-800 font-semibold block">Priority Level</label>
+              <label className="text-xs text-slate-300 font-semibold block">Priority Level</label>
               <Select value={priority} onValueChange={(val: FollowUpPriority) => setPriority(val)}>
-                <SelectTrigger className="bg-slate-50 border-slate-300 text-slate-900 text-xs focus:bg-white focus:ring-2 focus:ring-purple-500">
+                <SelectTrigger className="bg-slate-800 border-slate-700 text-white text-xs focus:ring-2 focus:ring-purple-500">
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-slate-200 text-slate-900">
-                  <SelectItem value="low">Low Priority</SelectItem>
-                  <SelectItem value="medium">Medium Priority</SelectItem>
-                  <SelectItem value="high">High Priority</SelectItem>
-                  <SelectItem value="urgent">Urgent Action</SelectItem>
+                <SelectContent className="bg-slate-900 border-slate-800 text-white">
+                  <SelectItem value="low" className="focus:bg-slate-800 focus:text-white">Low Priority</SelectItem>
+                  <SelectItem value="medium" className="focus:bg-slate-800 focus:text-white">Medium Priority</SelectItem>
+                  <SelectItem value="high" className="focus:bg-slate-800 focus:text-white">High Priority</SelectItem>
+                  <SelectItem value="urgent" className="focus:bg-slate-800 focus:text-white">Urgent Action</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-800 font-semibold block">Assigned Caregiver</label>
+              <label className="text-xs text-slate-300 font-semibold block">Assigned Caregiver</label>
               <Input
                 value={assignedToName}
                 onChange={(e) => setAssignedToName(e.target.value)}
                 placeholder="e.g. Pastor Thomas"
-                className="bg-slate-50 border-slate-300 text-slate-900 text-xs focus:bg-white focus:ring-2 focus:ring-purple-500"
+                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-xs focus:ring-2 focus:ring-purple-500"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs text-slate-800 font-semibold block">Scheduled Follow-up Date</label>
+            <label className="text-xs text-slate-300 font-semibold block">Scheduled Follow-up Date</label>
             <Input
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="bg-slate-50 border-slate-300 text-slate-900 text-xs focus:bg-white focus:ring-2 focus:ring-purple-500"
+              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-xs focus:ring-2 focus:ring-purple-500 cursor-pointer [color-scheme:dark]"
             />
           </div>
 
           {/* Non-sensitive Summary */}
           <div className="space-y-1.5">
-            <label className="text-xs text-slate-800 font-semibold block">Pastoral Summary (Non-sensitive Overview) *</label>
+            <label className="text-xs text-slate-300 font-semibold block">Pastoral Summary (Non-sensitive Overview) *</label>
             <Input
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
               placeholder="e.g. Pastoral home visit for prayer and encouragement following bereavement."
-              className="bg-slate-50 border-slate-300 text-slate-900 text-xs focus:bg-white focus:ring-2 focus:ring-purple-500"
+              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-xs focus:ring-2 focus:ring-purple-500"
               required
             />
-            <p className="text-[10px] text-slate-500">Brief summary displayed in care oversight lists.</p>
+            <p className="text-[10px] text-slate-400">Brief summary displayed in care oversight lists.</p>
           </div>
 
           {/* Confidential Private Notes */}
           <div className="space-y-1.5">
-            <label className="text-xs text-slate-800 font-semibold flex items-center justify-between">
+            <label className="text-xs text-slate-300 font-semibold flex items-center justify-between">
               <span>Confidential Pastoral Notes (Restricted Access)</span>
-              <Lock className="w-3.5 h-3.5 text-purple-600" />
+              <Lock className="w-3.5 h-3.5 text-purple-400" />
             </label>
             <textarea
               value={privateNotes}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrivateNotes(e.target.value)}
               placeholder="Record detailed pastoral conversation notes, spiritual counsel provided, and intercessory notes..."
               rows={3}
-              className="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs p-2.5 rounded-xl outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white"
+              className="w-full bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 text-xs p-2.5 rounded-xl outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
 
           {/* Safeguarding Switch & Notes */}
-          <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+          <div className="p-3.5 bg-slate-800/80 border border-slate-700 rounded-xl space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
+                <AlertTriangle className="w-4 h-4 text-amber-400" />
                 <div>
-                  <p className="text-xs font-bold text-slate-900">Safeguarding / Risk Awareness Flag</p>
-                  <p className="text-[10px] text-slate-500">Flag for urgent pastoral attention or legal safeguarding safety awareness</p>
+                  <p className="text-xs font-bold text-white">Safeguarding / Risk Awareness Flag</p>
+                  <p className="text-[10px] text-slate-400">Flag for urgent pastoral attention or legal safeguarding safety awareness</p>
                 </div>
               </div>
               <input
@@ -371,32 +371,32 @@ export const PastoralCareFormModal: React.FC<PastoralCareFormModalProps> = ({
             </div>
 
             {safeguardingFlag && (
-              <div className="space-y-1.5 pt-2 border-t border-slate-200">
-                <label className="text-xs text-amber-800 font-semibold block">Safeguarding Details & Action Plan</label>
+              <div className="space-y-1.5 pt-2 border-t border-slate-700">
+                <label className="text-xs text-amber-300 font-semibold block">Safeguarding Details & Action Plan</label>
                 <textarea
                   value={safeguardingNotes}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setSafeguardingNotes(e.target.value)}
                   placeholder="Note specific safety awareness, crisis protocol steps, or senior pastor notifications..."
                   rows={2}
-                  className="w-full bg-amber-50 border border-amber-300 text-amber-900 text-xs p-2.5 rounded-xl outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full bg-amber-950/40 border border-amber-800/60 text-amber-100 placeholder:text-amber-400/60 text-xs p-2.5 rounded-xl outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
             )}
           </div>
 
-          <DialogFooter className="pt-3 border-t border-slate-200 flex items-center justify-end gap-2">
+          <DialogFooter className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
-              className="border-slate-300 text-slate-700 hover:bg-slate-100 text-xs"
+              className="bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold rounded-xl px-4 py-2 transition"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold"
+              className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl px-4 py-2 shadow-lg transition"
             >
               {isSubmitting ? 'Saving Record...' : mode === 'create' ? 'Create Pastoral Record' : 'Save Changes'}
             </Button>

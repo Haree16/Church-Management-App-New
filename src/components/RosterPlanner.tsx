@@ -329,19 +329,29 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
   return (
     <div className="space-y-4">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-amber-900 via-slate-900 to-slate-950 text-white rounded-3xl p-5 sm:p-6 shadow-xl relative overflow-hidden">
+      <div 
+        data-theme-surface="dark"
+        data-preserve-dark="true"
+        className="dark-hero-panel bg-gradient-to-r from-amber-900 via-slate-900 to-slate-950 text-white rounded-3xl p-5 sm:p-6 shadow-xl relative overflow-hidden border border-amber-800/40"
+      >
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold mb-2 border border-amber-500/30">
-              <Calendar className="w-3.5 h-3.5" />
-              Service Volunteer Roster & Scheduling
+            <div 
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-[#fde68a] text-xs font-bold mb-2 border border-amber-500/30"
+              style={{ color: '#fde68a' }}
+            >
+              <Calendar className="w-3.5 h-3.5 text-[#fbbf24]" style={{ color: '#fbbf24' }} />
+              <span>Service Volunteer Roster & Scheduling</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white" style={{ color: '#ffffff' }}>
               Church Service Duty Roster
             </h2>
-            <p className="text-amber-100/80 text-xs sm:text-sm mt-1 max-w-xl">
+            <div 
+              className="text-[#fef3c7] text-xs sm:text-sm mt-1 max-w-xl font-normal leading-relaxed"
+              style={{ color: '#fef3c7' }}
+            >
               Schedule and manage volunteers across all church services — Sunday Worship, Midweek Prayer, Youth Nights, Dawn Prayer, and Special Gatherings.
-            </p>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
@@ -368,13 +378,13 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
       </div>
 
       {/* Main View Mode Selector */}
-      <div className="flex items-center gap-2 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm overflow-x-auto no-scrollbar scrollbar-none text-xs font-bold">
+      <div className="flex items-center gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800 shadow-sm overflow-x-auto no-scrollbar scrollbar-none text-xs font-bold">
         <button
           onClick={() => setActiveViewMode('by_date')}
           className={`flex-1 min-w-[150px] py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2 ${
             activeViewMode === 'by_date'
               ? 'bg-amber-500 text-slate-950 shadow-sm font-extrabold'
-              : 'text-slate-600 hover:bg-slate-100'
+              : 'text-slate-400 hover:bg-slate-800 hover:text-white'
           }`}
         >
           <CalendarDays className="w-4 h-4" />
@@ -386,7 +396,7 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
           className={`flex-1 min-w-[170px] py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2 ${
             activeViewMode === 'all_services'
               ? 'bg-amber-500 text-slate-950 shadow-sm font-extrabold'
-              : 'text-slate-600 hover:bg-slate-100'
+              : 'text-slate-400 hover:bg-slate-800 hover:text-white'
           }`}
         >
           <Layers className="w-4 h-4" />
@@ -398,7 +408,7 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
           className={`flex-1 min-w-[150px] py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2 ${
             activeViewMode === 'my_duties'
               ? 'bg-amber-500 text-slate-950 shadow-sm font-extrabold'
-              : 'text-slate-600 hover:bg-slate-100'
+              : 'text-slate-400 hover:bg-slate-800 hover:text-white'
           }`}
         >
           <User className="w-4 h-4" />
@@ -408,17 +418,17 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
 
       {/* Primary Date & Service Navigation Bar (Visible in 'by_date' mode) */}
       {activeViewMode === 'by_date' && (
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-sm space-y-3">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-900 flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold">
                 <Calendar className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-extrabold text-slate-900 leading-tight">
+                <h3 className="text-sm font-extrabold text-white leading-tight">
                   {formattedSelectedDate}
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-400">
                   {filteredRoster.length} Roles Assigned • {filteredRoster.filter((r) => r.confirmed).length} Confirmed
                 </p>
               </div>
@@ -426,15 +436,15 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
 
             {/* Quick Service Day Dropdown & Custom Date Picker */}
             <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-xl border border-slate-200">
-                <span className="text-[11px] font-bold text-slate-500 pl-2">Select Service:</span>
+              <div className="flex items-center gap-1.5 bg-slate-800 p-1 rounded-xl border border-slate-700">
+                <span className="text-[11px] font-bold text-slate-400 pl-2">Select Service:</span>
                 <select
                   value={selectedServiceDate}
                   onChange={(e) => setSelectedServiceDate(e.target.value)}
-                  className="bg-transparent text-xs font-bold text-slate-900 focus:outline-none pr-2 py-1 max-w-[240px] truncate"
+                  className="bg-transparent text-xs font-bold text-slate-100 focus:outline-none pr-2 py-1 max-w-[240px] truncate"
                 >
                   {serviceDateOptions.map((opt) => (
-                    <option key={opt.date} value={opt.date}>
+                    <option key={opt.date} value={opt.date} className="bg-slate-900 text-white">
                       {opt.label}
                     </option>
                   ))}
@@ -442,15 +452,15 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
               </div>
 
               {/* Direct HTML5 Date Picker to Pick ANY day on the calendar */}
-              <div className="flex items-center gap-1 bg-slate-50 p-1 px-2 rounded-xl border border-slate-200" title="Choose any custom date">
-                <span className="text-[10px] font-bold uppercase text-slate-500">Custom Date:</span>
+              <div className="flex items-center gap-1 bg-slate-800 p-1 px-2 rounded-xl border border-slate-700" title="Choose any custom date">
+                <span className="text-[10px] font-bold uppercase text-slate-400">Custom Date:</span>
                 <input
                   type="date"
                   value={selectedServiceDate}
                   onChange={(e) => {
                     if (e.target.value) setSelectedServiceDate(e.target.value);
                   }}
-                  className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
+                  className="bg-transparent text-xs font-bold text-slate-100 focus:outline-none cursor-pointer"
                 />
               </div>
             </div>
@@ -459,7 +469,7 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
       )}
 
       {/* Secondary Filters Bar */}
-      <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex flex-wrap items-center gap-2 flex-1 min-w-[280px]">
           {/* Search input */}
           <div className="relative flex-1 min-w-[160px]">
@@ -469,7 +479,7 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
               placeholder="Search volunteer, role, team..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
 
@@ -477,17 +487,17 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
           <select
             value={filterTeam}
             onChange={(e) => setFilterTeam(e.target.value)}
-            className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+            className="bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-slate-100 focus:ring-2 focus:ring-amber-500 focus:outline-none"
           >
-            <option value="All">All Ministry Teams</option>
+            <option value="All" className="bg-slate-900 text-white">All Ministry Teams</option>
             {safeMinistries.length > 0
               ? safeMinistries.map((m) => (
-                  <option key={m.id} value={m.name}>
+                  <option key={m.id} value={m.name} className="bg-slate-900 text-white">
                     {m.name}
                   </option>
                 ))
               : MINISTRY_TEAMS.map((t) => (
-                  <option key={t.id} value={t.name}>
+                  <option key={t.id} value={t.name} className="bg-slate-900 text-white">
                     {t.name}
                   </option>
                 ))}
@@ -497,16 +507,16 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as any)}
-            className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+            className="bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-slate-100 focus:ring-2 focus:ring-amber-500 focus:outline-none"
           >
-            <option value="All">All Statuses</option>
-            <option value="Confirmed">Confirmed Only</option>
-            <option value="Pending">Pending Confirmation</option>
+            <option value="All" className="bg-slate-900 text-white">All Statuses</option>
+            <option value="Confirmed" className="bg-slate-900 text-white">Confirmed Only</option>
+            <option value="Pending" className="bg-slate-900 text-white">Pending Confirmation</option>
           </select>
         </div>
 
-        <div className="text-xs font-bold text-slate-500">
-          Showing <strong>{filteredRoster.length}</strong> assignments
+        <div className="text-xs font-bold text-slate-400">
+          Showing <strong className="text-white font-extrabold">{filteredRoster.length}</strong> assignments
         </div>
       </div>
 
@@ -516,10 +526,10 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
       {activeViewMode === 'by_date' && (
         <div className="space-y-3">
           {filteredRoster.length === 0 ? (
-            <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border border-dashed border-slate-300 space-y-3">
+            <div className="bg-slate-900 rounded-3xl p-8 sm:p-12 text-center border border-dashed border-slate-800 space-y-3">
               <UserCheck className="w-10 h-10 text-slate-400 mx-auto" />
-              <h4 className="font-bold text-slate-800 text-sm">No volunteer roles assigned for this date yet</h4>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <h4 className="font-bold text-white text-sm">No volunteer roles assigned for this date yet</h4>
+              <p className="text-xs text-slate-400 max-w-sm mx-auto">
                 {canManage 
                   ? 'Click "Assign Volunteer" to schedule team members for Wednesday, Friday, Saturday, or Sunday service roles.'
                   : 'Check back soon once ministry leadership publishes the duty roster for this service date.'}
@@ -545,25 +555,27 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
                 return (
                   <div
                     key={item.id}
-                    className={`bg-white p-4 rounded-2xl border shadow-sm flex flex-col justify-between space-y-3 transition ${
-                      isOwnDuty ? 'border-amber-400 ring-2 ring-amber-400/20 bg-amber-50/30' : 'border-slate-200 hover:border-slate-300'
+                    className={`p-4 rounded-2xl border shadow-sm flex flex-col justify-between space-y-3 transition ${
+                      isOwnDuty
+                        ? 'bg-amber-950/20 border-amber-500/60 ring-2 ring-amber-500/20'
+                        : 'bg-slate-900 border-slate-800 hover:border-slate-700'
                     }`}
                   >
                     <div>
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
+                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300 bg-amber-950/80 border border-amber-800 px-2 py-0.5 rounded-md">
                               {item.team}
                             </span>
                             {isOwnDuty && (
-                              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-md">
+                              <span className="text-[10px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-800 px-2 py-0.5 rounded-md">
                                 ★ Your Duty
                               </span>
                             )}
                           </div>
-                          <h3 className="font-extrabold text-slate-900 text-sm mt-1.5 leading-snug">{item.roleName}</h3>
-                          <p className="text-[11px] text-slate-500 mt-0.5 truncate">{item.serviceName}</p>
+                          <h3 className="font-extrabold text-white text-sm mt-1.5 leading-snug">{item.roleName}</h3>
+                          <p className="text-[11px] text-slate-400 mt-0.5 truncate">{item.serviceName}</p>
                         </div>
 
                         {/* Edit & Delete Controls for Admins & Leaders */}
@@ -572,7 +584,7 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
                             <button
                               type="button"
                               onClick={() => handleOpenEdit(item)}
-                              className="text-slate-400 hover:text-amber-700 p-1.5 rounded-lg hover:bg-amber-50 border border-transparent hover:border-amber-200 transition"
+                              className="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg hover:bg-slate-800 transition"
                               title="Edit Assignment"
                             >
                               <Edit3 className="w-3.5 h-3.5" />
@@ -584,7 +596,7 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
                                   onRemoveAssignment(item.id);
                                 }
                               }}
-                              className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 border border-transparent hover:border-rose-200 transition"
+                              className="text-slate-400 hover:text-rose-400 p-1.5 rounded-lg hover:bg-rose-950/30 transition"
                               title="Remove Assignment"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -593,7 +605,7 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
                         )}
                       </div>
 
-                      <div className="text-xs font-semibold text-slate-800 mt-2.5 flex items-center gap-2">
+                      <div className="text-xs font-semibold text-slate-200 mt-2.5 flex items-center gap-2">
                         <UserAvatar
                           name={item.memberName}
                           avatarUrl={safeMembers.find(m => m.id === item.memberId || `${m.firstName} ${m.lastName}`.toLowerCase().trim() === item.memberName.toLowerCase().trim())?.avatarUrl}
@@ -604,18 +616,18 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
                       </div>
                     </div>
 
-                    <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <div className="pt-2.5 border-t border-slate-800 flex items-center justify-between gap-2">
                       <span className={`text-[11px] font-bold flex items-center gap-1 ${
-                        item.confirmed ? 'text-emerald-700' : 'text-amber-700'
+                        item.confirmed ? 'text-emerald-400' : 'text-amber-400'
                       }`}>
                         {item.confirmed ? (
                           <>
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                             <span>Confirmed</span>
                           </>
                         ) : (
                           <>
-                            <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                            <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                             <span>Pending Confirmation</span>
                           </>
                         )}
@@ -627,14 +639,14 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
                           onClick={() => onToggleConfirm(item.id)}
                           className={`px-3 py-1 rounded-xl text-xs font-bold transition shadow-xs flex items-center gap-1 ${
                             item.confirmed
-                              ? 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                              ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                               : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20'
                           }`}
                         >
                           {item.confirmed ? 'Mark Pending' : 'Confirm Attendance'}
                         </button>
                       ) : (
-                        <span className="text-[10px] text-slate-400 italic">View only</span>
+                        <span className="text-[10px] text-slate-500 italic">View only</span>
                       )}
                     </div>
                   </div>
@@ -651,9 +663,9 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
       {activeViewMode === 'all_services' && (
         <div className="space-y-5">
           {rosterGroupedByDate.length === 0 ? (
-            <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-slate-300">
+            <div className="bg-slate-900 rounded-3xl p-12 text-center border border-dashed border-slate-800">
               <UserCheck className="w-10 h-10 text-slate-400 mx-auto mb-2" />
-              <p className="text-sm font-bold text-slate-700">No upcoming service assignments scheduled.</p>
+              <p className="text-sm font-bold text-slate-300">No upcoming service assignments scheduled.</p>
               {canManage && (
                 <button
                   onClick={handleOpenCreate}
@@ -672,15 +684,15 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
               const serviceTitle = items[0]?.serviceName || 'Service Gathering';
 
               return (
-                <div key={dateStr} className="bg-white rounded-3xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <div key={dateStr} className="bg-slate-900 rounded-3xl border border-slate-800 p-4 sm:p-5 shadow-sm space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center font-bold text-xs">
+                      <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-xs">
                         <Calendar className="w-4 h-4" />
                       </div>
                       <div>
-                        <h4 className="text-sm font-extrabold text-slate-900">{headerText}</h4>
-                        <p className="text-[11px] text-slate-500">{serviceTitle} • {items.length} Assigned</p>
+                        <h4 className="text-sm font-extrabold text-white">{headerText}</h4>
+                        <p className="text-[11px] text-slate-400">{serviceTitle} • {items.length} Assigned</p>
                       </div>
                     </div>
 
@@ -690,7 +702,7 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
                           setSelectedServiceDate(dateStr);
                           setActiveViewMode('by_date');
                         }}
-                        className="text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 px-3 py-1 rounded-xl border border-amber-200 transition"
+                        className="text-xs font-bold text-amber-400 bg-amber-950/60 hover:bg-amber-900/60 px-3 py-1 rounded-xl border border-amber-800 transition"
                       >
                         View Date &rarr;
                       </button>
@@ -699,23 +711,23 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                     {items.map((item) => (
-                      <div key={item.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-2">
+                      <div key={item.id} className="p-3 bg-slate-800/80 rounded-2xl border border-slate-700/80 flex items-center justify-between gap-2">
                         <div className="min-w-0">
-                          <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">
+                          <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-800/60">
                             {item.team}
                           </span>
-                          <p className="text-xs font-bold text-slate-900 truncate mt-1">{item.roleName}</p>
-                          <p className="text-[11px] text-slate-600 truncate">{item.memberName}</p>
+                          <p className="text-xs font-bold text-white truncate mt-1">{item.roleName}</p>
+                          <p className="text-[11px] text-slate-300 truncate">{item.memberName}</p>
                         </div>
 
                         <div className="shrink-0 text-right">
-                          <span className={`text-[10px] font-bold block ${item.confirmed ? 'text-emerald-700' : 'text-amber-700'}`}>
+                          <span className={`text-[10px] font-bold block ${item.confirmed ? 'text-emerald-400' : 'text-amber-400'}`}>
                             {item.confirmed ? 'Confirmed ✓' : 'Pending'}
                           </span>
                           {(canManage || (currentMember && item.memberId === currentMember.id)) && (
                             <button
                               onClick={() => onToggleConfirm(item.id)}
-                              className="text-[10px] text-blue-600 hover:underline font-semibold mt-1"
+                              className="text-[10px] text-blue-400 hover:underline font-semibold mt-1"
                             >
                               Toggle
                             </button>
@@ -736,38 +748,38 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
       {/* ========================================================================= */}
       {activeViewMode === 'my_duties' && (
         <div className="space-y-3">
-          <div className="bg-amber-50/80 p-4 rounded-2xl border border-amber-200 text-xs text-amber-950 flex items-center justify-between gap-3">
+          <div className="bg-amber-950/40 p-4 rounded-2xl border border-amber-800/80 text-xs text-amber-200 flex items-center justify-between gap-3">
             <div>
-              <p className="font-extrabold">Showing assignments for: {currentUser?.name || 'Logged-in Volunteer'}</p>
-              <p className="text-[11px] text-amber-800 mt-0.5">Confirm your attendance for upcoming services so ministry leaders can plan ahead.</p>
+              <p className="font-extrabold text-amber-100">Showing assignments for: {currentUser?.name || 'Logged-in Volunteer'}</p>
+              <p className="text-[11px] text-amber-300/80 mt-0.5">Confirm your attendance for upcoming services so ministry leaders can plan ahead.</p>
             </div>
-            <span className="px-2.5 py-1 bg-amber-200 text-amber-950 font-bold rounded-lg shrink-0">
+            <span className="px-2.5 py-1 bg-amber-900/60 text-amber-200 border border-amber-700/60 font-bold rounded-lg shrink-0">
               {filteredRoster.length} Duties
             </span>
           </div>
 
           {filteredRoster.length === 0 ? (
-            <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-slate-300 space-y-2">
-              <UserCheck className="w-10 h-10 text-slate-300 mx-auto" />
-              <p className="text-sm font-bold text-slate-700">You have no upcoming duties scheduled right now.</p>
-              <p className="text-xs text-slate-500">When leaders assign you to a service duty, it will appear here and in your notifications.</p>
+            <div className="bg-slate-900 rounded-3xl p-12 text-center border border-dashed border-slate-800 space-y-2">
+              <UserCheck className="w-10 h-10 text-slate-500 mx-auto" />
+              <p className="text-sm font-bold text-slate-200">You have no upcoming duties scheduled right now.</p>
+              <p className="text-xs text-slate-400">When leaders assign you to a service duty, it will appear here and in your notifications.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {filteredRoster.map((item) => (
-                <div key={item.id} className="bg-white p-4 rounded-2xl border border-amber-300 shadow-sm space-y-3">
+                <div key={item.id} className="bg-slate-900 p-4 rounded-2xl border border-amber-500/40 shadow-sm space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 border border-amber-200">
+                      <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-amber-950/80 text-amber-300 border border-amber-800">
                         {item.team}
                       </span>
-                      <h4 className="text-sm font-black text-slate-900 mt-1">{item.roleName}</h4>
-                      <p className="text-xs text-slate-600 font-semibold mt-0.5">📅 {item.serviceDate} • {item.serviceName}</p>
+                      <h4 className="text-sm font-black text-white mt-1">{item.roleName}</h4>
+                      <p className="text-xs text-slate-300 font-semibold mt-0.5">📅 {item.serviceDate} • {item.serviceName}</p>
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
-                    <span className={`text-xs font-bold ${item.confirmed ? 'text-emerald-700' : 'text-amber-700'}`}>
+                  <div className="pt-2 border-t border-slate-800 flex items-center justify-between gap-2">
+                    <span className={`text-xs font-bold ${item.confirmed ? 'text-emerald-400' : 'text-amber-400'}`}>
                       {item.confirmed ? '✓ Confirmed by you' : '⏳ Action Required: Please confirm'}
                     </span>
 
@@ -794,17 +806,17 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
       {/* ========================================================================= */}
       {isModalOpen && canManage && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 p-5 sm:p-6 space-y-4 animate-in zoom-in-95 max-h-[92vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl border border-slate-800 p-5 sm:p-6 space-y-4 animate-in zoom-in-95 max-h-[92vh] overflow-y-auto text-white">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-amber-950/70 border border-amber-800/50 text-amber-400 flex items-center justify-center font-bold">
                   <Calendar className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-900 text-base">
+                  <h3 className="font-extrabold text-white text-base">
                     {editingAssignment ? 'Edit Volunteer Assignment' : 'Assign Volunteer Role'}
                   </h3>
-                  <p className="text-[11px] text-slate-500">Schedule volunteers across any church service day</p>
+                  <p className="text-[11px] text-slate-400">Schedule volunteers across any church service day</p>
                 </div>
               </div>
 
@@ -813,7 +825,7 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
                   setIsModalOpen(false);
                   setEditingAssignment(null);
                 }}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-100 transition"
+                className="text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-800 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -822,33 +834,33 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
             <form onSubmit={handleCreateOrUpdateAssignment} className="space-y-3.5 text-xs">
               {/* Target Service Name */}
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Target Service / Gathering *</label>
+                <label className="block font-bold text-slate-300 mb-1">Target Service / Gathering *</label>
                 <select
                   value={formServiceName}
                   onChange={(e) => setFormServiceName(e.target.value)}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 >
                   {defaultServices.map((s) => (
-                    <option key={s.id} value={s.name}>
+                    <option key={s.id} value={s.name} className="bg-slate-900 text-white">
                       {s.name} ({s.day})
                     </option>
                   ))}
-                  <option value="Special Revival Gathering">Special Revival Gathering</option>
-                  <option value="Leadership Training Workshop">Leadership Training Workshop</option>
-                  <option value="Custom">Custom Gathering Name...</option>
+                  <option value="Special Revival Gathering" className="bg-slate-900 text-white">Special Revival Gathering</option>
+                  <option value="Leadership Training Workshop" className="bg-slate-900 text-white">Leadership Training Workshop</option>
+                  <option value="Custom" className="bg-slate-900 text-white">Custom Gathering Name...</option>
                 </select>
               </div>
 
               {formServiceName === 'Custom' && (
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Custom Service Name *</label>
+                  <label className="block font-bold text-slate-300 mb-1">Custom Service Name *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Saturday Night Worship Encounter"
                     value={customServiceName}
                     onChange={(e) => setCustomServiceName(e.target.value)}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
               )}
@@ -856,7 +868,7 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
               {/* Service Date (Any Day: Sunday, Wednesday, Friday, Saturday, etc.) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Service Date (YYYY-MM-DD) *</label>
+                  <label className="block font-bold text-slate-300 mb-1">Service Date (YYYY-MM-DD) *</label>
                   <input
                     type="date"
                     required
@@ -868,25 +880,25 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
                         setFormServiceName(inferServiceNameForDate(newD, formTeam, churchSettings));
                       }
                     }}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-none cursor-pointer"
+                    className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white focus:ring-2 focus:ring-amber-500 focus:outline-none cursor-pointer"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Ministry Team *</label>
+                  <label className="block font-bold text-slate-300 mb-1">Ministry Team *</label>
                   <select
                     value={formTeam}
                     onChange={(e) => setFormTeam(e.target.value)}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl font-semibold text-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   >
                     {safeMinistries.length > 0
                       ? safeMinistries.map((m) => (
-                          <option key={m.id} value={m.name}>
+                          <option key={m.id} value={m.name} className="bg-slate-900 text-white">
                             {m.name}
                           </option>
                         ))
                       : MINISTRY_TEAMS.map((t) => (
-                          <option key={t.id} value={t.name}>
+                          <option key={t.id} value={t.name} className="bg-slate-900 text-white">
                             {t.name}
                           </option>
                         ))}
@@ -897,7 +909,7 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
               {/* Role Title with Quick Presets */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="font-bold text-slate-700">Role Title *</label>
+                  <label className="font-bold text-slate-300">Role Title *</label>
                   <span className="text-[10px] text-slate-400 font-normal">Click preset to populate</span>
                 </div>
                 <input
@@ -906,7 +918,7 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
                   placeholder="e.g. Acoustic Guitarist, Head Usher, Sound Tech, Camera Operator"
                   value={formRoleName}
                   onChange={(e) => setFormRoleName(e.target.value)}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white placeholder:text-slate-500 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
 
                 {/* Quick Role Suggestions */}
@@ -916,7 +928,7 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
                       key={r}
                       type="button"
                       onClick={() => setFormRoleName(r)}
-                      className="px-2 py-0.5 bg-slate-100 hover:bg-amber-100 hover:text-amber-900 text-slate-600 rounded-lg text-[10px] font-semibold transition"
+                      className="px-2 py-0.5 bg-slate-800 hover:bg-amber-950/60 hover:text-amber-300 hover:border-amber-800/60 border border-slate-700 text-slate-300 rounded-lg text-[10px] font-semibold transition"
                     >
                       + {r}
                     </button>
@@ -926,30 +938,30 @@ export const RosterPlanner: React.FC<RosterPlannerProps> = ({
 
               {/* Select Member */}
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Assign Church Member *</label>
+                <label className="block font-bold text-slate-300 mb-1">Assign Church Member *</label>
                 <select
                   required
                   value={formMemberId}
                   onChange={(e) => setFormMemberId(e.target.value)}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 >
-                  <option value="">-- Choose Church Member / Volunteer --</option>
+                  <option value="" className="bg-slate-900 text-white">-- Choose Church Member / Volunteer --</option>
                   {safeMembers.map((m) => (
-                    <option key={m.id} value={m.id}>
+                    <option key={m.id} value={m.id} className="bg-slate-900 text-white">
                       {m.firstName} {m.lastName} — {(m.ministryTeams || []).join(', ') || 'No team'} ({m.phone})
                     </option>
                   ))}
                 </select>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end space-x-2">
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => {
                     setIsModalOpen(false);
                     setEditingAssignment(null);
                   }}
-                  className="px-4 py-2.5 text-slate-600 hover:bg-slate-100 font-bold rounded-xl transition text-xs"
+                  className="px-4 py-2.5 text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-750 border border-slate-700 font-bold rounded-xl transition text-xs"
                 >
                   Cancel
                 </button>
