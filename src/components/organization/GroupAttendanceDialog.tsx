@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { CheckSquare, Square, Calendar, BookOpen } from 'lucide-react';
 import { GroupMember } from '@/types/database';
 import { toast } from 'sonner';
+import { resolveGroupMemberName } from '@/components/groups/QuickGroupAttendanceModal';
 
 interface GroupAttendanceDialogProps {
   isOpen: boolean;
@@ -153,6 +154,7 @@ export function GroupAttendanceDialog({
                   members.map((m) => {
                     const mId = m.member_id || m.user_id;
                     const isChecked = selectedMemberIds.includes(mId);
+                    const memberName = resolveGroupMemberName(m);
                     return (
                       <div
                         key={m.id}
@@ -161,7 +163,7 @@ export function GroupAttendanceDialog({
                       >
                         <div className="flex items-center gap-2 text-xs">
                           <span className="font-semibold text-slate-900 dark:text-slate-100">
-                            {m.profile?.display_name || m.profile?.email || 'Member'}
+                            {memberName}
                           </span>
                           <span className="text-[10px] text-slate-400">({m.role})</span>
                         </div>

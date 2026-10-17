@@ -81,7 +81,7 @@ function matchesChurchTenant(docChurchId: string | undefined | null, targetChurc
   return false;
 }
 
-function cleanForFirestore<T>(obj: T): any {
+export function cleanForFirestore<T>(obj: T): any {
   if (obj === undefined) {
     return null;
   }
@@ -389,7 +389,74 @@ export const groupService = {
     local.forEach((m) => {
       if (!map.has(m.id)) map.set(m.id, m);
     });
-    return Array.from(map.values()).filter((gm) => matchesChurchTenant(gm.church_id, churchId));
+    const combined = Array.from(map.values()).filter((gm) => matchesChurchTenant(gm.church_id, churchId));
+    const storedMembers = getStoredMembers();
+    return combined.map((gm) => {
+      const targetId = gm.member_id || (gm as any).memberId || gm.user_id;
+      const mem: any =
+        storedMembers.find((m: any) => m.id === targetId || m.user_id === targetId || (m as any).userId === targetId) ||
+        DEMO_MEMBERS.find((m: any) => m.id === targetId || m.user_id === targetId);
+
+      const resolvedName =
+        (gm as any).name ||
+        (gm as any).memberName ||
+        mem?.name ||
+        (mem?.profile ? `${mem.profile.first_name || ''} ${mem.profile.last_name || ''}`.trim() : '') ||
+        `${mem?.firstName || ''} ${mem?.lastName || ''}`.trim() ||
+        (gm.profile ? `${gm.profile.first_name || ''} ${gm.profile.last_name || ''}`.trim() : '') ||
+        gm.profile?.display_name ||
+        'Group Member';
+
+      const firstName =
+        gm.profile?.first_name ||
+        mem?.firstName ||
+        mem?.first_name ||
+        mem?.profile?.first_name ||
+        resolvedName.split(' ')[0] ||
+        'Member';
+
+      const lastName =
+        gm.profile?.last_name ||
+        mem?.lastName ||
+        mem?.last_name ||
+        mem?.profile?.last_name ||
+        resolvedName.split(' ').slice(1).join(' ') ||
+        '';
+
+      const memberProfile = gm.profile || {
+        id: mem?.id || gm.member_id || gm.id,
+        first_name: firstName,
+        last_name: lastName,
+        display_name: resolvedName,
+        email: mem?.email || '',
+        phone: mem?.phone || '',
+        avatar_url: mem?.avatarUrl || mem?.avatar_url || '',
+        is_super_admin: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const churchMemberObj: ChurchMember = (gm.church_member as ChurchMember) || {
+        id: mem?.id || gm.member_id || gm.id,
+        user_id: mem?.user_id || gm.user_id || `user-${gm.id}`,
+        church_id: churchId,
+        role: 'member',
+        status: 'active',
+        membership_number: null,
+        membership_date: null,
+        custom_fields: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        profile: memberProfile,
+      };
+
+      return {
+        ...gm,
+        name: resolvedName,
+        profile: memberProfile,
+        church_member: churchMemberObj,
+      } as GroupMember;
+    });
   },
 
   async getGroupById(churchId: string, groupId: string): Promise<{
@@ -417,48 +484,83 @@ export const groupService = {
       console.warn('Firebase getGroupById members error:', e);
     }
 
-    if (members.length === 0) {
-      const localMembers = getLocalGroupMembers(churchId).filter((gm) => gm.group_id === groupId);
-      const storedMembers = getStoredMembers();
-      members = localMembers.map((gm) => {
-        const mem: any = storedMembers.find((m: any) => m.id === gm.member_id || (m as any).user_id === gm.user_id || m.id === (gm as any).memberId) || DEMO_MEMBERS.find((m: any) => m.id === gm.member_id || m.user_id === gm.user_id);
-        const name = mem?.name || (mem?.profile ? `${mem.profile.first_name || ''} ${mem.profile.last_name || ''}`.trim() : `${mem?.firstName || ''} ${mem?.lastName || ''}`.trim()) || 'Group Member';
-        
-        const memberProfile = gm.profile || mem?.profile || {
-          id: mem?.id || gm.member_id || gm.id,
-          first_name: mem?.firstName || mem?.first_name || name.split(' ')[0] || 'Member',
-          last_name: mem?.lastName || mem?.last_name || name.split(' ').slice(1).join(' ') || '',
-          display_name: name,
-          email: mem?.email || '',
-          phone: mem?.phone || '',
-          avatar_url: mem?.avatarUrl || mem?.avatar_url || '',
-          is_super_admin: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
+    const localMembers = getLocalGroupMembers(churchId).filter((gm) => gm.group_id === groupId);
+    const memberMap = new Map<string, GroupMember>();
+    members.forEach((m) => memberMap.set(m.id, m));
+    localMembers.forEach((m) => {
+      if (!memberMap.has(m.id)) memberMap.set(m.id, m);
+    });
 
-        const churchMemberObj: ChurchMember = (gm.church_member as ChurchMember) || {
-          id: mem?.id || gm.member_id || gm.id,
-          user_id: mem?.user_id || gm.user_id || `user-${gm.id}`,
-          church_id: churchId,
-          role: 'member',
-          status: 'active',
-          membership_number: null,
-          membership_date: null,
-          custom_fields: {},
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          profile: memberProfile
-        };
+    const combinedMembers = Array.from(memberMap.values());
+    const storedMembers = getStoredMembers();
 
-        return {
-          ...gm,
-          church_id: churchId,
-          profile: memberProfile,
-          church_member: churchMemberObj,
-        } as GroupMember;
-      });
-    }
+    members = combinedMembers.map((gm) => {
+      const targetId = gm.member_id || (gm as any).memberId || gm.user_id;
+      const mem: any =
+        storedMembers.find((m: any) => m.id === targetId || m.user_id === targetId || (m as any).userId === targetId) ||
+        DEMO_MEMBERS.find((m: any) => m.id === targetId || m.user_id === targetId);
+
+      const resolvedName =
+        (gm as any).name ||
+        (gm as any).memberName ||
+        mem?.name ||
+        (mem?.profile ? `${mem.profile.first_name || ''} ${mem.profile.last_name || ''}`.trim() : '') ||
+        `${mem?.firstName || ''} ${mem?.lastName || ''}`.trim() ||
+        (gm.profile ? `${gm.profile.first_name || ''} ${gm.profile.last_name || ''}`.trim() : '') ||
+        gm.profile?.display_name ||
+        'Group Member';
+
+      const firstName =
+        gm.profile?.first_name ||
+        mem?.firstName ||
+        mem?.first_name ||
+        mem?.profile?.first_name ||
+        resolvedName.split(' ')[0] ||
+        'Member';
+
+      const lastName =
+        gm.profile?.last_name ||
+        mem?.lastName ||
+        mem?.last_name ||
+        mem?.profile?.last_name ||
+        resolvedName.split(' ').slice(1).join(' ') ||
+        '';
+
+      const memberProfile = gm.profile || {
+        id: mem?.id || gm.member_id || gm.id,
+        first_name: firstName,
+        last_name: lastName,
+        display_name: resolvedName,
+        email: mem?.email || '',
+        phone: mem?.phone || '',
+        avatar_url: mem?.avatarUrl || mem?.avatar_url || '',
+        is_super_admin: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const churchMemberObj: ChurchMember = (gm.church_member as ChurchMember) || {
+        id: mem?.id || gm.member_id || gm.id,
+        user_id: mem?.user_id || gm.user_id || `user-${gm.id}`,
+        church_id: churchId,
+        role: 'member',
+        status: 'active',
+        membership_number: null,
+        membership_date: null,
+        custom_fields: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        profile: memberProfile,
+      };
+
+      return {
+        ...gm,
+        name: resolvedName,
+        church_id: churchId,
+        profile: memberProfile,
+        church_member: churchMemberObj,
+      } as GroupMember;
+    });
 
     const attendance = await this.getGroupAttendance(churchId, groupId);
     const announcements = await this.getGroupAnnouncements(churchId, groupId);
@@ -558,6 +660,13 @@ export const groupService = {
       church_member: member,
     };
 
+    const memberName =
+      (member as any).name ||
+      (member.profile ? `${member.profile.first_name || ''} ${member.profile.last_name || ''}`.trim() : '') ||
+      `${(member as any).firstName || ''} ${(member as any).lastName || ''}`.trim() ||
+      member.profile?.display_name ||
+      'Group Member';
+
     try {
       await setDoc(doc(db, 'group_members', newGM.id), cleanForFirestore({
         id: newGM.id,
@@ -570,7 +679,9 @@ export const groupService = {
         joined_date: newGM.joined_date,
         notes: newGM.notes,
         created_at: newGM.created_at,
-        updated_at: newGM.updated_at
+        updated_at: newGM.updated_at,
+        name: memberName,
+        profile: newGM.profile || null,
       }));
     } catch (e) {
       console.warn('Firebase addGroupMember warning:', e);

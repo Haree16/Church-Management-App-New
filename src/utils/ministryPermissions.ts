@@ -31,7 +31,7 @@ export function getUserAssignedMinistries(
   ministries.forEach((min) => {
     let isAssigned = false;
     let isLeader = false;
-    let roleTitle = 'Member';
+    let roleTitle = 'Team Member';
 
     // 1. Check explicit MinistryMember table records
     const memberRec = ministryMembers.find(
@@ -42,7 +42,8 @@ export function getUserAssignedMinistries(
     );
     if (memberRec) {
       isAssigned = true;
-      roleTitle = memberRec.ministryRole || memberRec.role || 'Team Member';
+      const rawRole = memberRec.ministryRole || memberRec.role || 'Team Member';
+      roleTitle = rawRole.toLowerCase() === 'volunteer' ? 'Team Member' : rawRole;
       const roleLower = roleTitle.toLowerCase();
       if (
         roleLower.includes('leader') ||

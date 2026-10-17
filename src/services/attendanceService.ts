@@ -60,8 +60,10 @@ const INITIAL_DEMO_ATTENDANCE: AttendanceRecord[] = [];
 
 function getLocalAttendance(churchId: string): AttendanceRecord[] {
   try {
-    const raw = localStorage.getItem(`${LOCAL_STORAGE_ATTENDANCE_KEY}_${churchId}`);
-    if (raw) return JSON.parse(raw);
+    if (typeof localStorage !== 'undefined') {
+      const raw = localStorage.getItem(`${LOCAL_STORAGE_ATTENDANCE_KEY}_${churchId}`);
+      if (raw) return JSON.parse(raw);
+    }
   } catch (e) {
     console.error('Failed to load local attendance:', e);
   }
@@ -70,7 +72,9 @@ function getLocalAttendance(churchId: string): AttendanceRecord[] {
 
 function saveLocalAttendance(churchId: string, list: AttendanceRecord[]) {
   try {
-    localStorage.setItem(`${LOCAL_STORAGE_ATTENDANCE_KEY}_${churchId}`, JSON.stringify(list));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(`${LOCAL_STORAGE_ATTENDANCE_KEY}_${churchId}`, JSON.stringify(list));
+    }
   } catch (e) {
     console.error('Failed to save local attendance:', e);
   }

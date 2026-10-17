@@ -11,7 +11,7 @@ import {
   Sparkles, TrendingUp, AlertTriangle, CheckCircle2, ChevronRight, 
   Plus, MessageSquare, Shield, Layers, Award, ArrowUpRight, 
   Filter, Eye, Check, X, RefreshCw, BarChart3, ArrowRight, ShieldCheck,
-  CheckSquare
+  CheckSquare, Bot
 } from 'lucide-react';
 import { auditService } from '../../services/auditService';
 import { AuditLog } from '../../types/database';
@@ -25,6 +25,7 @@ import { ActionRequiredWidget } from './ActionRequiredWidget';
 import { RecentActivityWidget } from './RecentActivityWidget';
 import { UpcomingEventsWidget } from './UpcomingEventsWidget';
 import { BirthdaysWidget } from './BirthdaysWidget';
+import { TodaysBibleVerseCard } from './TodaysBibleVerseCard';
 
 export type DateRangeFilter = 'today' | 'this_week' | 'this_month' | 'last_month' | 'this_year' | 'all';
 
@@ -329,6 +330,15 @@ export const ChurchDashboard: React.FC<ChurchDashboardProps> = ({
           </div>
         </div>
 
+        {/* Today's Bible Verse Card */}
+        <TodaysBibleVerseCard
+          churchId={activeChurchId}
+          timezone={churchTimezone}
+          userId={currentUser?.id}
+          userRole={userRole}
+          onNavigateToAiAssistant={(prompt) => onNavigateTab('bible-assistant', prompt)}
+        />
+
         {/* Action Required Items */}
         <ActionRequiredWidget
           members={members}
@@ -421,6 +431,15 @@ export const ChurchDashboard: React.FC<ChurchDashboardProps> = ({
             </p>
           </div>
         </div>
+
+        {/* Today's Bible Verse Card */}
+        <TodaysBibleVerseCard
+          churchId={activeChurchId}
+          timezone={churchTimezone}
+          userId={currentUser?.id}
+          userRole={userRole}
+          onNavigateToAiAssistant={(prompt) => onNavigateTab('bible-assistant', prompt)}
+        />
 
         {/* My Ministry Widget (Section 3 - Only for Ministry Members) */}
         {myMinistries.length > 0 && (
@@ -621,6 +640,15 @@ export const ChurchDashboard: React.FC<ChurchDashboardProps> = ({
         </div>
       </div>
 
+      {/* Today's Bible Verse Card */}
+      <TodaysBibleVerseCard
+        churchId={activeChurchId}
+        timezone={churchTimezone}
+        userId={currentUser?.id}
+        userRole={userRole}
+        onNavigateToAiAssistant={(prompt) => onNavigateTab('bible-assistant', prompt)}
+      />
+
       {/* 3. Action Required (Records needing immediate attention) */}
       <ActionRequiredWidget
         members={members}
@@ -644,6 +672,49 @@ export const ChurchDashboard: React.FC<ChurchDashboardProps> = ({
         }}
         onNavigateTab={onNavigateTab}
       />
+
+      {/* Phase 4: Quick Launchers for Advanced Analytics & Automation Hub */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div 
+          onClick={() => onNavigateTab('reports', 'advanced-analytics')}
+          className="cursor-pointer bg-gradient-to-r from-indigo-950/40 to-slate-900 p-4 rounded-2xl border border-indigo-500/30 hover:border-indigo-500/60 transition shadow-sm flex items-center justify-between group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-400 group-hover:scale-110 transition-transform">
+              <BarChart3 className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-white group-hover:text-indigo-300 transition-colors">
+                Advanced Church Analytics
+              </h4>
+              <p className="text-xs text-slate-400">
+                Multi-period attendance variance, member retention & WhatsApp metrics
+              </p>
+            </div>
+          </div>
+          <ArrowRight className="w-4 h-4 text-indigo-400 group-hover:translate-x-1 transition-transform" />
+        </div>
+
+        <div 
+          onClick={() => onNavigateTab('reports', 'workflow-automation')}
+          className="cursor-pointer bg-gradient-to-r from-purple-950/40 to-slate-900 p-4 rounded-2xl border border-purple-500/30 hover:border-purple-500/60 transition shadow-sm flex items-center justify-between group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
+              <Bot className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-white group-hover:text-purple-300 transition-colors">
+                Workflow Automation Hub
+              </h4>
+              <p className="text-xs text-slate-400">
+                Configurable care workflows with Human-in-the-Loop approval safeguards
+              </p>
+            </div>
+          </div>
+          <ArrowRight className="w-4 h-4 text-purple-400 group-hover:translate-x-1 transition-transform" />
+        </div>
+      </div>
 
       {/* 5 & 6. Attendance Analytics & Member Growth Trajectory */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

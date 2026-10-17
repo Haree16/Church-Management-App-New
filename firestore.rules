@@ -1,0 +1,101 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions for authentication and role verification
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isUserDocOwner(resourceData) {
+      return isAuthenticated() && (
+        request.auth.uid == resourceData.userId || 
+        request.auth.uid == resourceData.memberId ||
+        request.auth.uid == resourceData.user_id
+      );
+    }
+
+    // Role-based helper (inspects token claims if set by Admin SDK)
+    function isPastorOrAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'SuperAdmin' ||
+        request.auth.token.role == 'PastorAdmin'
+      );
+    }
+
+    // -------------------------------------------------------------------------
+    // 1. Daily Bible Verses Collection
+    // -------------------------------------------------------------------------
+    match /daily_verses/{verseId} {
+      // Anyone can read published daily scriptures
+      allow read: if resource == null || resource.data.isPublished == true || isPastorOrAdmin();
+      
+      // Only authorized pastors or administrators can write or schedule verses
+      allow write: if isPastorOrAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. Member Saved / Bookmarked Verses
+    // -------------------------------------------------------------------------
+    match /member_saved_verses/{saveId} {
+      // Members can only read their own saved scriptures
+      allow read: if isUserDocOwner(resource.data);
+
+      // Members can only create bookmarks with their own userId
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+
+      // Members can only update or delete their own bookmarks
+      allow update, delete: if isUserDocOwner(resource.data);
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. AI Bible Assistant Conversations (Private Study Logs)
+    // -------------------------------------------------------------------------
+    match /bible_ai_conversations/{conversationId} {
+      // Strictly isolated to the conversation owner; no member can read another's private chat
+      allow read: if isUserDocOwner(resource.data);
+
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+
+      allow update, delete: if isUserDocOwner(resource.data);
+    }
+
+    // -------------------------------------------------------------------------
+    // Existing Collections Baseline Protection
+    // -------------------------------------------------------------------------
+    match /churches/{churchId} {
+      allow read: if true;
+      allow write: if isPastorOrAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) || isPastorOrAdmin();
+    }
+
+    match /church_settings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isPastorOrAdmin();
+    }
+
+    match /members/{memberId} {
+      allow read: if isAuthenticated();
+      allow write: if isPastorOrAdmin();
+    }
+
+    match /prayers/{prayerId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isPastorOrAdmin() || (isAuthenticated() && resource.data.memberId == request.auth.uid);
+    }
+
+    match /{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

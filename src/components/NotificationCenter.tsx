@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppNotification, ChurchTenant, SaaSUser } from '../types';
+import { AppNotification, ChurchTenant, SaaSUser, Member } from '../types';
 import { isNotificationReadByUser, isNotificationForUser } from '../utils/notificationUtils';
 import { 
   Bell, BellRing, Check, ShieldAlert, Sparkles, Filter, Trash2, Send, 
@@ -17,6 +17,7 @@ interface NotificationCenterProps {
   currentChurch?: ChurchTenant;
   currentUser?: SaaSUser;
   allUsers?: SaaSUser[];
+  members?: Member[];
   onMarkRead: (id: string) => void;
   onMarkAllRead?: () => void;
   onDeleteNotification?: (id: string) => void;
@@ -30,6 +31,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   currentChurch,
   currentUser,
   allUsers = [],
+  members = [],
   onMarkRead,
   onMarkAllRead,
   onDeleteNotification,
@@ -37,6 +39,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   onSendNotification,
   onNavigateTab,
 }) => {
+  const [viewScope, setViewScope] = useState<'my' | 'all'>('my');
   const [filterCategory, setFilterCategory] = useState<string>('All');
   const [showSendModal, setShowSendModal] = useState(false);
   const [showPrefsModal, setShowPrefsModal] = useState(false);
@@ -149,10 +152,14 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   };
 
   const userVisibleNotifications = safeNotifications.filter((n) =>
-    isNotificationForUser(n, currentUser, allUsers as any)
+    isNotificationForUser(n, currentUser, members && members.length > 0 ? members : (allUsers as any))
   );
 
-  const filtered = userVisibleNotifications.filter(
+  const activeNotificationList = (canSendBroadcast && viewScope === 'all')
+    ? safeNotifications
+    : userVisibleNotifications;
+
+  const filtered = activeNotificationList.filter(
     (n) => filterCategory === 'All' || n.category === filterCategory
   );
 
@@ -262,24 +269,59 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
       {/* Filter and Unread Bar */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 bg-slate-900 p-3 sm:p-3.5 rounded-2xl border border-slate-800 shadow-sm">
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scrollbar-none py-0.5 max-w-full">
-          {['All', 'Ministry', 'Activity', 'Roster', 'Announcement', 'Prayer', 'Event', 'Emergency', 'Devotional'].map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setFilterCategory(cat)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 transition ${
-                filterCategory === cat
-                  ? 'bg-amber-500 text-slate-950 font-extrabold shadow-sm'
-                  : 'bg-slate-800 text-slate-300 border border-slate-700/60 hover:bg-slate-750 hover:text-white'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          {canSendBroadcast && (
+            <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+              <button
+                type="button"
+                onClick={() => setViewScope('my')}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                  viewScope === 'my'
+                    ? 'bg-amber-500 text-slate-950 shadow-xs'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                My Alerts ({unreadCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewScope('all')}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                  viewScope === 'all'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                All Church Broadcasts ({safeNotifications.length})
+              </button>
+            </div>
+          )}
+
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scrollbar-none py-0.5 max-w-full">
+            {['All', 'Ministry', 'Activity', 'Roster', 'Announcement', 'Prayer', 'Event', 'Emergency', 'Devotional'].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setFilterCategory(cat)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 transition ${
+                  filterCategory === cat
+                    ? 'bg-amber-500 text-slate-950 font-extrabold shadow-sm'
+                    : 'bg-slate-800 text-slate-300 border border-slate-700/60 hover:bg-slate-750 hover:text-white'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center gap-2 text-xs font-bold">
-          <span className="text-slate-400 mr-1">Unread for you: <strong className="text-amber-400 font-extrabold">{unreadCount}</strong></span>
+          <span className="text-slate-400 mr-1">
+            {viewScope === 'my' ? (
+              <>Unread for you: <strong className="text-amber-400 font-extrabold">{unreadCount}</strong></>
+            ) : (
+              <>Total Church Alerts: <strong className="text-blue-400 font-extrabold">{safeNotifications.length}</strong></>
+            )}
+          </span>
           {notifications.length > 0 && (
             <div className="flex items-center gap-1.5">
               {onMarkAllRead && unreadCount > 0 && (
@@ -313,7 +355,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       <div className="space-y-3">
         {filtered.length === 0 ? (
           <div className="bg-slate-900 p-8 rounded-3xl border border-slate-800 text-center text-slate-400 text-sm">
-            No active notifications in this category. (All notifications have been seen by all users or none exist).
+            {viewScope === 'my'
+              ? 'No active alerts for you right now. All personal notifications have been reviewed.'
+              : 'No active church broadcast notifications in this category.'}
           </div>
         ) : (
           filtered.map((n) => {

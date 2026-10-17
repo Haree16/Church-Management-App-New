@@ -162,4 +162,27 @@ export const auditService = {
     const updated = [newLog, ...current];
     saveLocalAuditLogs(churchId, updated);
   },
+
+  async log(payload: {
+    churchId?: string;
+    church_id?: string;
+    userId?: string | null;
+    userEmail?: string;
+    action: string;
+    resourceType?: string;
+    resource_type?: string;
+    resourceId?: string | null;
+    resource_id?: string | null;
+    details?: Record<string, any>;
+  }): Promise<void> {
+    const cid = payload.churchId || payload.church_id || 'default-church';
+    return this.logAction(cid, {
+      action: payload.action,
+      resource_type: payload.resourceType || payload.resource_type || 'general',
+      resource_id: payload.resourceId || payload.resource_id,
+      actor_id: payload.userId,
+      actor_name: payload.userEmail,
+      details: payload.details,
+    });
+  },
 };

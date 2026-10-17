@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Group, GroupMember, ChurchMember, GroupAttendanceRecord } from '@/types/database';
 import { groupService } from '@/services/groupService';
+import { getStoredMembers } from '@/utils/storage';
+import { DEMO_MEMBERS } from '@/lib/mockData';
 import {
   Dialog,
   DialogContent,
@@ -11,16 +13,96 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { UserCheck, CheckCircle2, Search, Calendar, Zap, Users } from 'lucide-react';
+import { UserCheck, CheckCircle2, Search, Calendar, Zap, Users, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
+
+export function resolveGroupMemberName(gm: GroupMember, allMembers?: any[]): string {
+  // 1. Direct name property on gm
+  if ((gm as any).name && (gm as any).name !== 'Group Member') return (gm as any).name;
+  if ((gm as any).memberName) return (gm as any).memberName;
+  if ((gm as any).display_name && (gm as any).display_name !== 'Group Member') return (gm as any).display_name;
+
+  // 2. Profile directly on gm
+  if (gm.profile) {
+    const fn = gm.profile.first_name || '';
+    const ln = gm.profile.last_name || '';
+    const fullName = `${fn} ${ln}`.trim();
+    if (fullName) return fullName;
+    if (gm.profile.display_name && gm.profile.display_name !== 'Group Member') {
+      return gm.profile.display_name;
+    }
+  }
+
+  // 3. Church Member object on gm
+  if (gm.church_member) {
+    const cm = gm.church_member as any;
+    if (cm.profile) {
+      const fn = cm.profile.first_name || '';
+      const ln = cm.profile.last_name || '';
+      const fullName = `${fn} ${ln}`.trim();
+      if (fullName) return fullName;
+      if (cm.profile.display_name && cm.profile.display_name !== 'Group Member') {
+        return cm.profile.display_name;
+      }
+    }
+    const fn = cm.firstName || cm.first_name || '';
+    const ln = cm.lastName || cm.last_name || '';
+    const fullName = `${fn} ${ln}`.trim();
+    if (fullName) return fullName;
+    if (cm.name && cm.name !== 'Group Member') return cm.name;
+    if (cm.display_name && cm.display_name !== 'Group Member') return cm.display_name;
+  }
+
+  // 4. Look up in allMembers prop, local stored members, and demo members
+  const targetId = gm.member_id || (gm as any).memberId || gm.user_id || gm.id;
+  const lookupPool: any[] = [
+    ...(Array.isArray(allMembers) ? allMembers : []),
+    ...(getStoredMembers() || []),
+    ...(DEMO_MEMBERS || [])
+  ];
+
+  if (targetId || gm.profile?.email) {
+    const found: any = lookupPool.find((m: any) =>
+      (targetId && (m.id === targetId || m.user_id === targetId || m.userId === targetId)) ||
+      (gm.profile?.email && (m.email === gm.profile.email || m.profile?.email === gm.profile.email))
+    );
+
+    if (found) {
+      if (found.name && found.name !== 'Group Member') return found.name;
+      const fn = found.firstName || found.first_name || found.profile?.first_name || '';
+      const ln = found.lastName || found.last_name || found.profile?.last_name || '';
+      const fullName = `${fn} ${ln}`.trim();
+      if (fullName) return fullName;
+      if (found.profile?.display_name && found.profile?.display_name !== 'Group Member') {
+        return found.profile?.display_name;
+      }
+    }
+  }
+
+  // 5. Fallback
+  return gm.profile?.display_name || 'Group Member';
+}
+
+export function getMemberInitials(name: string): string {
+  if (!name || name === 'Group Member') return 'GM';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 interface QuickGroupAttendanceModalProps {
   isOpen: boolean;
   onClose: () => void;
   group: Group;
   groupMembers: GroupMember[];
+  allMembers?: any[];
   onAttendanceSaved: () => void;
   editingRecord?: GroupAttendanceRecord | null;
+  onOpenWhatsAppReport?: (
+    record: GroupAttendanceRecord,
+    present: { id: string; name: string; phone?: string }[],
+    absent: { id: string; name: string; phone?: string }[]
+  ) => void;
 }
 
 export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps> = ({
@@ -28,8 +110,10 @@ export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps>
   onClose,
   group,
   groupMembers,
+  allMembers,
   onAttendanceSaved,
   editingRecord,
+  onOpenWhatsAppReport,
 }) => {
   const [sessionDate, setSessionDate] = useState(new Date().toISOString().split('T')[0]);
   const [topic, setTopic] = useState('');
@@ -47,7 +131,7 @@ export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps>
         setSelectedMemberIds(editingRecord.attendee_ids || []);
       } else {
         // By default pre-check all active group members for fast single-tap confirmation
-        const activeIds = groupMembers.map((gm) => gm.member_id || gm.user_id).filter(Boolean) as string[];
+        const activeIds = groupMembers.map((gm) => gm.member_id || gm.user_id || gm.id).filter(Boolean) as string[];
         setSelectedMemberIds(activeIds);
         setSessionDate(new Date().toISOString().split('T')[0]);
         setTopic('');
@@ -57,14 +141,36 @@ export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps>
     }
   }, [isOpen, groupMembers, editingRecord]);
 
-  const toggleMemberSelection = (id: string) => {
-    setSelectedMemberIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+  const isMemberChecked = (gm: GroupMember) => {
+    const primaryId = gm.member_id || gm.user_id || gm.id;
+    return Boolean(
+      (primaryId && selectedMemberIds.includes(primaryId)) ||
+      (gm.member_id && selectedMemberIds.includes(gm.member_id)) ||
+      (gm.user_id && selectedMemberIds.includes(gm.user_id)) ||
+      (gm.id && selectedMemberIds.includes(gm.id))
     );
   };
 
+  const toggleMemberSelection = (gm: GroupMember) => {
+    const primaryId = gm.member_id || gm.user_id || gm.id;
+    const currentlyChecked = isMemberChecked(gm);
+    setSelectedMemberIds((prev) => {
+      if (currentlyChecked) {
+        return prev.filter(
+          (id) =>
+            id !== primaryId &&
+            id !== gm.member_id &&
+            id !== gm.user_id &&
+            id !== gm.id
+        );
+      } else {
+        return [...prev, primaryId];
+      }
+    });
+  };
+
   const handleSelectAll = () => {
-    const allIds = groupMembers.map((gm) => gm.member_id || gm.user_id).filter(Boolean) as string[];
+    const allIds = groupMembers.map((gm) => gm.member_id || gm.user_id || gm.id).filter(Boolean) as string[];
     setSelectedMemberIds(allIds);
   };
 
@@ -105,14 +211,65 @@ export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps>
     }
   };
 
+  const handleSaveAndWhatsApp = async () => {
+    setIsSubmitting(true);
+    try {
+      let savedRecord: GroupAttendanceRecord;
+      if (editingRecord) {
+        savedRecord = await groupService.updateGroupAttendance(group.church_id, editingRecord.id, {
+          sessionDate,
+          attendeeIds: selectedMemberIds,
+          topic: topic.trim() || undefined,
+          notes: notes.trim() || undefined,
+        });
+        toast.success('Attendance session updated!');
+      } else {
+        savedRecord = await groupService.logGroupAttendance(
+          group.church_id,
+          group.id,
+          sessionDate,
+          selectedMemberIds,
+          topic.trim() || undefined,
+          notes.trim() || undefined
+        );
+        toast.success(`Recorded attendance: ${selectedMemberIds.length} present!`);
+      }
+      onAttendanceSaved();
+      onClose();
+
+      if (onOpenWhatsAppReport) {
+        const presentObjs: { id: string; name: string; phone?: string }[] = [];
+        const absentObjs: { id: string; name: string; phone?: string }[] = [];
+        groupMembers.forEach((gm) => {
+          const mId = gm.member_id || gm.user_id || gm.id;
+          const name = resolveGroupMemberName(gm, allMembers);
+          const found: any = (allMembers || []).find((m: any) => m.id === mId || m.user_id === mId);
+          const phone = (gm as any).phone || (gm as any).profile?.phone || found?.phone || found?.profile?.phone || '';
+          if (isMemberChecked(gm)) {
+            presentObjs.push({ id: mId, name, phone });
+          } else {
+            absentObjs.push({ id: mId, name, phone });
+          }
+        });
+        onOpenWhatsAppReport(savedRecord, presentObjs, absentObjs);
+      }
+    } catch (err) {
+      console.error('Failed to save group attendance:', err);
+      toast.error('Failed to save group attendance record.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const filteredMembers = groupMembers.filter((gm) => {
     if (!searchTerm.trim()) return true;
     const term = searchTerm.toLowerCase();
-    const name = gm.church_member
-      ? `${gm.church_member.profile?.first_name || ''} ${gm.church_member.profile?.last_name || ''}`.toLowerCase()
-      : (gm.profile?.display_name || '').toLowerCase();
-    return name.includes(term);
+    const name = resolveGroupMemberName(gm, allMembers).toLowerCase();
+    const role = (gm.role || '').toLowerCase();
+    return name.includes(term) || role.includes(term);
   });
+
+  const presentCount = groupMembers.filter((gm) => isMemberChecked(gm)).length;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -166,7 +323,7 @@ export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps>
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4 text-emerald-400" />
               <span className="font-bold text-white">
-                {selectedMemberIds.length} of {groupMembers.length} Present
+                {presentCount} of {groupMembers.length} Present
               </span>
             </div>
 
@@ -206,16 +363,15 @@ export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps>
               <p className="text-xs text-slate-500 italic text-center py-4">No members found in this group.</p>
             ) : (
               filteredMembers.map((gm) => {
-                const memberId = gm.member_id || gm.user_id;
-                const isChecked = selectedMemberIds.includes(memberId);
-                const name = gm.church_member
-                  ? `${gm.church_member.profile?.first_name || ''} ${gm.church_member.profile?.last_name || ''}`.trim()
-                  : gm.profile?.display_name || 'Group Member';
+                const isChecked = isMemberChecked(gm);
+                const name = resolveGroupMemberName(gm, allMembers);
+                const initials = getMemberInitials(name);
+                const avatarUrl = gm.profile?.avatar_url || (gm.church_member as any)?.avatarUrl || (gm.church_member as any)?.avatar_url;
 
                 return (
                   <div
                     key={gm.id}
-                    onClick={() => toggleMemberSelection(memberId)}
+                    onClick={() => toggleMemberSelection(gm)}
                     className={`p-3 rounded-xl border transition cursor-pointer flex items-center justify-between ${
                       isChecked
                         ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-200'
@@ -229,9 +385,16 @@ export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps>
                         onChange={() => {}} // Handled by parent div
                         className="w-5 h-5 accent-emerald-500 rounded cursor-pointer pointer-events-none"
                       />
+                      <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center overflow-hidden flex-shrink-0 text-emerald-300 font-bold text-xs">
+                        {avatarUrl ? (
+                          <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+                        ) : (
+                          <span>{initials}</span>
+                        )}
+                      </div>
                       <div>
                         <span className="font-bold text-xs text-white block">{name}</span>
-                        <span className="text-[10px] text-slate-400 capitalize">{gm.role}</span>
+                        <span className="text-[10px] text-slate-400 capitalize">{gm.role || 'Member'}</span>
                       </div>
                     </div>
 
@@ -269,9 +432,18 @@ export const QuickGroupAttendanceModal: React.FC<QuickGroupAttendanceModalProps>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-5"
+              className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold border border-slate-600 text-xs px-4"
             >
-              {isSubmitting ? 'Saving...' : 'Save Group Attendance'}
+              {isSubmitting ? 'Saving...' : 'Save Only'}
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSaveAndWhatsApp}
+              disabled={isSubmitting}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 shadow flex items-center gap-1.5"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Save & WhatsApp</span>
             </Button>
           </DialogFooter>
         </form>

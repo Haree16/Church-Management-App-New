@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { 
   Bot, Send, RefreshCw, Trash2, X, Sparkles, ShieldAlert, 
   Users, Calendar, UserPlus, Heart, BarChart3, MessageSquare, AlertCircle,
-  CheckCircle2, Edit3, XCircle, BookOpen, Bell, Award, UserCheck
+  CheckCircle2, Edit3, XCircle, BookOpen, Bell, Award, UserCheck, ArrowLeft
 } from 'lucide-react';
 import { SaaSUserRole } from '@/types';
 import { normalizeRole } from '@/utils/rbac';
@@ -38,6 +38,7 @@ export const ChurchAiModal: React.FC<ChurchAiModalProps> = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [lastPrompt, setLastPrompt] = useState<string | null>(null);
   const [showDebugTrace, setShowDebugTrace] = useState(false);
+  const [showSuggestedQueries, setShowSuggestedQueries] = useState(false);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const normRole = normalizeRole(userRole);
@@ -49,11 +50,16 @@ export const ChurchAiModal: React.FC<ChurchAiModalProps> = ({
   const getRoleAwarePrompts = () => {
     if (isLeadership) {
       return [
-        { icon: BarChart3, label: "Show attendance this month and compare with last month." },
-        { icon: Users, label: "How many total members do we have and show recent joins?" },
-        { icon: UserPlus, label: "Show visitors who need follow-up and pending tasks." },
-        { icon: AlertCircle, label: "Show members with no recorded attendance in past 30 days." },
-        { icon: Calendar, label: "What upcoming events are on the church calendar?" }
+        { icon: AlertCircle, label: "Show members who have not attended church for the last four Sundays." },
+        { icon: MessageSquare, label: "Prepare a reminder for this Sunday's worship service." },
+        { icon: Calendar, label: "List upcoming birthdays this month." },
+        { icon: Users, label: "Show volunteers assigned to this Sunday's service." },
+        { icon: UserPlus, label: "Prepare a follow-up list for first-time visitors." },
+        { icon: BarChart3, label: "Summarize attendance and visitor numbers for the last month." },
+        { icon: BarChart3, label: "Compare attendance across the last four Sundays." },
+        { icon: ShieldAlert, label: "Which member records are incomplete or potential duplicates?" },
+        { icon: Award, label: "Which ministries recorded attendance this month?" },
+        { icon: BarChart3, label: "Show executive church health and vitality scorecard." }
       ];
     }
     if (normRole === 'MinistryLeader') {
@@ -61,6 +67,7 @@ export const ChurchAiModal: React.FC<ChurchAiModalProps> = ({
         { icon: Users, label: "Show my ministry members and team leader details." },
         { icon: Calendar, label: "Who is serving this Sunday in my ministry?" },
         { icon: Award, label: "How was our ministry attendance this month?" },
+        { icon: Calendar, label: "What scheduled activities are coming up in next 30 days?" },
         { icon: MessageSquare, label: "Create an announcement for Media Ministry." }
       ];
     }
@@ -80,20 +87,20 @@ export const ChurchAiModal: React.FC<ChurchAiModalProps> = ({
     scrollToBottom();
   }, [messages, isLoading]);
 
-  useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      setMessages([
-        {
-          id: 'welcome-1',
-          sender: 'assistant',
-          text: `Grace and peace, ${userName}! Welcome to **Church AI**. 
+  const createWelcomeMessage = (): ChatMessage => ({
+    id: `welcome-${Date.now()}`,
+    sender: 'assistant',
+    text: `Grace and peace, ${userName}! Welcome to **Church AI**. 
 
 I am your central conversational assistant. I can assist you with profile details, attendance records, roster assignments, prayer requests, events, and ministry insights.
 
 *How may I serve you today?*`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-      ]);
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  });
+
+  useEffect(() => {
+    if (isOpen && messages.length === 0) {
+      setMessages([createWelcomeMessage()]);
     }
   }, [isOpen, userName, messages.length]);
 
@@ -164,6 +171,13 @@ I am your central conversational assistant. I can assist you with profile detail
     setErrorMsg(null);
   };
 
+  const handleBack = () => {
+    setIsLoading(false);
+    setErrorMsg(null);
+    setShowSuggestedQueries(false);
+    setMessages([createWelcomeMessage()]);
+  };
+
   const formatMarkdownText = (text: string) => {
     const lines = text.split('\n');
     return lines
@@ -229,7 +243,19 @@ I am your central conversational assistant. I can assist you with profile detail
           className="dark-hero-panel flex items-center justify-between px-5 py-4 bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white border-b border-purple-800/40 shrink-0"
         >
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-600/30 border border-purple-400/30 flex items-center justify-center text-purple-300 shadow-inner">
+            {messages.length > 1 && (
+              <button
+                type="button"
+                onClick={handleBack}
+                title="Back to suggested queries"
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-white transition-all text-xs font-semibold border border-purple-400/40 shadow-xs cursor-pointer active:scale-95 shrink-0"
+                style={{ color: '#ffffff' }}
+              >
+                <ArrowLeft className="w-4 h-4 text-purple-300" />
+                <span>Back</span>
+              </button>
+            )}
+            <div className="w-10 h-10 rounded-xl bg-purple-600/30 border border-purple-400/30 flex items-center justify-center text-purple-300 shadow-inner shrink-0">
               <Sparkles className="w-5 h-5 animate-pulse text-[#c084fc]" style={{ color: '#c084fc' }} />
             </div>
             <div>
@@ -368,20 +394,35 @@ I am your central conversational assistant. I can assist you with profile detail
           </div>
 
           {/* Role-Aware Suggested Prompts Pills */}
-          {messages.length <= 2 && !isLoading && (
-            <div className="px-4 py-2 bg-slate-900/80 border-t border-slate-800">
-              <p className="text-[11px] font-semibold text-slate-300 mb-2 uppercase tracking-wider flex items-center space-x-1" style={{ color: '#cbd5e1' }}>
-                <Sparkles className="w-3 h-3 text-purple-400" />
-                <span>Suggested Actions for {userRole}</span>
-              </p>
+          {(messages.length <= 2 || showSuggestedQueries) && !isLoading && (
+            <div className="px-4 py-2.5 bg-slate-900/90 border-t border-slate-800 shrink-0">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider flex items-center space-x-1" style={{ color: '#cbd5e1' }}>
+                  <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                  <span>Suggested Actions for {userRole}</span>
+                </p>
+                {messages.length > 2 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowSuggestedQueries(false)}
+                    className="text-[11px] text-slate-400 hover:text-slate-200 transition-colors cursor-pointer px-1.5 py-0.5 rounded hover:bg-slate-800"
+                  >
+                    Close
+                  </button>
+                )}
+              </div>
               <div className="flex flex-wrap gap-2">
                 {getRoleAwarePrompts().map((q, idx) => {
                   const IconComp = q.icon;
                   return (
                     <button
                       key={idx}
-                      onClick={() => handleSendMessage(q.label)}
-                      className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-full text-xs text-slate-200 hover:border-purple-400 hover:text-purple-300 transition-all shadow-2xs hover:shadow-xs"
+                      type="button"
+                      onClick={() => {
+                        handleSendMessage(q.label);
+                        setShowSuggestedQueries(false);
+                      }}
+                      className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-full text-xs text-slate-200 hover:border-purple-400 hover:text-purple-300 transition-all shadow-2xs hover:shadow-xs cursor-pointer text-left"
                       style={{ color: '#f1f5f9', backgroundColor: '#1e293b' }}
                     >
                       <IconComp className="w-3.5 h-3.5 text-purple-400 shrink-0" />
@@ -390,6 +431,29 @@ I am your central conversational assistant. I can assist you with profile detail
                   );
                 })}
               </div>
+            </div>
+          )}
+
+          {/* Quick Action Bar when conversation has started and suggestions are hidden */}
+          {messages.length > 2 && !showSuggestedQueries && !isLoading && (
+            <div className="px-4 py-1.5 bg-slate-900/70 border-t border-slate-800 flex items-center justify-between shrink-0">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="text-xs text-purple-300 hover:text-white flex items-center space-x-1.5 transition-colors cursor-pointer py-1 px-2 rounded-lg hover:bg-purple-900/30 font-medium"
+                style={{ color: '#d8b4fe' }}
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back to Suggested Queries</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSuggestedQueries(true)}
+                className="text-xs text-slate-400 hover:text-purple-300 flex items-center space-x-1 transition-colors cursor-pointer py-1 px-2 rounded-lg hover:bg-slate-800"
+              >
+                <Sparkles className="w-3 h-3 text-purple-400" />
+                <span>View Queries</span>
+              </button>
             </div>
           )}
 
