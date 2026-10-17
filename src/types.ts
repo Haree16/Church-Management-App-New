@@ -315,6 +315,7 @@ export interface SaaSUser {
   username: string;
   password?: string;
   name: string;
+  displayName?: string;
   email: string;
   phone: string;
   role: SaaSUserRole;

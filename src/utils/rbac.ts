@@ -54,6 +54,7 @@ export const ROLE_CONFIGS: Record<SaaSUserRole, RoleConfig> = {
       'roster',
       'notifications',
       'settings',
+      'bible-assistant',
     ],
     canSwitchChurch: true,
     canManageMembers: true,
@@ -100,6 +101,7 @@ export const ROLE_CONFIGS: Record<SaaSUserRole, RoleConfig> = {
       'notifications',
       'saas',
       'settings',
+      'bible-assistant',
     ],
     canSwitchChurch: false,
     canManageMembers: true,
@@ -463,7 +465,8 @@ export function isModuleEnabledInChurch(tab: AppTab, moduleToggles?: ChurchModul
     tab === 'my-ministry' ||
     tab === 'my-assignments' ||
     tab === 'my-attendance' ||
-    tab === 'my-profile'
+    tab === 'my-profile' ||
+    tab === 'bible-assistant'
   ) return true;
   return moduleToggles[tab as keyof ChurchModuleToggles] !== false;
 }
@@ -481,7 +484,8 @@ export function isTabAllowed(
       tab === 'my-ministry' ||
       tab === 'my-assignments' ||
       tab === 'my-attendance' ||
-      tab === 'my-profile'
+      tab === 'my-profile' ||
+      tab === 'bible-assistant'
     ) return true;
     return false;
   }

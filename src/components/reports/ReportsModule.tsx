@@ -13,7 +13,7 @@ import {
   Download, Printer, Search, Filter, RefreshCw, Eye,
   ArrowUpDown, FileSpreadsheet, Layers, ShieldCheck, Check,
   X, UserPlus, UserCheck, GraduationCap, ChevronLeft,
-  Share2, ArrowUpRight, DollarSign, Database, SlidersHorizontal, Trash2
+  Share2, ArrowUpRight, DollarSign, Database, SlidersHorizontal, Trash2, Bot
 } from 'lucide-react';
 import { canAccessAllChurchReports, getRoleConfig } from '../../utils/rbac';
 import { auditService } from '../../services/auditService';
@@ -21,8 +21,12 @@ import { AttendanceInsightsDashboard } from './AttendanceInsightsDashboard';
 import { MemberEngagementDashboard } from './MemberEngagementDashboard';
 import { AutomatedAbsenceFollowUpDashboard } from './AutomatedAbsenceFollowUpDashboard';
 import { AiReportGenerator } from './AiReportGenerator';
+import { AdvancedAnalyticsDashboard } from '../dashboard/AdvancedAnalyticsDashboard';
+import { WorkflowAutomationHub } from '../automation/WorkflowAutomationHub';
 
 export type ReportCategory =
+  | 'advanced-analytics'
+  | 'workflow-automation'
   | 'members'
   | 'families'
   | 'visitors'
@@ -581,6 +585,8 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
         {/* ========================================================================= */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-2 no-scrollbar print:hidden border-t border-slate-800">
           {[
+            { id: 'advanced-analytics' as ReportCategory, label: 'Advanced Analytics', icon: BarChart3 },
+            { id: 'workflow-automation' as ReportCategory, label: 'Automation Hub', icon: Bot },
             { id: 'members' as ReportCategory, label: 'Members', icon: Users },
             { id: 'families' as ReportCategory, label: 'Families', icon: Users },
             { id: 'visitors' as ReportCategory, label: 'Visitors', icon: UserPlus },
@@ -782,6 +788,27 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
       {/* ========================================================================= */}
       {/* 3. REPORT CONTENT ROUTER BY CATEGORY */}
       {/* ========================================================================= */}
+
+      {/* ----------------------------------------------------------------------- */}
+      {/* PHASE 4: ADVANCED CHURCH ANALYTICS DASHBOARD */}
+      {/* ----------------------------------------------------------------------- */}
+      {activeCategory === 'advanced-analytics' && (
+        <AdvancedAnalyticsDashboard
+          churchId={activeChurchId}
+          userRole={userRole}
+        />
+      )}
+
+      {/* ----------------------------------------------------------------------- */}
+      {/* PHASE 4: WORKFLOW AUTOMATION HUB */}
+      {/* ----------------------------------------------------------------------- */}
+      {activeCategory === 'workflow-automation' && (
+        <WorkflowAutomationHub
+          churchId={activeChurchId}
+          userName={currentUser?.displayName || currentUser?.name || 'Administrator'}
+          userRole={userRole}
+        />
+      )}
 
       {/* ----------------------------------------------------------------------- */}
       {/* REPORT 1: MEMBERS REPORT */}

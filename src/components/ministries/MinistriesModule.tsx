@@ -11,7 +11,7 @@ import {
   Edit3, ChevronRight, ArrowLeft, Sparkles, Music, GraduationCap, 
   Heart, Shield, Globe, Coffee, Video, MessageSquare, 
   Copy, FileText, Layers, BookOpen, Award, 
-  Download, UserCheck, Square, 
+  Download, UserCheck, Square, Crown, Check,
   X, Megaphone
 } from 'lucide-react';
 import { auditService } from '../../services/auditService';
@@ -84,6 +84,8 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
   onDeleteMinistryMember,
   onSaveMinistryTeam,
   onDeleteMinistryTeam,
+  onSaveMinistryTeamMember,
+  onDeleteMinistryTeamMember,
   onSaveMinistryActivity,
   onDeleteMinistryActivity,
   onSaveMinistryAnnouncement,
@@ -119,6 +121,11 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
   const [teamFormName, setTeamFormName] = useState('');
   const [teamFormDesc, setTeamFormDesc] = useState('');
   const [teamFormLeader, setTeamFormLeader] = useState('');
+  const [teamFormLeaderId, setTeamFormLeaderId] = useState('');
+  const [isCustomLeader, setIsCustomLeader] = useState(false);
+  const [selectedTeamMemberIds, setSelectedTeamMemberIds] = useState<string[]>([]);
+  const [teamMemberSearch, setTeamMemberSearch] = useState('');
+  const [teamMemberFilter, setTeamMemberFilter] = useState<'all' | 'ministry' | 'selected'>('all');
 
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<MinistryActivity | null>(null);
@@ -146,6 +153,14 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
   // WhatsApp Quick Message State
   const [waCustomMessage, setWaCustomMessage] = useState('');
   const [waCopied, setWaCopied] = useState(false);
+
+  // Edit Member Role State
+  const [editingMemberRole, setEditingMemberRole] = useState<{
+    membershipId: string;
+    memberName: string;
+    currentRole: string;
+  } | null>(null);
+  const [newMemberRoleInput, setNewMemberRoleInput] = useState('');
 
   // 1. Church-scoped collections
   const churchMinistryMembers = useMemo(() => {
@@ -264,8 +279,8 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
     });
   }, [accessibleMinistries, searchQuery, statusFilter]);
 
-  // Permission check for managing active ministry (Creation / Edit / Management actions)
-  const canManageActiveMinistry = useMemo(() => {
+  // Permission check for managing active ministry (Overall Ministry Leader or Admin)
+  const isOverallMinistryLeader = useMemo(() => {
     if (isSuperOrPastor) return true;
     if (!activeMinistry || !currentUser) return false;
 
@@ -281,11 +296,17 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
     // 2. Is leaderName, contactEmail, contactPhone matching currentUser?
     const minLeader = (activeMinistry.leaderName || '').trim().toLowerCase();
+    const minAsst = (activeMinistry.assistantLeaderName || '').trim().toLowerCase();
     const minContactEmail = (activeMinistry.contactEmail || '').trim().toLowerCase();
     const minContactPhone = (activeMinistry.contactPhone || '').replace(/\D/g, '').slice(-10);
 
     if (minLeader && userName && minLeader.length > 1 && userName.length > 1) {
       if (minLeader === userName || minLeader.includes(userName) || userName.includes(minLeader)) {
+        return true;
+      }
+    }
+    if (minAsst && userName && minAsst.length > 1 && userName.length > 1) {
+      if (minAsst === userName || minAsst.includes(userName) || userName.includes(minAsst)) {
         return true;
       }
     }
@@ -300,7 +321,6 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
     const isLeadershipMember = churchMinistryMembers.some((mm) => {
       if (mm.ministryId !== activeMinistry.id) return false;
 
-      // Check if mm is current user
       let isUserMatch = false;
       if (currentMemberRecord && mm.memberId === currentMemberRecord.id) {
         isUserMatch = true;
@@ -316,17 +336,14 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
       if (!isUserMatch) return false;
 
-      // Must have leadership role in this ministry
       const roleLower = (mm.ministryRole || mm.role || '').toLowerCase();
-      return roleLower.includes('leader') || roleLower.includes('director') || roleLower.includes('coordinator') || roleLower.includes('head') || roleLower.includes('chair');
+      return roleLower.includes('ministry leader') || roleLower.includes('director') || roleLower.includes('coordinator') || roleLower.includes('head') || roleLower.includes('chair');
     });
 
-    if (isLeadershipMember) {
-      return true;
-    }
-
-    return false;
+    return isLeadershipMember;
   }, [isSuperOrPastor, activeMinistry, currentUser, currentMemberRecord, churchMinistryMembers, churchMembers]);
+
+  const canManageActiveMinistry = isOverallMinistryLeader;
 
   // Permission check for managing announcements (Admin or Ministry Leader)
   const canManageAnnouncements = isSuperOrPastor || canManageActiveMinistry;
@@ -341,6 +358,241 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
     if (!activeMinistry) return [];
     return churchMinistryTeams.filter((mt) => mt.ministryId === activeMinistry.id);
   }, [churchMinistryTeams, activeMinistry]);
+
+  // Teams led by current user in this active ministry
+  const myLedTeams = useMemo(() => {
+    if (!currentUser || !activeMinistry) return [];
+    const userName = (currentUser.name || '').trim().toLowerCase();
+    const myMemId = currentMemberRecord?.id;
+
+    return currentMinTeams.filter((t) => {
+      if (myMemId && t.leaderMemberId === myMemId) return true;
+      if (t.leaderName && userName && (t.leaderName.trim().toLowerCase() === userName || t.leaderName.toLowerCase().includes(userName) || userName.includes(t.leaderName.toLowerCase()))) {
+        return true;
+      }
+      if (myMemId && churchTeamMembers.some((tm) => tm.teamId === t.id && tm.memberId === myMemId && tm.role === 'Team Leader')) {
+        return true;
+      }
+      return false;
+    });
+  }, [currentMinTeams, currentUser, currentMemberRecord, churchTeamMembers, activeMinistry]);
+
+  const isAnyTeamLeader = myLedTeams.length > 0;
+
+  // Teams assigned to current user (as member or leader)
+  const myAssignedTeams = useMemo(() => {
+    if (!currentUser || !activeMinistry) return [];
+    const myMemId = currentMemberRecord?.id;
+    const userName = (currentUser.name || '').trim().toLowerCase();
+
+    return currentMinTeams.filter((t) => {
+      if (myLedTeams.some((lt) => lt.id === t.id)) return true;
+      if (myMemId && t.leaderMemberId === myMemId) return true;
+      if (t.leaderName && userName && (
+        t.leaderName.trim().toLowerCase() === userName ||
+        t.leaderName.toLowerCase().includes(userName) ||
+        userName.includes(t.leaderName.toLowerCase())
+      )) return true;
+      if (myMemId && churchTeamMembers.some((tm) => tm.teamId === t.id && tm.memberId === myMemId && tm.status !== 'Inactive')) {
+        return true;
+      }
+      if (currentMemberRecord?.ministryTeams && Array.isArray(currentMemberRecord.ministryTeams)) {
+        if (currentMemberRecord.ministryTeams.some((mt) => mt.toLowerCase() === t.name.toLowerCase() || t.name.toLowerCase().includes(mt.toLowerCase()))) {
+          return true;
+        }
+      }
+      return false;
+    });
+  }, [currentMinTeams, myLedTeams, currentMemberRecord, churchTeamMembers, currentUser, activeMinistry]);
+
+  // Teams visible on the Teams tab:
+  // For ministry leader / admin -> ALL teams in this ministry.
+  // For normal people / team leaders -> THEIR team and their team members.
+  const visibleTeams = useMemo(() => {
+    if (isOverallMinistryLeader) {
+      return currentMinTeams;
+    }
+    return myAssignedTeams;
+  }, [isOverallMinistryLeader, currentMinTeams, myAssignedTeams]);
+
+  // Members visible on the Members tab:
+  // For overall ministry leader / admin -> ALL members in this ministry (currentMinMembers).
+  // For normal people / team leaders -> members of THEIR assigned team(s) only!
+  const visibleMinistryMembers = useMemo(() => {
+    if (isOverallMinistryLeader || currentMinTeams.length === 0) {
+      return currentMinMembers;
+    }
+    const myTeamIds = new Set(myAssignedTeams.map((t) => t.id));
+    const allowedMemberIds = new Set<string>();
+
+    myAssignedTeams.forEach((t) => {
+      if (t.leaderMemberId) allowedMemberIds.add(t.leaderMemberId);
+      if (t.leaderName) {
+        const norm = t.leaderName.trim().toLowerCase();
+        churchMembers.forEach((m) => {
+          const fn = `${m.firstName} ${m.lastName}`.trim().toLowerCase();
+          if (fn === norm || fn.includes(norm) || norm.includes(fn)) allowedMemberIds.add(m.id);
+        });
+      }
+    });
+
+    churchTeamMembers.forEach((tm) => {
+      if (myTeamIds.has(tm.teamId) && tm.status !== 'Inactive') {
+        allowedMemberIds.add(tm.memberId);
+      }
+    });
+
+    churchMembers.forEach((m) => {
+      if (m.ministryTeams && Array.isArray(m.ministryTeams)) {
+        if (m.ministryTeams.some((mt) => myAssignedTeams.some((t) => t.name.toLowerCase() === mt.toLowerCase() || mt.toLowerCase().includes(t.name.toLowerCase())))) {
+          allowedMemberIds.add(m.id);
+        }
+      }
+    });
+
+    if (currentMemberRecord) allowedMemberIds.add(currentMemberRecord.id);
+
+    return currentMinMembers.filter((mm) => allowedMemberIds.has(mm.memberId));
+  }, [isOverallMinistryLeader, currentMinTeams, myAssignedTeams, churchTeamMembers, currentMinMembers, churchMembers, currentMemberRecord]);
+
+  // Who can schedule activities: Overall Ministry Leader or any Team Leader
+  const canScheduleActivity = isOverallMinistryLeader || isAnyTeamLeader;
+
+  // Who can assign roster duties: Overall Ministry Leader or any Team Leader
+  const canAssignRoster = isOverallMinistryLeader || isAnyTeamLeader;
+
+  // Candidate members for roster assignment:
+  // For ministry leader -> all ministry members
+  // For team leader -> members of their led team only!
+  const rosterCandidateMembers = useMemo(() => {
+    if (isOverallMinistryLeader) {
+      return currentMinMembers;
+    }
+    if (isAnyTeamLeader) {
+      const myTeamIds = new Set(myLedTeams.map((t) => t.id));
+      const myTeamMemberIds = new Set(
+        churchTeamMembers
+          .filter((tm) => myTeamIds.has(tm.teamId))
+          .map((tm) => tm.memberId)
+      );
+      myLedTeams.forEach((t) => {
+        if (t.leaderMemberId) myTeamMemberIds.add(t.leaderMemberId);
+      });
+      return currentMinMembers.filter((mm) => myTeamMemberIds.has(mm.memberId));
+    }
+    return [];
+  }, [isOverallMinistryLeader, isAnyTeamLeader, myLedTeams, churchTeamMembers, currentMinMembers]);
+
+  // Helper to accurately resolve a ministry member's displayed role
+  const getResolvedMinistryRole = (mm: MinistryMember, memberFullName: string) => {
+    const normMemName = (memberFullName || '').trim().toLowerCase();
+
+    // 1. Is overall Ministry Leader?
+    const isMinLeader = 
+      (activeMinistry?.leaderMemberId && activeMinistry.leaderMemberId === mm.memberId) ||
+      (activeMinistry?.leaderName && normMemName.length > 1 && (
+        activeMinistry.leaderName.trim().toLowerCase() === normMemName ||
+        activeMinistry.leaderName.trim().toLowerCase().includes(normMemName) ||
+        normMemName.includes(activeMinistry.leaderName.trim().toLowerCase())
+      ));
+
+    if (isMinLeader) {
+      return {
+        roleTitle: 'Ministry Leader',
+        isMinistryLeader: true,
+        isTeamLeader: false,
+      };
+    }
+
+    // 2. Is Assistant Ministry Leader?
+    const isAsstLeader = 
+      (activeMinistry?.assistantLeaderMemberId && activeMinistry.assistantLeaderMemberId === mm.memberId) ||
+      (activeMinistry?.assistantLeaderName && normMemName.length > 1 && (
+        activeMinistry.assistantLeaderName.trim().toLowerCase() === normMemName ||
+        activeMinistry.assistantLeaderName.trim().toLowerCase().includes(normMemName)
+      ));
+
+    if (isAsstLeader) {
+      return {
+        roleTitle: 'Assistant Leader',
+        isMinistryLeader: false,
+        isTeamLeader: false,
+      };
+    }
+
+    // 3. Is Leader of any sub-team in this ministry?
+    const ledTeam = currentMinTeams.find((t) => {
+      if (t.leaderMemberId && t.leaderMemberId === mm.memberId) return true;
+      if (t.leaderName && normMemName.length > 1) {
+        const normLead = t.leaderName.trim().toLowerCase();
+        return normLead === normMemName || normLead.includes(normMemName) || normMemName.includes(normLead);
+      }
+      return false;
+    });
+
+    if (ledTeam) {
+      return {
+        roleTitle: `Team Leader (${ledTeam.name})`,
+        isMinistryLeader: false,
+        isTeamLeader: true,
+        teamName: ledTeam.name,
+      };
+    }
+
+    // 4. Designated as Team Leader in churchTeamMembers?
+    const tmRecord = churchTeamMembers.find(
+      (tm) => tm.memberId === mm.memberId && tm.ministryId === activeMinistry?.id && tm.role === 'Team Leader'
+    );
+    if (tmRecord) {
+      const parentTeam = currentMinTeams.find((t) => t.id === tmRecord.teamId);
+      return {
+        roleTitle: parentTeam ? `Team Leader (${parentTeam.name})` : 'Team Leader',
+        isMinistryLeader: false,
+        isTeamLeader: true,
+        teamName: parentTeam?.name,
+      };
+    }
+
+    // 5. If mm.ministryRole explicitly says something specific other than 'Volunteer'
+    if (mm.ministryRole && mm.ministryRole.toLowerCase() !== 'volunteer') {
+      return {
+        roleTitle: mm.ministryRole,
+        isMinistryLeader: false,
+        isTeamLeader: false,
+      };
+    }
+
+    // 6. Check if member belongs to a sub-team
+    const anyTeam = churchTeamMembers.find(
+      (tm) => tm.memberId === mm.memberId && tm.ministryId === activeMinistry?.id
+    );
+    if (anyTeam) {
+      const parentTeam = currentMinTeams.find((t) => t.id === anyTeam.teamId);
+      if (anyTeam.role && anyTeam.role.toLowerCase() !== 'volunteer') {
+        return {
+          roleTitle: anyTeam.role,
+          isMinistryLeader: false,
+          isTeamLeader: false,
+          teamName: parentTeam?.name,
+        };
+      }
+      if (parentTeam) {
+        return {
+          roleTitle: `Team Member (${parentTeam.name})`,
+          isMinistryLeader: false,
+          isTeamLeader: false,
+          teamName: parentTeam.name,
+        };
+      }
+    }
+
+    // Default fallback: 'Team Member'
+    return {
+      roleTitle: 'Team Member',
+      isMinistryLeader: false,
+      isTeamLeader: false,
+    };
+  };
 
   const currentMinActivities = useMemo(() => {
     if (!activeMinistry) return [];
@@ -386,6 +638,91 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
       return hasMatchingSkill || hasMinistryTag;
     });
   }, [churchMembers, currentMinMembers, activeMinistry]);
+
+  // Filtered members for team assignment modal
+  const filteredTeamCandidates = useMemo(() => {
+    const search = teamMemberSearch.trim().toLowerCase();
+    const minMemberIdSet = new Set(currentMinMembers.map((mm) => mm.memberId));
+
+    return churchMembers
+      .map((m) => {
+        const isMinMember = minMemberIdSet.has(m.id);
+        const minMembership = currentMinMembers.find((mm) => mm.memberId === m.id);
+        const isSelected = selectedTeamMemberIds.includes(m.id);
+        const isLeader = m.id === teamFormLeaderId;
+        return {
+          member: m,
+          isMinMember,
+          minRole: minMembership?.ministryRole || (isMinMember ? 'Ministry Member' : ''),
+          isSelected,
+          isLeader,
+        };
+      })
+      .filter(({ member, isMinMember, isSelected, minRole }) => {
+        if (teamMemberFilter === 'ministry' && !isMinMember) return false;
+        if (teamMemberFilter === 'selected' && !isSelected) return false;
+
+        if (!search) return true;
+        const fullName = `${member.firstName || ''} ${member.lastName || ''}`.toLowerCase();
+        const email = (member.email || '').toLowerCase();
+        const phone = (member.phone || '').toLowerCase();
+        const role = (minRole || '').toLowerCase();
+        return fullName.includes(search) || email.includes(search) || phone.includes(search) || role.includes(search);
+      })
+      .sort((a, b) => {
+        if (a.isLeader && !b.isLeader) return -1;
+        if (!a.isLeader && b.isLeader) return 1;
+        if (a.isMinMember && !b.isMinMember) return -1;
+        if (!a.isMinMember && b.isMinMember) return 1;
+        return (a.member.firstName || '').localeCompare(b.member.firstName || '');
+      });
+  }, [churchMembers, currentMinMembers, teamMemberSearch, teamMemberFilter, selectedTeamMemberIds, teamFormLeaderId]);
+
+  const handleToggleTeamMember = (memberId: string) => {
+    setSelectedTeamMemberIds((prev) =>
+      prev.includes(memberId)
+        ? prev.filter((id) => id !== memberId)
+        : [...prev, memberId]
+    );
+  };
+
+  const handleOpenCreateTeam = () => {
+    setEditingTeam(null);
+    setTeamFormName('');
+    setTeamFormDesc('');
+    setTeamFormLeader('');
+    setTeamFormLeaderId('');
+    setIsCustomLeader(false);
+    setSelectedTeamMemberIds([]);
+    setTeamMemberSearch('');
+    setTeamMemberFilter('all');
+    setIsTeamModalOpen(true);
+  };
+
+  const handleOpenEditTeam = (team: MinistryTeam) => {
+    setEditingTeam(team);
+    setTeamFormName(team.name);
+    setTeamFormDesc(team.description || '');
+    setTeamFormLeader(team.leaderName || '');
+
+    let matchedLeaderId = team.leaderMemberId || '';
+    if (!matchedLeaderId && team.leaderName) {
+      const matched = churchMembers.find(
+        (m) => `${m.firstName} ${m.lastName}`.trim().toLowerCase() === team.leaderName?.trim().toLowerCase()
+      );
+      if (matched) matchedLeaderId = matched.id;
+    }
+    setTeamFormLeaderId(matchedLeaderId);
+    setIsCustomLeader(!matchedLeaderId && !!team.leaderName);
+
+    const squadMemberIds = churchTeamMembers
+      .filter((tm) => tm.teamId === team.id)
+      .map((tm) => tm.memberId);
+    setSelectedTeamMemberIds(squadMemberIds);
+    setTeamMemberSearch('');
+    setTeamMemberFilter('all');
+    setIsTeamModalOpen(true);
+  };
 
   // Icon Resolver Helper
   const renderMinistryIcon = (iconName: string, className = 'w-5 h-5') => {
@@ -524,25 +861,147 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
       return;
     }
 
+    const teamId = editingTeam?.id || `team-${Date.now()}`;
+    const matchedLeader = teamFormLeaderId ? churchMembers.find((m) => m.id === teamFormLeaderId) : null;
+    const leaderNameFinal = isCustomLeader 
+      ? teamFormLeader.trim() 
+      : (matchedLeader ? `${matchedLeader.firstName} ${matchedLeader.lastName}`.trim() : teamFormLeader.trim());
+
     const teamData: MinistryTeam = {
-      id: editingTeam?.id || `team-${Date.now()}`,
+      id: teamId,
       church_id: activeChurchId,
       churchId: activeChurchId,
       ministryId: activeMinistry.id,
       name: teamFormName.trim(),
       description: teamFormDesc.trim(),
-      leaderName: teamFormLeader.trim(),
+      leaderMemberId: isCustomLeader ? undefined : (teamFormLeaderId || undefined),
+      leaderName: leaderNameFinal,
       status: editingTeam?.status || 'Active',
       createdAt: editingTeam?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
     await onSaveMinistryTeam(teamData);
+
+    // Sync team members
+    const finalMemberIds = new Set(selectedTeamMemberIds);
+    if (teamFormLeaderId && !isCustomLeader) {
+      finalMemberIds.add(teamFormLeaderId);
+    }
+
+    // Existing team members for this squad
+    const existingSquad = churchTeamMembers.filter((tm) => tm.teamId === teamId);
+    const existingMemberIds = new Set(existingSquad.map((tm) => tm.memberId));
+
+    // 1. Add new members or update existing roles
+    for (const memId of Array.from(finalMemberIds)) {
+      const isLeader = memId === teamFormLeaderId && !isCustomLeader;
+      const targetRole = isLeader ? 'Team Leader' : 'Team Member';
+      const existingRecord = existingSquad.find((tm) => tm.memberId === memId);
+
+      if (!existingRecord) {
+        if (onSaveMinistryTeamMember) {
+          const newMtm: MinistryTeamMember = {
+            id: `mtm-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+            church_id: activeChurchId,
+            churchId: activeChurchId,
+            teamId: teamId,
+            ministryId: activeMinistry.id,
+            memberId: memId,
+            role: targetRole,
+            status: 'Active',
+            createdAt: new Date().toISOString(),
+          };
+          await onSaveMinistryTeamMember(newMtm);
+        }
+
+        // Auto-enroll in ministry if not already enrolled
+        const isAlreadyMinMember = currentMinMembers.some((mm) => mm.memberId === memId);
+        if (!isAlreadyMinMember && onSaveMinistryMember) {
+          const newMinMembership: MinistryMember = {
+            id: `mm-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+            church_id: activeChurchId,
+            churchId: activeChurchId,
+            ministryId: activeMinistry.id,
+            memberId: memId,
+            ministryRole: targetRole,
+            status: 'Active',
+            joinedAt: new Date().toISOString().split('T')[0],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          await onSaveMinistryMember(newMinMembership);
+        }
+      } else {
+        // If already in squad, update role if changed
+        if (existingRecord.role !== targetRole && onSaveMinistryTeamMember) {
+          await onSaveMinistryTeamMember({
+            ...existingRecord,
+            role: targetRole,
+          });
+        }
+      }
+    }
+
+    // 2. Remove unselected members (when editing)
+    if (editingTeam && onDeleteMinistryTeamMember) {
+      for (const tm of existingSquad) {
+        if (!finalMemberIds.has(tm.memberId)) {
+          await onDeleteMinistryTeamMember(tm.id);
+        }
+      }
+    }
+
+    auditService.logAction(activeChurchId, {
+      action: editingTeam ? 'ministry_team.updated' : 'ministry_team.created',
+      resource_type: 'ministry_teams',
+      resource_id: teamId,
+      actor_name: currentUser?.name || 'Admin',
+      details: { 
+        name: teamData.name, 
+        ministry: activeMinistry.name,
+        leader: leaderNameFinal,
+        memberCount: finalMemberIds.size
+      }
+    });
+
     setIsTeamModalOpen(false);
     setEditingTeam(null);
     setTeamFormName('');
     setTeamFormDesc('');
     setTeamFormLeader('');
+    setTeamFormLeaderId('');
+    setIsCustomLeader(false);
+    setSelectedTeamMemberIds([]);
+    setTeamMemberSearch('');
+  };
+
+  // Update a Member's Ministry Role
+  const handleUpdateMemberRole = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingMemberRole || !newMemberRoleInput.trim() || !activeMinistry) return;
+
+    const targetMembership = churchMinistryMembers.find((mm) => mm.id === editingMemberRole.membershipId);
+    if (!targetMembership) return;
+
+    const updatedMembership: MinistryMember = {
+      ...targetMembership,
+      ministryRole: newMemberRoleInput.trim(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    await onSaveMinistryMember(updatedMembership);
+
+    auditService.logAction(activeChurchId, {
+      action: 'ministry_member.role_updated',
+      resource_type: 'ministry_members',
+      resource_id: targetMembership.id,
+      actor_name: currentUser?.name || 'Admin',
+      details: { member: editingMemberRole.memberName, newRole: newMemberRoleInput.trim(), ministry: activeMinistry.name }
+    });
+
+    setEditingMemberRole(null);
+    setNewMemberRoleInput('');
   };
 
   // Open Create Activity Modal
@@ -554,7 +1013,14 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
     setActivityFormStartTime('06:00 PM');
     setActivityFormEndTime('07:30 PM');
     setActivityFormLocation('Main Sanctuary');
-    setActivityFormTeamId('');
+
+    // Default to their team if Team Leader, or entire ministry if Ministry Leader
+    if (!isOverallMinistryLeader && myLedTeams.length > 0) {
+      setActivityFormTeamId(myLedTeams[0].id);
+    } else {
+      setActivityFormTeamId('');
+    }
+
     setActivityFormStatus('Scheduled');
     setIsActivityModalOpen(true);
   };
@@ -656,14 +1122,26 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
   const handleSaveRosterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeMinistry || !rosterRoleName.trim() || !rosterMemberId) {
-      alert('Please fill role name and select volunteer.');
+      alert('Please fill role name and select member.');
       return;
     }
 
     const targetMember = churchMembers.find((m) => m.id === rosterMemberId);
     if (!targetMember || !onSaveRosterAssignment) return;
 
+    // Strict validation: Team Leader can only assign duties to members of their team
+    if (!isOverallMinistryLeader && isAnyTeamLeader) {
+      const allowedIds = new Set(rosterCandidateMembers.map((mm) => mm.memberId));
+      if (!allowedIds.has(rosterMemberId)) {
+        alert('You can only assign roster duties to members of your team.');
+        return;
+      }
+    }
+
     const finalServiceName = rosterServiceName.trim() || inferServiceNameForDate(rosterDate, activeMinistry.name, churchSettings);
+    const assignedTeamName = (!isOverallMinistryLeader && myLedTeams.length > 0)
+      ? myLedTeams[0].name
+      : activeMinistry.name;
 
     const newAssignment: RosterAssignment = {
       id: `roster-${Date.now()}`,
@@ -673,12 +1151,12 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
       serviceDate: rosterDate,
       serviceName: finalServiceName,
       roleName: rosterRoleName.trim(),
-      team: (activeMinistry.name as any),
+      team: assignedTeamName as any,
       memberId: targetMember.id,
       memberName: `${targetMember.firstName} ${targetMember.lastName}`,
       confirmed: false,
       createdByUserId: currentUser?.id,
-      createdByName: currentUser?.name || 'Ministry Leader',
+      createdByName: currentUser?.name || (isAnyTeamLeader ? `${myLedTeams[0]?.name} Leader` : 'Ministry Leader'),
     };
 
     await onSaveRosterAssignment(newAssignment);
@@ -1076,12 +1554,23 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                 </div>
               </div>
 
-              {currentMinMembers.length > 0 ? (
+              {!isOverallMinistryLeader && currentMinTeams.length > 0 && myAssignedTeams.length > 0 && (
+                <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-amber-900 text-xs flex items-center justify-between">
+                  <span>
+                    Showing members of your assigned team: <strong>{myAssignedTeams.map((t) => t.name).join(', ')}</strong> ({visibleMinistryMembers.length} Members)
+                  </span>
+                  <span className="text-[11px] font-bold text-amber-750 bg-amber-100 border border-amber-250 px-2.5 py-0.5 rounded-full">
+                    Your Team View
+                  </span>
+                </div>
+              )}
+
+              {visibleMinistryMembers.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                  {currentMinMembers.map((mm) => {
+                  {visibleMinistryMembers.map((mm) => {
                     const m = churchMembers.find((cm) => cm.id === mm.memberId);
                     const fullName = m ? `${m.firstName} ${m.lastName}` : 'Member';
-                    const initials = m ? `${m.firstName[0] || ''}${m.lastName[0] || ''}` : 'M';
+                    const resolvedRole = getResolvedMinistryRole(mm, fullName);
 
                     return (
                       <div key={mm.id} className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-amber-400/50 transition flex items-start gap-3 relative group">
@@ -1095,7 +1584,25 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
                         <div className="flex-1 min-w-0">
                           <h4 className="font-bold text-xs text-slate-900 truncate">{fullName}</h4>
-                          <div className="text-[11px] font-semibold text-amber-700 mt-0.5 truncate">{mm.ministryRole}</div>
+                          
+                          <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                            {resolvedRole.isMinistryLeader ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-extrabold shadow-2xs">
+                                <Crown className="w-3 h-3 text-amber-600 fill-amber-500" />
+                                Ministry Leader
+                              </span>
+                            ) : resolvedRole.isTeamLeader ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-900 border border-indigo-300 text-[10px] font-bold shadow-2xs">
+                                <Crown className="w-3 h-3 text-indigo-600" />
+                                {resolvedRole.roleTitle}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-800 border border-slate-200 text-[10px] font-medium">
+                                {resolvedRole.roleTitle}
+                              </span>
+                            )}
+                          </div>
+
                           <div className="text-[10px] text-slate-400 mt-1">Joined: {mm.joinedAt}</div>
                           
                           <div className="flex items-center gap-2 mt-2">
@@ -1113,13 +1620,31 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                         </div>
 
                         {canManageActiveMinistry && (
-                          <button
-                            onClick={() => handleRemoveMember(mm.id, fullName)}
-                            className="text-slate-300 hover:text-rose-500 p-1 transition opacity-0 group-hover:opacity-100"
-                            title="Remove from Ministry"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingMemberRole({
+                                  membershipId: mm.id,
+                                  memberName: fullName,
+                                  currentRole: resolvedRole.roleTitle,
+                                });
+                                setNewMemberRoleInput(resolvedRole.roleTitle);
+                              }}
+                              className="text-slate-400 hover:text-amber-600 p-1 transition"
+                              title="Edit Member Role"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveMember(mm.id, fullName)}
+                              className="text-slate-400 hover:text-rose-500 p-1 transition"
+                              title="Remove from Ministry"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         )}
                       </div>
                     );
@@ -1128,9 +1653,13 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
               ) : (
                 <div className="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-300 p-6 space-y-3">
                   <Users className="w-10 h-10 text-slate-300 mx-auto" />
-                  <h4 className="font-bold text-sm text-slate-700">No members assigned yet</h4>
+                  <h4 className="font-bold text-sm text-slate-700">
+                    {!isOverallMinistryLeader && currentMinTeams.length > 0 ? 'No members found in your sub-team' : 'No members assigned yet'}
+                  </h4>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Add church members to {activeMinistry.name} to assign specific roles, track attendance, and schedule teams.
+                    {!isOverallMinistryLeader && currentMinTeams.length > 0 
+                      ? `You are not currently assigned to any sub-teams in ${activeMinistry.name}. Contact your ministry leader to join a squad.`
+                      : `Add church members to ${activeMinistry.name} to assign specific roles, track attendance, and schedule teams.`}
                   </p>
                   {canManageActiveMinistry && (
                     <button
@@ -1153,19 +1682,19 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
             <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-base">Ministry Teams & Squads</h3>
-                  <p className="text-xs text-slate-500">Organize sub-teams (e.g. Vocalists, Praise Band, Tech, Ushers) within {activeMinistry.name}.</p>
+                  <h3 className="font-bold text-slate-900 text-base">
+                    {isOverallMinistryLeader ? 'Ministry Teams & Squads' : 'My Ministry Teams & Squads'}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    {isOverallMinistryLeader
+                      ? `Organize sub-teams (e.g. Vocalists, Praise Band, Tech, Ushers) within ${activeMinistry.name}.`
+                      : `Showing your assigned squad(s) and fellow team members in ${activeMinistry.name}.`}
+                  </p>
                 </div>
 
-                {canManageActiveMinistry && (
+                {isOverallMinistryLeader && (
                   <button
-                    onClick={() => {
-                      setEditingTeam(null);
-                      setTeamFormName('');
-                      setTeamFormDesc('');
-                      setTeamFormLeader('');
-                      setIsTeamModalOpen(true);
-                    }}
+                    onClick={handleOpenCreateTeam}
                     className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
                   >
                     <Plus className="w-3.5 h-3.5" />
@@ -1174,68 +1703,107 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                 )}
               </div>
 
-              {currentMinTeams.length > 0 ? (
+              {visibleTeams.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {currentMinTeams.map((team) => {
+                  {visibleTeams.map((team) => {
                     const squadMembers = churchTeamMembers.filter((tm) => tm.teamId === team.id);
+                    const isLedByMe = myLedTeams.some((lt) => lt.id === team.id);
+                    const canManageThisTeam = isOverallMinistryLeader || isLedByMe;
+
                     return (
                       <div key={team.id} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <h4 className="font-bold text-sm text-slate-900">{team.name}</h4>
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-bold text-sm text-slate-900">{team.name}</h4>
+                              {isLedByMe && (
+                                <span className="px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-200 text-[10px] font-bold">
+                                  My Squad
+                                </span>
+                              )}
+                            </div>
                             <p className="text-xs text-slate-500 mt-0.5">{team.description || 'No description'}</p>
                             {team.leaderName && (
-                              <span className="inline-block mt-1 text-[11px] text-amber-700 font-semibold">
+                              <span className="inline-flex items-center gap-1 mt-1 text-[11px] text-amber-700 font-semibold">
+                                <Crown className="w-3 h-3 text-amber-600" />
                                 Leader: {team.leaderName}
                               </span>
                             )}
                           </div>
 
-                          {(isSuperOrPastor || canManageActiveMinistry) && (
+                          {canManageThisTeam && (
                             <div className="flex items-center gap-1">
                               <button
-                                onClick={() => {
-                                  setEditingTeam(team);
-                                  setTeamFormName(team.name);
-                                  setTeamFormDesc(team.description || '');
-                                  setTeamFormLeader(team.leaderName || '');
-                                  setIsTeamModalOpen(true);
-                                }}
+                                onClick={() => handleOpenEditTeam(team)}
                                 className="p-1 text-slate-400 hover:text-slate-700"
+                                title="Edit Team & Members"
                               >
                                 <Edit3 className="w-3.5 h-3.5" />
                               </button>
-                              <button
-                                onClick={async () => {
-                                  if (confirm(`Delete team "${team.name}"?`)) {
-                                    await onDeleteMinistryTeam(team.id);
-                                  }
-                                }}
-                                className="p-1 text-slate-400 hover:text-rose-600"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
+                              {isOverallMinistryLeader && (
+                                <button
+                                  onClick={async () => {
+                                    if (confirm(`Delete team "${team.name}"?`)) {
+                                      await onDeleteMinistryTeam(team.id);
+                                    }
+                                  }}
+                                  className="p-1 text-slate-400 hover:text-rose-600"
+                                  title="Delete Team"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              )}
                             </div>
                           )}
                         </div>
 
                         <div className="pt-2 border-t border-slate-200/80">
-                          <div className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-                            Assigned Members ({squadMembers.length})
+                          <div className="flex items-center justify-between mb-1.5">
+                            <div className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                              Assigned Members ({squadMembers.length})
+                            </div>
+                            {canManageThisTeam && squadMembers.length > 0 && (
+                              <button
+                                onClick={() => handleOpenEditTeam(team)}
+                                className="text-[11px] text-amber-600 hover:text-amber-700 font-semibold flex items-center gap-1"
+                              >
+                                <Edit3 className="w-3 h-3" />
+                                Manage
+                              </button>
+                            )}
                           </div>
                           {squadMembers.length > 0 ? (
                             <div className="flex flex-wrap gap-1.5">
                               {squadMembers.map((tm) => {
                                 const m = churchMembers.find((cm) => cm.id === tm.memberId);
+                                const isLeader = tm.role === 'Team Leader';
                                 return (
-                                  <span key={tm.id} className="px-2 py-0.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 font-medium">
+                                  <span 
+                                    key={tm.id} 
+                                    className={`px-2 py-0.5 border rounded-lg text-xs font-medium flex items-center gap-1 ${
+                                      isLeader 
+                                        ? 'bg-amber-50 border-amber-300 text-amber-900 font-semibold' 
+                                        : 'bg-white border-slate-200 text-slate-800'
+                                    }`}
+                                  >
+                                    {isLeader && <Crown className="w-3 h-3 text-amber-600" />}
                                     {m ? `${m.firstName} ${m.lastName}` : 'Member'} ({tm.role})
                                   </span>
                                 );
                               })}
                             </div>
                           ) : (
-                            <p className="text-xs text-slate-400 italic">No members assigned to this squad yet.</p>
+                            <div className="flex items-center justify-between">
+                              <p className="text-xs text-slate-400 italic">No members assigned to this squad yet.</p>
+                              {canManageThisTeam && (
+                                <button
+                                  onClick={() => handleOpenEditTeam(team)}
+                                  className="text-xs text-amber-600 hover:text-amber-700 font-semibold"
+                                >
+                                  + Assign Members
+                                </button>
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -1243,8 +1811,25 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                   })}
                 </div>
               ) : (
-                <div className="text-center py-10 text-slate-400 text-xs italic">
-                  No teams configured yet. {canManageActiveMinistry ? 'Click "Create Team" to organize sub-squads.' : ''}
+                <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-300 p-6 space-y-2">
+                  <Layers className="w-8 h-8 text-slate-400 mx-auto" />
+                  <h4 className="font-bold text-sm text-slate-700">
+                    {isOverallMinistryLeader ? 'No teams configured yet' : 'No Sub-Teams Assigned'}
+                  </h4>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    {isOverallMinistryLeader 
+                      ? 'Organize sub-squads (e.g. Vocalists, Praise Band, Tech) to delegate responsibilities.'
+                      : `You are not currently assigned to any sub-teams in ${activeMinistry.name}. Contact your ministry leader to join a squad.`}
+                  </p>
+                  {isOverallMinistryLeader && (
+                    <button
+                      onClick={handleOpenCreateTeam}
+                      className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs inline-flex items-center gap-1.5 transition mt-2"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Create First Team</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -1261,7 +1846,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                   <p className="text-xs text-slate-500">Recurring and upcoming rehearsals, Bible studies, and trainings.</p>
                 </div>
 
-                {canManageActiveMinistry && (
+                {canScheduleActivity && (
                   <button
                     onClick={handleOpenCreateActivity}
                     className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
@@ -1305,7 +1890,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                             {act.status}
                           </span>
 
-                          {canManageActiveMinistry && (
+                          {(isOverallMinistryLeader || (act.teamId && myLedTeams.some((t) => t.id === act.teamId))) && (
                             <button
                               type="button"
                               onClick={() => handleOpenEditActivity(act)}
@@ -1316,7 +1901,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                             </button>
                           )}
 
-                          {(isSuperOrPastor || canManageActiveMinistry) && (
+                          {(isSuperOrPastor || isOverallMinistryLeader || (act.teamId && myLedTeams.some((t) => t.id === act.teamId))) && (
                             <button
                               type="button"
                               onClick={async () => {
@@ -1475,10 +2060,10 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                   <p className="text-xs text-slate-500">Service duties assigned to {activeMinistry.name}.</p>
                 </div>
 
-                {onSaveRosterAssignment && canManageActiveMinistry && (
+                {onSaveRosterAssignment && canAssignRoster && (
                   <button
                     onClick={() => setIsRosterModalOpen(true)}
-                    className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+                    className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Assign Roster</span>
@@ -1488,34 +2073,39 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
               {currentMinRoster.length > 0 ? (
                 <div className="space-y-2.5">
-                  {currentMinRoster.map((r) => (
-                    <div key={r.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs gap-2">
-                      <div>
-                        <div className="font-bold text-slate-900">{r.roleName} — {r.memberName}</div>
-                        <div className="text-[11px] text-slate-500">{r.serviceDate} • {r.serviceName}</div>
+                  {currentMinRoster.map((r) => {
+                    const canDeleteThisRoster = isOverallMinistryLeader || 
+                      (isAnyTeamLeader && (rosterCandidateMembers.some((m) => m.memberId === r.memberId) || r.createdByUserId === currentUser?.id));
+
+                    return (
+                      <div key={r.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs gap-2">
+                        <div>
+                          <div className="font-bold text-slate-900">{r.roleName} — {r.memberName}</div>
+                          <div className="text-[11px] text-slate-500">{r.serviceDate} • {r.serviceName}</div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border ${r.confirmed ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-amber-50 text-amber-800 border-amber-300'}`}>
+                            {r.confirmed ? 'Confirmed' : 'Pending'}
+                          </span>
+                          {onDeleteRosterAssignment && canDeleteThisRoster && (
+                            <button
+                              type="button"
+                              title="Delete Roster Duty"
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                if (window.confirm(`Are you sure you want to remove ${r.memberName}'s duty as ${r.roleName}?`)) {
+                                  await onDeleteRosterAssignment(r.id);
+                                }
+                              }}
+                              className="p-1.5 rounded-lg bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 transition"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border ${r.confirmed ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-amber-50 text-amber-800 border-amber-300'}`}>
-                          {r.confirmed ? 'Confirmed' : 'Pending'}
-                        </span>
-                        {onDeleteRosterAssignment && canManageActiveMinistry && (
-                          <button
-                            type="button"
-                            title="Delete Roster Duty"
-                            onClick={async (e) => {
-                              e.stopPropagation();
-                              if (window.confirm(`Are you sure you want to remove ${r.memberName}'s duty as ${r.roleName}?`)) {
-                                await onDeleteRosterAssignment(r.id);
-                              }
-                            }}
-                            className="p-1.5 rounded-lg bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 transition"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="text-xs text-slate-400 italic text-center py-8">
@@ -1557,7 +2147,7 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                               churchId: activeChurchId,
                               ministryId: activeMinistry.id,
                               memberId: m.id,
-                              ministryRole: 'Volunteer',
+                              ministryRole: 'Team Member',
                               status: 'Active',
                               joinedAt: new Date().toISOString().split('T')[0],
                               createdAt: new Date().toISOString(),
@@ -2250,8 +2840,8 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
       {/* ========================================================================= */}
       {isTeamModalOpen && activeMinistry && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl border border-slate-800 overflow-hidden my-auto animate-in zoom-in-95 text-white">
-            <div className="bg-slate-950 text-white p-5 flex items-center justify-between border-b border-slate-800">
+          <div className="bg-slate-900 w-full max-w-xl max-h-[90vh] flex flex-col rounded-3xl shadow-2xl border border-slate-800 overflow-hidden my-auto animate-in zoom-in-95 text-white">
+            <div className="bg-slate-950 text-white p-4 sm:p-5 flex items-center justify-between border-b border-slate-800 shrink-0">
               <div className="flex items-center space-x-2">
                 <Layers className="w-5 h-5 text-amber-400" />
                 <h3 className="font-bold text-base">{editingTeam ? 'Edit Sub-Team' : `New Team in ${activeMinistry.name}`}</h3>
@@ -2264,55 +2854,323 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
               </button>
             </div>
 
-            <form onSubmit={handleSaveTeamSubmit} className="p-5 space-y-4 text-xs">
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-300">Team / Squad Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={teamFormName}
-                  onChange={(e) => setTeamFormName(e.target.value)}
-                  placeholder="e.g. Vocal Ensemble, Praise Band, Tech & Mics..."
-                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
-                />
+            <form onSubmit={handleSaveTeamSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0 text-xs">
+              <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-300">Team / Squad Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={teamFormName}
+                    onChange={(e) => setTeamFormName(e.target.value)}
+                    placeholder="e.g. Vocal Ensemble, Praise Band, Tech & Mics..."
+                    className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-300">Description</label>
+                  <textarea
+                    rows={2}
+                    value={teamFormDesc}
+                    onChange={(e) => setTeamFormDesc(e.target.value)}
+                    placeholder="Specific role and duties of this sub-team..."
+                    className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="font-semibold text-slate-300">Team Leader</label>
+                    {isCustomLeader ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCustomLeader(false);
+                          setTeamFormLeader('');
+                          setTeamFormLeaderId('');
+                        }}
+                        className="text-[11px] text-amber-400 hover:text-amber-300 font-medium underline"
+                      >
+                        Choose from Member Directory
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCustomLeader(true);
+                          setTeamFormLeaderId('');
+                        }}
+                        className="text-[11px] text-slate-400 hover:text-amber-400 font-medium"
+                      >
+                        + Custom / External Name
+                      </button>
+                    )}
+                  </div>
+
+                  {isCustomLeader ? (
+                    <input
+                      type="text"
+                      value={teamFormLeader}
+                      onChange={(e) => setTeamFormLeader(e.target.value)}
+                      placeholder="Enter custom leader name..."
+                      className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  ) : (
+                    <select
+                      value={teamFormLeaderId}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === '__custom__') {
+                          setIsCustomLeader(true);
+                          setTeamFormLeaderId('');
+                          setTeamFormLeader('');
+                        } else if (!val) {
+                          setTeamFormLeaderId('');
+                          setTeamFormLeader('');
+                        } else {
+                          setTeamFormLeaderId(val);
+                          const found = churchMembers.find((m) => m.id === val);
+                          if (found) {
+                            setTeamFormLeader(`${found.firstName} ${found.lastName}`.trim());
+                          }
+                          setSelectedTeamMemberIds((prev) => (prev.includes(val) ? prev : [...prev, val]));
+                        }
+                      }}
+                      className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-medium outline-none focus:ring-2 focus:ring-amber-500"
+                    >
+                      <option value="" className="bg-slate-900 text-white">-- Select Team Leader (Optional) --</option>
+                      {currentMinMembers.length > 0 && (
+                        <optgroup label="Ministry Members" className="bg-slate-900 text-amber-400 font-bold">
+                          {currentMinMembers.map((mm) => {
+                            const m = churchMembers.find((cm) => cm.id === mm.memberId);
+                            if (!m) return null;
+                            return (
+                              <option key={`min-leader-${m.id}`} value={m.id} className="bg-slate-900 text-white font-normal">
+                                {m.firstName} {m.lastName} {mm.ministryRole ? `(${mm.ministryRole})` : ''}
+                              </option>
+                            );
+                          })}
+                        </optgroup>
+                      )}
+                      <optgroup label="Other Church Directory Members" className="bg-slate-900 text-slate-400 font-bold">
+                        {churchMembers
+                          .filter((m) => !currentMinMembers.some((mm) => mm.memberId === m.id))
+                          .map((m) => (
+                            <option key={`other-leader-${m.id}`} value={m.id} className="bg-slate-900 text-white font-normal">
+                              {m.firstName} {m.lastName}
+                            </option>
+                          ))}
+                      </optgroup>
+                      <option value="__custom__" className="bg-slate-900 text-amber-300">
+                        ✏️ Custom / External Name...
+                      </option>
+                    </select>
+                  )}
+                </div>
+
+                {/* Assign Members Section */}
+                <div className="space-y-2 pt-3 border-t border-slate-800">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <label className="font-semibold text-slate-200">
+                        Assign Team Members ({selectedTeamMemberIds.length} selected)
+                      </label>
+                      <p className="text-[11px] text-slate-400">
+                        Check members to assign to this team in {activeMinistry.name}.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const minMemberIds = currentMinMembers.map((mm) => mm.memberId);
+                          setSelectedTeamMemberIds((prev) => {
+                            const merged = new Set([...prev, ...minMemberIds]);
+                            if (teamFormLeaderId && !isCustomLeader) merged.add(teamFormLeaderId);
+                            return Array.from(merged);
+                          });
+                        }}
+                        className="px-2 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 text-[11px] font-medium transition"
+                      >
+                        Select All Ministry ({currentMinMembers.length})
+                      </button>
+                      {selectedTeamMemberIds.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (teamFormLeaderId && !isCustomLeader) {
+                              setSelectedTeamMemberIds([teamFormLeaderId]);
+                            } else {
+                              setSelectedTeamMemberIds([]);
+                            }
+                          }}
+                          className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-750 text-slate-400 hover:text-slate-200 border border-slate-700 text-[11px] font-medium transition"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Filter and Search Bar */}
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+                      <input
+                        type="text"
+                        value={teamMemberSearch}
+                        onChange={(e) => setTeamMemberSearch(e.target.value)}
+                        placeholder="Filter by name, role, email, phone..."
+                        className="w-full pl-8 pr-7 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder:text-slate-500 text-xs outline-none focus:ring-1 focus:ring-amber-500"
+                      />
+                      {teamMemberSearch && (
+                        <button
+                          type="button"
+                          onClick={() => setTeamMemberSearch('')}
+                          className="absolute right-2.5 top-2 text-slate-400 hover:text-white"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1.5 text-[11px]">
+                      <button
+                        type="button"
+                        onClick={() => setTeamMemberFilter('all')}
+                        className={`px-2.5 py-1 rounded-lg font-medium transition ${
+                          teamMemberFilter === 'all'
+                            ? 'bg-amber-500 text-slate-950 font-bold'
+                            : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        All Directory ({churchMembers.length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTeamMemberFilter('ministry')}
+                        className={`px-2.5 py-1 rounded-lg font-medium transition ${
+                          teamMemberFilter === 'ministry'
+                            ? 'bg-amber-500 text-slate-950 font-bold'
+                            : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        Ministry Members ({currentMinMembers.length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTeamMemberFilter('selected')}
+                        className={`px-2.5 py-1 rounded-lg font-medium transition ${
+                          teamMemberFilter === 'selected'
+                            ? 'bg-amber-500 text-slate-950 font-bold'
+                            : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        Selected ({selectedTeamMemberIds.length})
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Checklist Items */}
+                  <div className="max-h-56 overflow-y-auto space-y-1.5 pr-1 rounded-xl border border-slate-800 bg-slate-950/40 p-2">
+                    {filteredTeamCandidates.length > 0 ? (
+                      filteredTeamCandidates.map(({ member, isMinMember, minRole, isSelected, isLeader }) => {
+                        const fullName = `${member.firstName || ''} ${member.lastName || ''}`.trim();
+                        return (
+                          <div
+                            key={`team-candidate-${member.id}`}
+                            onClick={() => handleToggleTeamMember(member.id)}
+                            className={`flex items-center justify-between p-2 rounded-xl border transition cursor-pointer select-none ${
+                              isSelected
+                                ? 'bg-amber-500/10 border-amber-500/40 text-white'
+                                : 'bg-slate-800/40 border-slate-800 text-slate-300 hover:bg-slate-800/70 hover:border-slate-700'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => {}}
+                                className="w-4 h-4 rounded accent-amber-500 cursor-pointer pointer-events-none"
+                              />
+                              <UserAvatar
+                                name={fullName}
+                                avatarUrl={member.avatarUrl}
+                                size="sm"
+                                shape="circle"
+                              />
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="font-semibold text-xs text-white truncate">{fullName}</span>
+                                  {isLeader && (
+                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-bold">
+                                      <Crown className="w-2.5 h-2.5" />
+                                      Leader
+                                    </span>
+                                  )}
+                                  {isMinMember && !isLeader && (
+                                    <span className="px-1.5 py-0.2 rounded-full bg-blue-500/15 text-blue-300 border border-blue-500/20 text-[10px]">
+                                      {minRole || 'Ministry Member'}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-[10px] text-slate-400 truncate">
+                                  {member.email || member.phone || 'Church Member'}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-1 shrink-0 ml-2">
+                              {isSelected && !isLeader && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setTeamFormLeaderId(member.id);
+                                    setTeamFormLeader(fullName);
+                                    setIsCustomLeader(false);
+                                  }}
+                                  className="px-2 py-0.5 rounded-md bg-slate-800 hover:bg-amber-500/20 hover:text-amber-300 text-slate-400 text-[10px] font-medium border border-slate-700 transition"
+                                  title="Make Leader"
+                                >
+                                  Set as Leader
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="text-center py-6 text-slate-500 text-xs">
+                        No members found matching your search.
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-300">Description</label>
-                <textarea
-                  rows={2}
-                  value={teamFormDesc}
-                  onChange={(e) => setTeamFormDesc(e.target.value)}
-                  placeholder="Specific role and duties of this sub-team..."
-                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-300">Team Leader</label>
-                <input
-                  type="text"
-                  value={teamFormLeader}
-                  onChange={(e) => setTeamFormLeader(e.target.value)}
-                  placeholder="Leader name"
-                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 font-medium outline-none focus:ring-2 focus:ring-amber-500"
-                />
-              </div>
-
-              <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsTeamModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-semibold transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shadow-md transition"
-                >
-                  Save Team
-                </button>
+              {/* Modal Footer */}
+              <div className="p-4 border-t border-slate-800 flex items-center justify-between gap-2 shrink-0 bg-slate-950/60">
+                <div className="text-[11px] text-slate-400">
+                  <span className="font-semibold text-amber-400">{selectedTeamMemberIds.length}</span> member(s) assigned
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsTeamModalOpen(false)}
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-semibold transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shadow-md transition"
+                  >
+                    {editingTeam ? 'Save Team Changes' : 'Create Team'}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
@@ -2358,19 +3216,35 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
 
               {currentMinTeams.length > 0 && (
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-300">Assigned Sub-Team (Optional)</label>
+                  <div className="flex items-center justify-between">
+                    <label className="font-semibold text-slate-300">
+                      Assigned Sub-Team {isOverallMinistryLeader ? '(Optional)' : ''}
+                    </label>
+                    {!isOverallMinistryLeader && isAnyTeamLeader && (
+                      <span className="text-[10px] text-amber-400 font-semibold">
+                        Your Squad Default
+                      </span>
+                    )}
+                  </div>
                   <select
                     value={activityFormTeamId}
                     onChange={(e) => setActivityFormTeamId(e.target.value)}
                     className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-semibold outline-none focus:ring-2 focus:ring-amber-500"
                   >
-                    <option value="" className="bg-slate-900 text-white">All Teams / Whole Ministry</option>
-                    {currentMinTeams.map((t) => (
+                    {isOverallMinistryLeader && (
+                      <option value="" className="bg-slate-900 text-white">All Teams / Whole Ministry</option>
+                    )}
+                    {(isOverallMinistryLeader ? currentMinTeams : myLedTeams).map((t) => (
                       <option key={t.id} value={t.id} className="bg-slate-900 text-white">
                         {t.name}
                       </option>
                     ))}
                   </select>
+                  {!isOverallMinistryLeader && isAnyTeamLeader && (
+                    <p className="text-[10px] text-amber-400/90 mt-0.5">
+                      Scheduling by default for your team ({myLedTeams[0]?.name}).
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -2606,23 +3480,40 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-slate-300">Assign Member *</label>
+                <div className="flex items-center justify-between">
+                  <label className="font-semibold text-slate-300">Assign Member *</label>
+                  {!isOverallMinistryLeader && isAnyTeamLeader && (
+                    <span className="text-[11px] font-medium text-amber-400">
+                      Squad: {myLedTeams.map((t) => t.name).join(', ')}
+                    </span>
+                  )}
+                </div>
                 <select
                   required
                   value={rosterMemberId}
                   onChange={(e) => setRosterMemberId(e.target.value)}
                   className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-medium outline-none focus:ring-2 focus:ring-amber-500"
                 >
-                  <option value="" className="bg-slate-900 text-white">Select volunteer from this ministry...</option>
-                  {currentMinMembers.map((mm) => {
+                  <option value="" className="bg-slate-900 text-white">
+                    {isOverallMinistryLeader 
+                      ? 'Select volunteer from this ministry...' 
+                      : `Select member from your squad (${rosterCandidateMembers.length} available)...`}
+                  </option>
+                  {rosterCandidateMembers.map((mm) => {
                     const m = churchMembers.find((cm) => cm.id === mm.memberId);
+                    const resRole = getResolvedMinistryRole(mm, m ? `${m.firstName} ${m.lastName}` : '');
                     return (
                       <option key={mm.id} value={mm.memberId} className="bg-slate-900 text-white">
-                        {m ? `${m.firstName} ${m.lastName}` : 'Member'} — ({mm.ministryRole})
+                        {m ? `${m.firstName} ${m.lastName}` : 'Member'} — ({resRole.roleTitle})
                       </option>
                     );
                   })}
                 </select>
+                {!isOverallMinistryLeader && isAnyTeamLeader && (
+                  <p className="text-[10px] text-amber-400/80">
+                    As team leader, you can only create roster for members of your assigned squad.
+                  </p>
+                )}
               </div>
 
               <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
@@ -2638,6 +3529,85 @@ export const MinistriesModule: React.FC<MinistriesModuleProps> = ({
                   className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shadow-md transition"
                 >
                   Save Duty Assignment
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL: EDIT MEMBER ROLE */}
+      {/* ========================================================================= */}
+      {editingMemberRole && activeMinistry && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl border border-slate-800 overflow-hidden my-auto animate-in zoom-in-95 text-white">
+            <div className="bg-slate-950 text-white p-5 flex items-center justify-between border-b border-slate-800">
+              <div className="flex items-center space-x-2">
+                <Edit3 className="w-5 h-5 text-amber-400" />
+                <h3 className="font-bold text-base">Edit Member Role</h3>
+              </div>
+              <button
+                onClick={() => setEditingMemberRole(null)}
+                className="text-slate-400 hover:text-white p-1 rounded-full bg-slate-800 transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateMemberRole} className="p-5 space-y-4 text-xs">
+              <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-400 text-[11px] block">Member</span>
+                  <span className="font-bold text-white text-sm">{editingMemberRole.memberName}</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-full bg-slate-700 text-slate-300 text-[10px]">
+                  {editingMemberRole.currentRole}
+                </span>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-slate-300">Ministry Role Title *</label>
+                <input
+                  type="text"
+                  required
+                  value={newMemberRoleInput}
+                  onChange={(e) => setNewMemberRoleInput(e.target.value)}
+                  placeholder="e.g. Ministry Leader, Team Leader, Intercessor, Coordinator..."
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-medium outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              {/* Quick suggestions */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] text-slate-400">Quick role suggestions:</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {['Ministry Leader', 'Team Leader', 'Team Member', 'Coordinator', 'Intercessor', 'Vocalist'].map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      type="button"
+                      onClick={() => setNewMemberRoleInput(suggestion)}
+                      className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white border border-slate-700 text-[11px] transition"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingMemberRole(null)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white font-semibold transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shadow-md transition"
+                >
+                  Save Role
                 </button>
               </div>
             </form>

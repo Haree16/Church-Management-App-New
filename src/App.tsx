@@ -120,7 +120,8 @@ import {
   isNotificationForUser, 
   isNotificationReadByUser, 
   findLinkedMemberForUser, 
-  findLinkedUserForMember 
+  findLinkedUserForMember,
+  getUnreadNotificationsCount
 } from './utils/notificationUtils';
 import { BottomNav, AppTab } from './components/BottomNav';
 import { MemberList } from './components/MemberList';
@@ -150,10 +151,12 @@ import { ReportsModule, ReportCategory } from './components/reports/ReportsModul
 import { VisitorsPage } from './pages/people/VisitorsPage';
 import { PastoralCareModule } from './components/care/PastoralCareModule';
 import { SmallGroupsModule } from './components/groups/SmallGroupsModule';
+import { PrayerMinistryModule } from './components/prayer/PrayerMinistryModule';
 import { MyMinistryView } from './components/member/MyMinistryView';
 import { MyAssignmentsView } from './components/member/MyAssignmentsView';
 import { MyAttendanceView } from './components/member/MyAttendanceView';
 import { MyProfileModal } from './components/member/MyProfileModal';
+import { AiBibleAssistantView } from './components/bible/AiBibleAssistantView';
 import { initMobileNotifications, sendMobilePanelNotification } from './services/mobileNotificationService';
 import { authSecurityService } from './services/authSecurityService';
 import { auditService } from './services/auditService';
@@ -204,6 +207,7 @@ export default function App() {
   const [rawMinistryAnnouncements, setRawMinistryAnnouncements] = useState<MinistryAnnouncement[]>(() => getStoredMinistryAnnouncements());
   const [selectedMinistryNavId, setSelectedMinistryNavId] = useState<string | null>(null);
   const [selectedReportCategoryNav, setSelectedReportCategoryNav] = useState<ReportCategory | undefined>(undefined);
+  const [bibleAssistantPrompt, setBibleAssistantPrompt] = useState<string>('');
 
   const [rawSundaySchoolClasses, setRawSundaySchoolClasses] = useState<SundaySchoolClass[]>(() => getStoredSundaySchoolClasses());
   const [rawSundaySchoolStudents, setRawSundaySchoolStudents] = useState<SundaySchoolStudent[]>(() => getStoredSundaySchoolStudents());
@@ -2076,7 +2080,7 @@ export default function App() {
   const roleConfig = getRoleConfig(userRole);
 
   const urgentPrayersCount = prayers.filter(p => p.status === 'Urgent').length;
-  const unreadNotifCount = notifications.filter(n => !n.read).length;
+  const unreadNotifCount = getUnreadNotificationsCount(notifications, currentUser, members);
   const activeVolunteersCount = members.filter(m => m.ministryTeams.length > 0).length;
 
   return (
@@ -2165,6 +2169,9 @@ export default function App() {
                 }
                 if (deepLinkId && tab === 'reports') {
                   setSelectedReportCategoryNav(deepLinkId as ReportCategory);
+                }
+                if (deepLinkId && tab === 'bible-assistant') {
+                  setBibleAssistantPrompt(deepLinkId);
                 }
                 handleNavigateTab(tab as AppTab);
               }}
@@ -2294,6 +2301,7 @@ export default function App() {
               ministries={ministries}
               ministryMembers={ministryMembers}
               ministryTeams={ministryTeams}
+              ministryTeamMembers={ministryTeamMembers}
               ministryActivities={ministryActivities}
               ministryAnnouncements={ministryAnnouncements}
               events={events}
@@ -2351,26 +2359,11 @@ export default function App() {
           )}
 
           {activeTab === 'prayers' && isTabAllowed(userRole, 'prayers', activeModuleToggles) && (
-            <PrayerWall
-              prayers={prayers}
-              members={members}
+            <PrayerMinistryModule
+              currentChurch={currentChurch}
               currentUser={currentUser}
-              currentUserId={currentUser?.id}
-              canManagePrayers={roleConfig.canManagePrayers}
-              onPrayForRequest={handlePrayForRequest}
-              onMarkAnswered={handleMarkAnswered}
-              onAddPrayerUpdate={handleAddPrayerUpdate}
-              onDeletePrayer={roleConfig.canManagePrayers ? handleDeletePrayer : undefined}
-              onOpenAddPrayerModal={() => {
-                setPrayerToEdit(null);
-                setInitialPrayerMember(null);
-                setIsAddPrayerOpen(true);
-              }}
-              onEditPrayer={(prayer) => {
-                setPrayerToEdit(prayer);
-                setInitialPrayerMember(null);
-                setIsAddPrayerOpen(true);
-              }}
+              members={members}
+              onNavigateTab={(tab) => handleNavigateTab(tab as any)}
             />
           )}
 
@@ -2397,6 +2390,7 @@ export default function App() {
               currentChurch={currentChurch}
               currentUser={currentUser}
               allUsers={allUsers}
+              members={members}
               onMarkRead={handleMarkNotifRead}
               onMarkAllRead={handleMarkAllNotifsRead}
               onDeleteNotification={handleDeleteNotification}
@@ -2516,6 +2510,15 @@ export default function App() {
               settings={activeChurchSettings}
               onSaveSettings={handleSaveChurchSettings}
               onNavigateTab={(tab) => handleNavigateTab(tab as AppTab)}
+            />
+          )}
+
+          {activeTab === 'bible-assistant' && isTabAllowed(userRole, 'bible-assistant', activeModuleToggles) && (
+            <AiBibleAssistantView
+              currentUser={currentUser}
+              churchId={currentChurch.id}
+              initialPrompt={bibleAssistantPrompt}
+              onBack={() => handleNavigateTab('dashboard')}
             />
           )}
         </main>

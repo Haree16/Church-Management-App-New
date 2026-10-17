@@ -31,7 +31,8 @@ export type AppTab =
   | 'sundayschool'
   | 'whatsapp'
   | 'saas'
-  | 'settings';
+  | 'settings'
+  | 'bible-assistant';
 
 interface BottomNavProps {
   activeTab: AppTab;
@@ -81,7 +82,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     { id: 'directory' as AppTab, label: 'Members', icon: Users, desc: 'Church member & family directory' },
     { id: 'ministries' as AppTab, label: 'Ministries', icon: Landmark, desc: 'Church ministries, teams & activities' },
     { id: 'groups' as AppTab, label: 'Small Groups', icon: Users, desc: 'Small groups, cell groups, meetings & attendance' },
-    { id: 'prayers' as AppTab, label: 'Prayers', icon: Heart, desc: 'Intercessory prayer requests & praises', badge: urgentPrayerCount > 0 ? urgentPrayerCount : undefined },
+    { id: 'prayers' as AppTab, label: 'Prayer Ministry', icon: Heart, desc: 'Prayer groups, requests wall, meetings & guides', badge: urgentPrayerCount > 0 ? urgentPrayerCount : undefined },
     { id: 'pastoral' as AppTab, label: 'Pastoral Care', icon: HeartHandshake, desc: 'Confidential care cases, hospital visits & counseling' },
     { id: 'calendar' as AppTab, label: 'Events', icon: Calendar, desc: 'Service calendar & event schedules' },
     { id: 'sundayschool' as AppTab, label: 'Sunday School', icon: GraduationCap, desc: 'Children classes, memory verses & badges' },
@@ -93,6 +94,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     { id: 'notifications' as AppTab, label: 'Alerts', icon: Bell, desc: 'Live church broadcast notifications', badge: unreadNotifCount > 0 ? unreadNotifCount : undefined },
     { id: 'saas' as AppTab, label: 'SaaS Console', icon: Building2, desc: 'Multi-tenant church switcher & user roles' },
     { id: 'settings' as AppTab, label: 'Settings', icon: Settings, desc: 'Church profile, services, ministries & preferences' },
+    { id: 'bible-assistant' as AppTab, label: 'AI Bible Assistant', icon: BookOpen, desc: 'AI Scripture insights, study prep & theological questions' },
   ];
 
   // Tailored tab lists for Normal Member vs Ministry Member (Section 11)
@@ -103,6 +105,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         // Bible (Sunday School), Bulletins, Alerts, My Ministry, My Assignments, My Attendance, My Profile, My Prayer Requests, Small Groups, Settings
         const tabOrder: AppTab[] = [
           'dashboard',
+          'bible-assistant',
           'prayers',
           'groups',
           'ministries',
@@ -123,6 +126,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         // Bulletins, Alerts, My Profile, My Prayer Requests, My Attendance, Small Groups
         const tabOrder: AppTab[] = [
           'dashboard',
+          'bible-assistant',
           'prayers',
           'groups',
           'ministries',

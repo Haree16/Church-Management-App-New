@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { 
   Bot, Send, RefreshCw, Trash2, X, Sparkles, ShieldAlert, 
   Users, Calendar, HeartHandshake, Landmark, Megaphone, 
-  MessageSquare, CheckCircle2, AlertCircle, ChevronDown, Check, ExternalLink
+  MessageSquare, CheckCircle2, AlertCircle, ChevronDown, Check, ExternalLink, ArrowLeft
 } from 'lucide-react';
 import { 
   SaaSUser, Member, ChurchMinistry, MinistryMember, 
@@ -56,6 +56,7 @@ export const AiMinistryAssistantModal: React.FC<AiMinistryAssistantModalProps> =
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [lastPrompt, setLastPrompt] = useState<string | null>(null);
   const [publishedAnnouncements, setPublishedAnnouncements] = useState<Record<string, boolean>>({});
+  const [showSuggestedQueries, setShowSuggestedQueries] = useState(false);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -82,6 +83,7 @@ export const AiMinistryAssistantModal: React.FC<AiMinistryAssistantModalProps> =
         "Who has not confirmed their assignment?",
         "Show our ministry attendance.",
         "Summarize this month's ministry activity.",
+        "What scheduled activities are coming up in next 30 days?",
         "Create a ministry announcement."
       ];
     }
@@ -95,19 +97,19 @@ export const AiMinistryAssistantModal: React.FC<AiMinistryAssistantModalProps> =
     ];
   }, [isLeader]);
 
+  const createWelcomeMessage = (): MinistryChatMessage => ({
+    id: `welcome-${selectedMinistryId}-${Date.now()}`,
+    sender: 'assistant',
+    text: `Grace and peace, ${currentUser?.name ? currentUser.name.split(' ')[0] : 'Leader'}! I am your **AI Ministry Assistant** for **${activeMinistryName}**.
+
+How can I help you with your team duties, meeting schedules, or announcements today?`,
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  });
+
   // Initial welcome message per ministry context
   useEffect(() => {
     if (isOpen && selectedMinistryId && isHasMinistry) {
-      setMessages([
-        {
-          id: `welcome-${selectedMinistryId}`,
-          sender: 'assistant',
-          text: `Grace and peace, ${currentUser?.name ? currentUser.name.split(' ')[0] : 'Leader'}! I am your **AI Ministry Assistant** for **${activeMinistryName}**.
-
-How can I help you with your team duties, meeting schedules, or announcements today?`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-      ]);
+      setMessages([createWelcomeMessage()]);
     }
   }, [isOpen, selectedMinistryId, activeMinistryName]);
 
@@ -211,6 +213,13 @@ How can I help you with your team duties, meeting schedules, or announcements to
     setErrorMsg(null);
   };
 
+  const handleBack = () => {
+    setIsLoading(false);
+    setErrorMsg(null);
+    setShowSuggestedQueries(false);
+    setMessages([createWelcomeMessage()]);
+  };
+
   const formatMarkdownText = (text: string) => {
     const lines = text.split('\n');
     return lines.map((line, idx) => {
@@ -270,6 +279,18 @@ How can I help you with your team duties, meeting schedules, or announcements to
           className="dark-hero-panel flex items-center justify-between px-5 py-4 bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-950 text-white border-b border-indigo-800/40 shrink-0"
         >
           <div className="flex items-center space-x-3 min-w-0">
+            {isHasMinistry && messages.length > 1 && (
+              <button
+                type="button"
+                onClick={handleBack}
+                title="Back to suggested questions"
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-white transition-all text-xs font-semibold border border-indigo-400/40 shadow-xs cursor-pointer active:scale-95 shrink-0"
+                style={{ color: '#ffffff' }}
+              >
+                <ArrowLeft className="w-4 h-4 text-indigo-300" />
+                <span>Back</span>
+              </button>
+            )}
             <div className="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-400/30 flex items-center justify-center text-indigo-300 shadow-inner shrink-0">
               <Sparkles className="w-5 h-5 animate-pulse text-[#818cf8]" style={{ color: '#818cf8' }} />
             </div>
@@ -496,18 +517,33 @@ How can I help you with your team duties, meeting schedules, or announcements to
             </div>
 
             {/* Suggested Question Pills */}
-            {messages.length <= 2 && !isLoading && (
-              <div className="px-4 py-2 bg-slate-900/90 border-t border-slate-800">
-                <p className="text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-wider flex items-center space-x-1">
-                  <Sparkles className="w-3 h-3 text-indigo-400" />
-                  <span>Suggested Questions ({isLeader ? 'Leader View' : 'Member View'})</span>
-                </p>
+            {(messages.length <= 2 || showSuggestedQueries) && !isLoading && (
+              <div className="px-4 py-2.5 bg-slate-900/90 border-t border-slate-800 shrink-0">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider flex items-center space-x-1">
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Suggested Questions ({isLeader ? 'Leader View' : 'Member View'})</span>
+                  </p>
+                  {messages.length > 2 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowSuggestedQueries(false)}
+                      className="text-[11px] text-slate-400 hover:text-slate-200 transition-colors cursor-pointer px-1.5 py-0.5 rounded hover:bg-slate-800"
+                    >
+                      Close
+                    </button>
+                  )}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {suggestedQuestions.map((q, idx) => (
                     <button
                       key={idx}
-                      onClick={() => handleSendMessage(q)}
-                      className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full text-xs text-slate-100 hover:text-white transition-all shadow-2xs hover:shadow-xs"
+                      type="button"
+                      onClick={() => {
+                        handleSendMessage(q);
+                        setShowSuggestedQueries(false);
+                      }}
+                      className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full text-xs text-slate-100 hover:text-white transition-all shadow-2xs hover:shadow-xs cursor-pointer"
                       style={{ color: '#f1f5f9', backgroundColor: '#1e293b' }}
                     >
                       <HeartHandshake className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
@@ -515,6 +551,29 @@ How can I help you with your team duties, meeting schedules, or announcements to
                     </button>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Quick Action Bar when conversation has started and suggestions are hidden */}
+            {messages.length > 2 && !showSuggestedQueries && !isLoading && (
+              <div className="px-4 py-1.5 bg-slate-900/70 border-t border-slate-800 flex items-center justify-between shrink-0">
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="text-xs text-indigo-300 hover:text-white flex items-center space-x-1.5 transition-colors cursor-pointer py-1 px-2 rounded-lg hover:bg-indigo-900/30 font-medium"
+                  style={{ color: '#c7d2fe' }}
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back to Suggested Questions</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowSuggestedQueries(true)}
+                  className="text-xs text-slate-400 hover:text-indigo-300 flex items-center space-x-1 transition-colors cursor-pointer py-1 px-2 rounded-lg hover:bg-slate-800"
+                >
+                  <Sparkles className="w-3 h-3 text-indigo-400" />
+                  <span>View Questions</span>
+                </button>
               </div>
             )}
 

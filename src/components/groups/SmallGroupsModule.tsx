@@ -12,7 +12,8 @@ import {
 import { groupService, CreateGroupPayload } from '@/services/groupService';
 import { pastoralCareService } from '@/services/pastoralCareService';
 import { GroupFormModal, isMinistryMatch } from './GroupFormModal';
-import { QuickGroupAttendanceModal } from './QuickGroupAttendanceModal';
+import { QuickGroupAttendanceModal, resolveGroupMemberName } from './QuickGroupAttendanceModal';
+import { GroupAttendanceWhatsAppModal } from './GroupAttendanceWhatsAppModal';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -104,6 +105,12 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
 
   const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
   const [editingAttendance, setEditingAttendance] = useState<GroupAttendanceRecord | null>(null);
+
+  // Group Attendance WhatsApp Hub States
+  const [isAttendanceWhatsAppModalOpen, setIsAttendanceWhatsAppModalOpen] = useState(false);
+  const [whatsAppAttendanceRecord, setWhatsAppAttendanceRecord] = useState<GroupAttendanceRecord | null>(null);
+  const [whatsAppPresentMembers, setWhatsAppPresentMembers] = useState<{ id: string; name: string; phone?: string }[]>([]);
+  const [whatsAppAbsentMembers, setWhatsAppAbsentMembers] = useState<{ id: string; name: string; phone?: string }[]>([]);
 
   // Add Member Modal State
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
@@ -368,6 +375,17 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
     } catch (err) {
       toast.error('Failed to delete attendance record.');
     }
+  };
+
+  const handleOpenAttendanceWhatsApp = (
+    att: GroupAttendanceRecord,
+    presentList: { id: string; name: string; phone?: string }[],
+    absentList: { id: string; name: string; phone?: string }[]
+  ) => {
+    setWhatsAppAttendanceRecord(att);
+    setWhatsAppPresentMembers(presentList);
+    setWhatsAppAbsentMembers(absentList);
+    setIsAttendanceWhatsAppModalOpen(true);
   };
 
   const handleCreatePastoralPathway = async (e: React.FormEvent) => {
@@ -963,25 +981,7 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
                       ) : (
                         <div className="space-y-2">
                           {groupDetails.members.map((gm) => {
-                            let name = (gm as any).name || (gm as any).memberName;
-                            if (!name && gm.church_member) {
-                              const fn = gm.church_member.profile?.first_name || (gm.church_member as any).firstName || (gm.church_member as any).first_name;
-                              const ln = gm.church_member.profile?.last_name || (gm.church_member as any).lastName || (gm.church_member as any).last_name;
-                              name = `${fn || ''} ${ln || ''}`.trim() || gm.church_member.profile?.display_name || (gm.church_member as any).name;
-                            }
-                            if (!name && gm.profile) {
-                              name = `${gm.profile.first_name || ''} ${gm.profile.last_name || ''}`.trim() || gm.profile.display_name;
-                            }
-                            if (!name) {
-                              const targetId = gm.member_id || (gm as any).memberId || gm.user_id;
-                              if (targetId) {
-                                const found = memberList.find((m: any) => m.id === targetId || m.user_id === targetId);
-                                if (found) {
-                                  name = found.name || (found.profile ? `${found.profile.first_name || ''} ${found.profile.last_name || ''}`.trim() : `${found.firstName || found.first_name || ''} ${found.lastName || found.last_name || ''}`.trim());
-                                }
-                              }
-                            }
-                            if (!name) name = 'Group Member';
+                            const name = resolveGroupMemberName(gm, memberList);
 
                             const targetId = gm.member_id || (gm as any).memberId || gm.user_id;
                             const matchedMember = memberList.find((m: any) => m.id === targetId || m.user_id === targetId || m.email === gm.profile?.email);
@@ -1048,34 +1048,22 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
                             const rosterMembers = groupDetails.members || [];
                             const presentMembers: string[] = [];
                             const absentMembers: string[] = [];
+                            const presentMemberObjs: { id: string; name: string; phone?: string }[] = [];
+                            const absentMemberObjs: { id: string; name: string; phone?: string }[] = [];
 
                             rosterMembers.forEach((gm) => {
-                              let name = (gm as any).name || (gm as any).memberName;
-                              if (!name && gm.church_member) {
-                                const fn = gm.church_member.profile?.first_name || (gm.church_member as any).firstName || (gm.church_member as any).first_name;
-                                const ln = gm.church_member.profile?.last_name || (gm.church_member as any).lastName || (gm.church_member as any).last_name;
-                                name = `${fn || ''} ${ln || ''}`.trim() || gm.church_member.profile?.display_name || (gm.church_member as any).name;
-                              }
-                              if (!name && gm.profile) {
-                                name = `${gm.profile.first_name || ''} ${gm.profile.last_name || ''}`.trim() || gm.profile.display_name;
-                              }
-                              if (!name) {
-                                const targetId = gm.member_id || (gm as any).memberId || gm.user_id;
-                                if (targetId) {
-                                  const found: any = memberList.find((m: any) => m.id === targetId || m.user_id === targetId);
-                                  if (found) {
-                                    name = found.name || (found.profile ? `${found.profile.first_name || ''} ${found.profile.last_name || ''}`.trim() : `${found.firstName || found.first_name || ''} ${found.lastName || found.last_name || ''}`.trim());
-                                  }
-                                }
-                              }
-                              if (!name) name = 'Group Member';
-
+                              const name = resolveGroupMemberName(gm, memberList);
                               const mId = gm.member_id || gm.user_id || gm.id;
                               const altId = (gm as any).memberId;
+                              const foundMem: any = memberList.find((m: any) => m.id === mId || m.user_id === mId || (altId && m.id === altId));
+                              const phone = (gm as any).phone || (gm as any).profile?.phone || foundMem?.phone || foundMem?.profile?.phone || foundMem?.contact || '';
+
                               if (attendeeIdSet.has(mId) || (altId && attendeeIdSet.has(altId)) || attendeeIdSet.has(gm.id)) {
                                 presentMembers.push(name);
+                                presentMemberObjs.push({ id: mId, name, phone });
                               } else {
                                 absentMembers.push(name);
+                                absentMemberObjs.push({ id: mId, name, phone });
                               }
                             });
 
@@ -1085,8 +1073,10 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
                               if (!inRoster) {
                                 const found: any = memberList.find((m: any) => m.id === id || m.user_id === id);
                                 const guestName = found ? (found.name || `${found.firstName || ''} ${found.lastName || ''}`.trim()) : `Member (${id.slice(0, 6)})`;
+                                const guestPhone = found?.phone || found?.profile?.phone || '';
                                 if (guestName && !presentMembers.includes(guestName)) {
                                   presentMembers.push(guestName);
+                                  presentMemberObjs.push({ id, name: guestName, phone: guestPhone });
                                 }
                               }
                             });
@@ -1107,6 +1097,15 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
                                         ✕ {absentMembers.length} Absent
                                       </Badge>
                                     )}
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleOpenAttendanceWhatsApp(att, presentMemberObjs, absentMemberObjs)}
+                                      className="h-6 px-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] rounded-md shadow-sm flex items-center gap-1"
+                                      title="Share to WhatsApp, Follow Up Missing Members, Report to Pastor"
+                                    >
+                                      <MessageSquare className="w-3 h-3" />
+                                      <span>WhatsApp</span>
+                                    </Button>
                                     {canManageActiveGroup && (
                                       <div className="flex items-center gap-1 border-l border-slate-800 pl-1.5 ml-1">
                                         <Button
@@ -1238,10 +1237,43 @@ export const SmallGroupsModule: React.FC<SmallGroupsModuleProps> = ({
           onClose={() => setIsAttendanceModalOpen(false)}
           group={activeGroup}
           groupMembers={groupDetails?.members || []}
+          allMembers={memberList}
           editingRecord={editingAttendance}
           onAttendanceSaved={() => {
             if (selectedGroupId) loadGroupDetails(selectedGroupId);
           }}
+          onOpenWhatsAppReport={handleOpenAttendanceWhatsApp}
+        />
+      )}
+
+      {/* WhatsApp Attendance & Care Hub Modal */}
+      {activeGroup && whatsAppAttendanceRecord && (
+        <GroupAttendanceWhatsAppModal
+          isOpen={isAttendanceWhatsAppModalOpen}
+          onClose={() => {
+            setIsAttendanceWhatsAppModalOpen(false);
+            setWhatsAppAttendanceRecord(null);
+          }}
+          type="cell_group"
+          churchName={activeChurch?.name || 'Grace Community Church'}
+          pastorName={activeChurch?.pastorName || 'Senior Pastor'}
+          pastorPhone={activeChurch?.whatsappNumber || activeChurch?.contactPhone || ''}
+          groupName={activeGroup.name}
+          leaderName={activeGroup.leader?.display_name || activeGroup.leader_name || 'Cell Leader'}
+          schedule={(activeGroup as any).schedule || `${activeGroup.meeting_day || 'Weekly'} • ${activeGroup.meeting_time || '7:00 PM'}`}
+          location={activeGroup.location || 'Host Home / Church'}
+          sessionDate={whatsAppAttendanceRecord.session_date}
+          topic={whatsAppAttendanceRecord.topic || undefined}
+          notes={whatsAppAttendanceRecord.notes || undefined}
+          presentMembers={whatsAppPresentMembers}
+          absentMembers={whatsAppAbsentMembers}
+          availableGroups={groups.map((g) => ({
+            id: g.id,
+            name: g.name,
+            category: g.category,
+            inviteLink: (g as any).whatsapp_link || (g as any).invite_link || (g as any).inviteLink,
+            memberCount: g.member_count || (g.members?.length || 0),
+          }))}
         />
       )}
 

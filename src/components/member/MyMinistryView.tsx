@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { 
   ChurchTenant, SaaSUser, Member, ChurchMinistry, MinistryMember, 
-  MinistryTeam, MinistryActivity, MinistryAnnouncement, RosterAssignment, ChurchEvent 
+  MinistryTeam, MinistryTeamMember, MinistryActivity, MinistryAnnouncement, RosterAssignment, ChurchEvent 
 } from '../../types';
 import { 
   getUserAssignedMinistries, isUserLeaderOfMinistry 
@@ -11,7 +11,7 @@ import {
   Landmark, Users, Calendar, Clock, MapPin, Phone, Mail, 
   Megaphone, Plus, Trash2, Edit2, Shield, HeartHandshake, 
   CheckCircle2, ChevronRight, AlertCircle, Sparkles, UserCheck, 
-  Lock, Bell, FileText, Check
+  Lock, Bell, FileText, Check, Crown
 } from 'lucide-react';
 
 interface MyMinistryViewProps {
@@ -21,6 +21,7 @@ interface MyMinistryViewProps {
   ministries: ChurchMinistry[];
   ministryMembers: MinistryMember[];
   ministryTeams: MinistryTeam[];
+  ministryTeamMembers?: MinistryTeamMember[];
   ministryActivities: MinistryActivity[];
   ministryAnnouncements: MinistryAnnouncement[];
   events: ChurchEvent[];
@@ -41,6 +42,7 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
   ministries = [],
   ministryMembers = [],
   ministryTeams = [],
+  ministryTeamMembers = [],
   ministryActivities = [],
   ministryAnnouncements = [],
   events = [],
@@ -63,6 +65,9 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
     return userMinistries[0]?.ministry.id || '';
   });
 
+  // Filter state for overall ministry leader to filter members by squad (default 'ALL')
+  const [selectedTeamFilter, setSelectedTeamFilter] = useState<string>('ALL');
+
   // Ensure valid selection if userMinistries changes
   const activeUserMin = useMemo(() => {
     return (
@@ -73,8 +78,276 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
   }, [userMinistries, selectedMinistryId]);
 
   const activeMinistry = activeUserMin?.ministry;
-  const isLeader = activeUserMin?.isLeader || false;
-  const myRoleTitle = activeUserMin?.roleTitle || 'Team Member';
+
+  const linkedMember = useMemo(() => {
+    return findLinkedMemberForUser(currentUser, members);
+  }, [currentUser, members]);
+
+  // Sub-teams belonging to the active ministry
+  const currentMinTeams = useMemo(() => {
+    if (!activeMinistry) return [];
+    return ministryTeams.filter((t) => t.ministryId === activeMinistry.id && t.status !== 'Inactive');
+  }, [ministryTeams, activeMinistry]);
+
+  // Check if current user is Overall Ministry Leader or Church Admin
+  const isOverallMinistryLeader = useMemo(() => {
+    if (!currentUser || !activeMinistry) return false;
+    const userRole = currentUser.role;
+    if (['SuperAdmin', 'PastorAdmin', 'AssistantPastor'].includes(userRole)) return true;
+
+    const userName = (currentUser.name || '').trim().toLowerCase();
+    const userEmail = (currentUser.email || '').trim().toLowerCase();
+    const userPhone = (currentUser.phone || '').replace(/\D/g, '').slice(-10);
+
+    // 1. Leader / Assistant Leader linked IDs on ChurchMinistry
+    if (linkedMember) {
+      if (activeMinistry.leaderMemberId && linkedMember.id === activeMinistry.leaderMemberId) return true;
+      if (activeMinistry.assistantLeaderMemberId && linkedMember.id === activeMinistry.assistantLeaderMemberId) return true;
+    }
+
+    // 2. Direct Leader name / contact info match
+    const minLeader = (activeMinistry.leaderName || '').trim().toLowerCase();
+    const minAsst = (activeMinistry.assistantLeaderName || '').trim().toLowerCase();
+    const minContactEmail = (activeMinistry.contactEmail || '').trim().toLowerCase();
+    const minContactPhone = (activeMinistry.contactPhone || '').replace(/\D/g, '').slice(-10);
+
+    if (minLeader && userName && minLeader.length > 1 && userName.length > 1) {
+      if (minLeader === userName || minLeader.includes(userName) || userName.includes(minLeader)) return true;
+    }
+    if (minAsst && userName && minAsst.length > 1 && userName.length > 1) {
+      if (minAsst === userName || minAsst.includes(userName) || userName.includes(minAsst)) return true;
+    }
+    if (minContactEmail && userEmail && minContactEmail === userEmail) return true;
+    if (minContactPhone && userPhone && userPhone.length >= 7 && minContactPhone === userPhone) return true;
+
+    // 3. Overall ministry leadership role in MinistryMember table
+    const myMinRecord = ministryMembers.find(
+      (mm) => mm.ministryId === activeMinistry.id && mm.status !== 'Inactive' &&
+        (mm.memberId === linkedMember?.id || mm.memberId === currentUser.id)
+    );
+    if (myMinRecord) {
+      const roleLower = (myMinRecord.ministryRole || myMinRecord.role || '').toLowerCase();
+      if (
+        roleLower.includes('ministry leader') || 
+        roleLower.includes('director') || 
+        roleLower.includes('coordinator') || 
+        roleLower.includes('head') || 
+        roleLower.includes('chair')
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }, [currentUser, activeMinistry, linkedMember, ministryMembers]);
+
+  // Sub-teams led by current user
+  const myLedTeams = useMemo(() => {
+    if (!currentUser || !activeMinistry) return [];
+    const myMemId = linkedMember?.id || currentUser.id;
+    const userName = (currentUser.name || '').trim().toLowerCase();
+
+    return currentMinTeams.filter((t) => {
+      if (myMemId && t.leaderMemberId === myMemId) return true;
+      if (t.leaderName && userName && (
+        t.leaderName.trim().toLowerCase() === userName ||
+        t.leaderName.toLowerCase().includes(userName) ||
+        userName.includes(t.leaderName.toLowerCase())
+      )) return true;
+      if (myMemId && ministryTeamMembers.some((tm) => tm.teamId === t.id && (tm.memberId === myMemId || tm.memberId === currentUser.id) && (tm.role === 'Team Leader' || tm.role?.toLowerCase().includes('leader')))) {
+        return true;
+      }
+      return false;
+    });
+  }, [currentMinTeams, currentUser, linkedMember, ministryTeamMembers, activeMinistry]);
+
+  const isAnyTeamLeader = myLedTeams.length > 0;
+
+  // Sub-teams assigned to current user (as leader or member)
+  const myAssignedTeams = useMemo(() => {
+    if (!currentUser || !activeMinistry) return [];
+    const myMemId = linkedMember?.id || currentUser.id;
+    const userName = (currentUser.name || '').trim().toLowerCase();
+
+    return currentMinTeams.filter((t) => {
+      if (myLedTeams.some((lt) => lt.id === t.id)) return true;
+      if (myMemId && t.leaderMemberId === myMemId) return true;
+      if (t.leaderName && userName && (
+        t.leaderName.trim().toLowerCase() === userName ||
+        t.leaderName.toLowerCase().includes(userName) ||
+        userName.includes(t.leaderName.toLowerCase())
+      )) return true;
+      if (myMemId && ministryTeamMembers.some((tm) => tm.teamId === t.id && (tm.memberId === myMemId || tm.memberId === currentUser.id) && tm.status !== 'Inactive')) {
+        return true;
+      }
+      if (linkedMember?.ministryTeams && Array.isArray(linkedMember.ministryTeams)) {
+        if (linkedMember.ministryTeams.some((mt) => mt.toLowerCase() === t.name.toLowerCase() || t.name.toLowerCase().includes(mt.toLowerCase()))) {
+          return true;
+        }
+      }
+      return false;
+    });
+  }, [currentMinTeams, myLedTeams, linkedMember, currentUser, ministryTeamMembers, activeMinistry]);
+
+  // Overall leader or squad leader
+  const isLeader = isOverallMinistryLeader || isAnyTeamLeader;
+
+  // Accurately resolve current user's role title
+  const myRoleTitle = useMemo(() => {
+    if (isOverallMinistryLeader) return 'Ministry Leader';
+    if (isAnyTeamLeader) return `Team Leader (${myLedTeams[0].name})`;
+    if (myAssignedTeams.length > 0) return `Team Member (${myAssignedTeams[0].name})`;
+    const raw = activeUserMin?.roleTitle || 'Team Member';
+    return raw.toLowerCase() === 'volunteer' ? 'Team Member' : raw;
+  }, [isOverallMinistryLeader, isAnyTeamLeader, myLedTeams, myAssignedTeams, activeUserMin]);
+
+  // Helper to accurately resolve any member's ministry/team role (NEVER 'Volunteer')
+  const getResolvedMemberInfo = (memberId: string, memberFullName: string, rawRole?: string) => {
+    const normMemName = (memberFullName || '').trim().toLowerCase();
+
+    // 1. Overall Ministry Leader?
+    const isMinLeader = 
+      (activeMinistry?.leaderMemberId && activeMinistry.leaderMemberId === memberId) ||
+      (activeMinistry?.leaderName && normMemName.length > 1 && (
+        activeMinistry.leaderName.trim().toLowerCase() === normMemName ||
+        activeMinistry.leaderName.trim().toLowerCase().includes(normMemName) ||
+        normMemName.includes(activeMinistry.leaderName.trim().toLowerCase())
+      ));
+
+    if (isMinLeader) {
+      return {
+        roleTitle: 'Ministry Leader',
+        isLeader: true,
+        isMinistryLeader: true,
+        isTeamLeader: false,
+      };
+    }
+
+    // 2. Assistant Ministry Leader?
+    const isAsstLeader = 
+      (activeMinistry?.assistantLeaderMemberId && activeMinistry.assistantLeaderMemberId === memberId) ||
+      (activeMinistry?.assistantLeaderName && normMemName.length > 1 && (
+        activeMinistry.assistantLeaderName.trim().toLowerCase() === normMemName ||
+        activeMinistry.assistantLeaderName.trim().toLowerCase().includes(normMemName)
+      ));
+
+    if (isAsstLeader) {
+      return {
+        roleTitle: 'Assistant Leader',
+        isLeader: true,
+        isMinistryLeader: false,
+        isTeamLeader: false,
+      };
+    }
+
+    // 3. Sub-Team Leader of any team in this ministry?
+    const ledTeam = currentMinTeams.find((t) => {
+      if (t.leaderMemberId && t.leaderMemberId === memberId) return true;
+      if (t.leaderName && normMemName.length > 1) {
+        const normLead = t.leaderName.trim().toLowerCase();
+        return normLead === normMemName || normLead.includes(normMemName) || normMemName.includes(normLead);
+      }
+      return false;
+    });
+
+    if (ledTeam) {
+      return {
+        roleTitle: `Team Leader (${ledTeam.name})`,
+        isLeader: true,
+        isMinistryLeader: false,
+        isTeamLeader: true,
+        teamName: ledTeam.name,
+      };
+    }
+
+    // 4. Designated Team Leader in ministryTeamMembers?
+    const tmLeaderRec = ministryTeamMembers.find(
+      (tm) => tm.memberId === memberId && tm.ministryId === activeMinistry?.id &&
+        (tm.role === 'Team Leader' || tm.role?.toLowerCase().includes('leader'))
+    );
+    if (tmLeaderRec) {
+      const parentTeam = currentMinTeams.find((t) => t.id === tmLeaderRec.teamId);
+      const teamName = parentTeam?.name || '';
+      return {
+        roleTitle: teamName ? `Team Leader (${teamName})` : 'Team Leader',
+        isLeader: true,
+        isMinistryLeader: false,
+        isTeamLeader: true,
+        teamName,
+      };
+    }
+
+    // 5. Does rawRole explicitly specify a leader title?
+    const rawClean = (rawRole || '').trim();
+    if (rawClean && /leader|director|coordinator|head|chair/i.test(rawClean)) {
+      return {
+        roleTitle: rawClean,
+        isLeader: true,
+        isMinistryLeader: false,
+        isTeamLeader: true,
+      };
+    }
+
+    // 6. Sub-team member in ministryTeamMembers?
+    const teamAssignment = ministryTeamMembers.find(
+      (tm) => tm.memberId === memberId && tm.ministryId === activeMinistry?.id
+    );
+    if (teamAssignment) {
+      const parentTeam = currentMinTeams.find((t) => t.id === teamAssignment.teamId);
+      const teamName = parentTeam?.name || '';
+      if (teamAssignment.role && !['volunteer', 'member'].includes(teamAssignment.role.toLowerCase())) {
+        return {
+          roleTitle: teamName ? `${teamAssignment.role} (${teamName})` : teamAssignment.role,
+          isLeader: false,
+          isMinistryLeader: false,
+          isTeamLeader: false,
+          teamName,
+        };
+      }
+      return {
+        roleTitle: teamName ? `Team Member (${teamName})` : 'Team Member',
+        isLeader: false,
+        isMinistryLeader: false,
+        isTeamLeader: false,
+        teamName,
+      };
+    }
+
+    // 7. Check Member's ministryTeams tags
+    const memberObj = members.find((m) => m.id === memberId);
+    if (memberObj?.ministryTeams && Array.isArray(memberObj.ministryTeams)) {
+      const matchedTeam = currentMinTeams.find((t) =>
+        memberObj.ministryTeams.some((mt) => mt.toLowerCase() === t.name.toLowerCase() || t.name.toLowerCase().includes(mt.toLowerCase()))
+      );
+      if (matchedTeam) {
+        return {
+          roleTitle: `Team Member (${matchedTeam.name})`,
+          isLeader: false,
+          isMinistryLeader: false,
+          isTeamLeader: false,
+          teamName: matchedTeam.name,
+        };
+      }
+    }
+
+    // 8. Custom raw role (not volunteer or member)
+    if (rawClean && !['volunteer', 'member'].includes(rawClean.toLowerCase())) {
+      return {
+        roleTitle: rawClean,
+        isLeader: false,
+        isMinistryLeader: false,
+        isTeamLeader: false,
+      };
+    }
+
+    // 9. Default fallback: ALWAYS 'Team Member', NEVER 'Volunteer'
+    return {
+      roleTitle: 'Team Member',
+      isLeader: false,
+      isMinistryLeader: false,
+      isTeamLeader: false,
+    };
+  };
 
   // Modal / Form state for creating announcement
   const [isAddAnnouncementOpen, setIsAddAnnouncementOpen] = useState(false);
@@ -88,11 +361,7 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
   const [selectedMemberToAddId, setSelectedMemberToAddId] = useState('');
   const [newMemberRoleTitle, setNewMemberRoleTitle] = useState('Team Member');
 
-  const linkedMember = useMemo(() => {
-    return findLinkedMemberForUser(currentUser, members);
-  }, [currentUser, members]);
-
-  // Ministry-specific members list
+  // Ministry-specific member records
   const activeMinMemberRecords = useMemo(() => {
     if (!activeMinistry) return [];
     return ministryMembers.filter(
@@ -100,19 +369,43 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
     );
   }, [ministryMembers, activeMinistry]);
 
-  const activeMinMembersWithDetails = useMemo(() => {
+  // All ministry members with resolved details and sub-team linkages
+  const allMinMembersWithDetails = useMemo(() => {
     if (!activeMinistry) return [];
     
-    // Map records from MinistryMember
     const mapped = activeMinMemberRecords.map((mm) => {
       const mDetail = members.find((m) => m.id === mm.memberId);
+      const fullName = mDetail ? `${mDetail.firstName} ${mDetail.lastName}`.trim() : 'Church Member';
+      const resolved = getResolvedMemberInfo(mm.memberId, fullName, mm.ministryRole || mm.role);
+
+      // Find all sub-teams this member belongs to
+      const memberTeams = currentMinTeams.filter((t) => {
+        if (t.leaderMemberId === mm.memberId) return true;
+        if (t.leaderName && fullName.length > 1) {
+          const nl = t.leaderName.trim().toLowerCase();
+          const nf = fullName.toLowerCase();
+          if (nl === nf || nl.includes(nf) || nf.includes(nl)) return true;
+        }
+        if (ministryTeamMembers.some((tm) => tm.teamId === t.id && tm.memberId === mm.memberId && tm.status !== 'Inactive')) return true;
+        if (mDetail?.ministryTeams && Array.isArray(mDetail.ministryTeams)) {
+          if (mDetail.ministryTeams.some((mt) => mt.toLowerCase() === t.name.toLowerCase() || t.name.toLowerCase().includes(mt.toLowerCase()))) return true;
+        }
+        return false;
+      });
+
       return {
         id: mm.id,
         memberId: mm.memberId,
-        name: mDetail ? `${mDetail.firstName} ${mDetail.lastName}` : 'Church Member',
-        roleTitle: mm.ministryRole || mm.role || 'Team Member',
+        name: fullName,
+        roleTitle: resolved.roleTitle,
+        isLeader: resolved.isLeader,
+        isMinistryLeader: resolved.isMinistryLeader,
+        isTeamLeader: resolved.isTeamLeader,
+        teamName: resolved.teamName || memberTeams[0]?.name || '',
+        teamIds: memberTeams.map((t) => t.id),
         avatarUrl: mDetail?.avatarUrl,
         email: mDetail?.email,
+        phone: mDetail?.phone,
         joinedAt: mm.joinedAt,
       };
     });
@@ -128,15 +421,55 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
           memberId: activeMinistry.leaderMemberId || '',
           name: activeMinistry.leaderName,
           roleTitle: 'Ministry Leader',
+          isLeader: true,
+          isMinistryLeader: true,
+          isTeamLeader: false,
+          teamName: '',
+          teamIds: [],
           avatarUrl: undefined,
           email: activeMinistry.contactEmail,
+          phone: activeMinistry.contactPhone,
           joinedAt: activeMinistry.createdAt,
         });
       }
     }
 
     return mapped;
-  }, [activeMinMemberRecords, activeMinistry, members]);
+  }, [activeMinMemberRecords, activeMinistry, members, currentMinTeams, ministryTeamMembers]);
+
+  // Scoped members visible based on user role:
+  // - Overall Ministry Leader: sees all members (or filtered by selectedTeamFilter)
+  // - Normal Member / Volunteer / Team Leader: sees ONLY their assigned team's members!
+  const visibleMinMembersWithDetails = useMemo(() => {
+    if (!activeMinistry) return [];
+
+    // Overall Ministry Leader / Admin
+    if (isOverallMinistryLeader) {
+      if (selectedTeamFilter === 'ALL' || currentMinTeams.length === 0) {
+        return allMinMembersWithDetails;
+      }
+      return allMinMembersWithDetails.filter((m) => m.teamIds.includes(selectedTeamFilter) || m.isMinistryLeader);
+    }
+
+    // Normal Member / Volunteer / Team Leader:
+    // If ministry has NO sub-teams: show all members in the ministry
+    if (currentMinTeams.length === 0) {
+      return allMinMembersWithDetails;
+    }
+
+    // If user belongs to one or more sub-teams:
+    if (myAssignedTeams.length > 0) {
+      const myTeamIdSet = new Set(myAssignedTeams.map((t) => t.id));
+      return allMinMembersWithDetails.filter((m) => {
+        if (m.teamIds.some((tid) => myTeamIdSet.has(tid))) return true;
+        if (m.memberId === linkedMember?.id || m.memberId === currentUser.id) return true;
+        return false;
+      });
+    }
+
+    // User is in the ministry, but not assigned to any sub-team yet
+    return [];
+  }, [isOverallMinistryLeader, selectedTeamFilter, currentMinTeams, allMinMembersWithDetails, myAssignedTeams, linkedMember, currentUser]);
 
   // Ministry Announcements
   const activeMinAnnouncements = useMemo(() => {
@@ -365,7 +698,9 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
               </div>
               <div>
                 <div className="text-slate-400 text-[10px] font-semibold uppercase">Active Team Size</div>
-                <div className="font-bold text-emerald-300">{activeMinMembersWithDetails.length} Members</div>
+                <div className="font-bold text-emerald-300">
+                  {visibleMinMembersWithDetails.length} Members
+                </div>
               </div>
             </div>
           </div>
@@ -414,22 +749,96 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
             </div>
           </div>
 
-          {/* Ministry Members List (Section 5 - Privacy Guarded) */}
+          {/* Sub-Teams / Squads Section */}
+          {currentMinTeams.length > 0 && (
+            <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-3.5 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-white text-sm flex items-center gap-2">
+                    <Shield className="w-4 h-4 text-amber-400" />
+                    <span>{isOverallMinistryLeader ? `${activeMinistry?.name} Sub-Teams` : 'My Ministry Team'}</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    {isOverallMinistryLeader
+                      ? 'Sub-teams and squads operating under this ministry'
+                      : 'Your designated serving squad and team leader'}
+                  </p>
+                </div>
+                <span className="bg-slate-800 text-slate-300 border border-slate-700 text-xs font-bold px-2.5 py-1 rounded-xl">
+                  {isOverallMinistryLeader ? `${currentMinTeams.length} Teams` : `${myAssignedTeams.length} Assigned`}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {(isOverallMinistryLeader ? currentMinTeams : myAssignedTeams).map((team) => {
+                  const teamMembersCount = allMinMembersWithDetails.filter((m) => m.teamIds.includes(team.id)).length;
+                  const isUserTeam = myAssignedTeams.some((t) => t.id === team.id);
+                  const isUserLeading = myLedTeams.some((t) => t.id === team.id);
+
+                  return (
+                    <div
+                      key={team.id}
+                      className={`p-3.5 rounded-2xl border transition space-y-2 ${
+                        isUserTeam 
+                          ? 'bg-amber-500/10 border-amber-500/40 shadow-xs' 
+                          : 'bg-slate-800/80 border-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <h4 className="font-bold text-xs text-white">{team.name}</h4>
+                            {isUserLeading && (
+                              <span className="bg-amber-500 text-slate-950 text-[9px] font-extrabold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                                <Crown className="w-2.5 h-2.5" />
+                                Leader
+                              </span>
+                            )}
+                          </div>
+                          {team.description && (
+                            <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">{team.description}</p>
+                          )}
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-300 bg-slate-900/80 px-2 py-0.5 rounded-lg border border-slate-700/80 shrink-0">
+                          {teamMembersCount} Members
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-700/60">
+                        <div className="flex items-center gap-1.5 text-slate-300">
+                          <Crown className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                          <span>Team Leader: <strong className="text-white">{team.leaderName || 'To be assigned'}</strong></span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Ministry Members List (Privacy Guarded & Scoped by User Team) */}
           <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 shadow-sm space-y-4 text-white">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h3 className="font-bold text-white text-sm flex items-center gap-2">
                   <Users className="w-4 h-4 text-amber-400" />
-                  <span>{activeMinistry?.name} Members</span>
+                  <span>
+                    {!isOverallMinistryLeader && currentMinTeams.length > 0 && myAssignedTeams.length > 0
+                      ? `${myAssignedTeams.map((t) => t.name).join(' & ')} Members`
+                      : `${activeMinistry?.name} Members`}
+                  </span>
                 </h3>
                 <p className="text-[11px] text-slate-400">
-                  Members serving in this ministry team
+                  {!isOverallMinistryLeader && currentMinTeams.length > 0
+                    ? `Members serving in your ministry team (${activeMinistry?.name})`
+                    : 'Members serving in this ministry team'}
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 self-start sm:self-auto">
                 <span className="bg-slate-800 text-slate-300 border border-slate-700 text-xs font-bold px-2.5 py-1 rounded-xl">
-                  {activeMinMembersWithDetails.length} Members
+                  {visibleMinMembersWithDetails.length} Members
                 </span>
                 {isLeader && (
                   <button
@@ -443,38 +852,123 @@ export const MyMinistryView: React.FC<MyMinistryViewProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {activeMinMembersWithDetails.map((m) => (
-                <div
-                  key={m.id}
-                  className="p-3 bg-slate-800/80 rounded-2xl border border-slate-700 flex items-center justify-between gap-3"
+            {/* Sub-team filter pills for Overall Ministry Leaders */}
+            {isOverallMinistryLeader && currentMinTeams.length > 1 && (
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1 border-t border-slate-800/80">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1">
+                  Filter Team:
+                </span>
+                <button
+                  onClick={() => setSelectedTeamFilter('ALL')}
+                  className={`px-3 py-1 rounded-xl text-xs font-bold transition shrink-0 ${
+                    selectedTeamFilter === 'ALL'
+                      ? 'bg-amber-500 text-slate-950 shadow-sm'
+                      : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-750'
+                  }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold flex items-center justify-center text-xs shrink-0">
-                      {m.avatarUrl ? (
-                        <img src={m.avatarUrl} alt={m.name} className="w-full h-full rounded-xl object-cover" />
-                      ) : (
-                        m.name.charAt(0)
-                      )}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-xs text-white">{m.name}</h4>
-                      <p className="text-[10px] text-amber-400 font-semibold">{m.roleTitle}</p>
-                    </div>
-                  </div>
-
-                  {isLeader && onDeleteMinistryMember && !m.id.startsWith('leader-') && (
+                  All Teams ({allMinMembersWithDetails.length})
+                </button>
+                {currentMinTeams.map((t) => {
+                  const count = allMinMembersWithDetails.filter((m) => m.teamIds.includes(t.id)).length;
+                  return (
                     <button
-                      onClick={() => onDeleteMinistryMember(m.id)}
-                      className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg transition"
-                      title="Remove member from ministry"
+                      key={t.id}
+                      onClick={() => setSelectedTeamFilter(t.id)}
+                      className={`px-3 py-1 rounded-xl text-xs font-bold transition shrink-0 ${
+                        selectedTeamFilter === t.id
+                          ? 'bg-amber-500 text-slate-950 shadow-sm'
+                          : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-750'
+                      }`}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      {t.name} ({count})
                     </button>
-                  )}
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Scoped notification banner for team members */}
+            {!isOverallMinistryLeader && currentMinTeams.length > 0 && myAssignedTeams.length > 0 && (
+              <div className="p-2.5 bg-amber-500/10 border border-amber-500/25 rounded-2xl flex items-center justify-between text-xs text-amber-300">
+                <span className="flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Showing members of your assigned team: <strong>{myAssignedTeams.map((t) => t.name).join(', ')}</strong></span>
+                </span>
+                <span className="text-[10px] font-bold bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-500/30">
+                  Your Squad View
+                </span>
+              </div>
+            )}
+
+            {visibleMinMembersWithDetails.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {visibleMinMembersWithDetails.map((m) => (
+                  <div
+                    key={m.id}
+                    className={`p-3 rounded-2xl border flex items-center justify-between gap-3 transition ${
+                      m.isLeader 
+                        ? 'bg-amber-500/10 border-amber-500/30 shadow-xs' 
+                        : 'bg-slate-800/80 border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-xl font-bold flex items-center justify-center text-xs shrink-0 ${
+                        m.isLeader 
+                          ? 'bg-amber-500/30 text-amber-300 border border-amber-500/50' 
+                          : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                      }`}>
+                        {m.avatarUrl ? (
+                          <img src={m.avatarUrl} alt={m.name} className="w-full h-full rounded-xl object-cover" />
+                        ) : (
+                          m.name.charAt(0)
+                        )}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="font-bold text-xs text-white">{m.name}</h4>
+                          {m.isLeader && (
+                            <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400/40" />
+                          )}
+                        </div>
+                        <div className="mt-0.5">
+                          {m.isLeader ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] text-amber-400 font-extrabold">
+                              {m.roleTitle}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+                              {m.roleTitle}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {isLeader && onDeleteMinistryMember && !m.id.startsWith('leader-') && (
+                      <button
+                        onClick={() => onDeleteMinistryMember(m.id)}
+                        className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg transition"
+                        title="Remove member from ministry"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-6 bg-slate-800/40 border border-dashed border-slate-700 rounded-2xl text-center space-y-2">
+                <Users className="w-8 h-8 text-slate-400 mx-auto opacity-60" />
+                <h4 className="font-bold text-sm text-white">
+                  {!isOverallMinistryLeader && currentMinTeams.length > 0 ? 'Not Assigned to a Sub-Team' : 'No Members Found'}
+                </h4>
+                <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                  {!isOverallMinistryLeader && currentMinTeams.length > 0 
+                    ? `You are registered in ${activeMinistry?.name}, but you have not yet been assigned to a specific sub-team. Please contact your ministry leader (${activeMinistry?.leaderName || 'Ministry Leader'}) to be placed on a squad.`
+                    : 'No members currently listed in this ministry squad.'}
+                </p>
+              </div>
+            )}
 
             <div className="p-3 bg-slate-800/60 border border-slate-700/60 rounded-2xl text-[11px] text-slate-400 flex items-center gap-2">
               <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />

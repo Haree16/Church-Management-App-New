@@ -11,6 +11,7 @@ import {
   GraduationCap, Bell, Calendar, Video, BookOpen, Award, CheckCircle2, ListChecks,
   RefreshCw, Share2, HelpCircle
 } from 'lucide-react';
+import { ChurchOperationsHub } from './ChurchOperationsHub';
 
 interface WhatsAppHubProps {
   members?: Member[];
@@ -102,8 +103,8 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
   const safeSSAttendance = sundaySchoolAttendance || [];
   const safeEvents = events || [];
 
-  // Active Main Tab Mode: 'composer' (Templates & Custom) | 'ss_auto' (Sunday School Automation) | 'service_auto' (Service Broadcast Automation) | 'groups' (Manage WhatsApp Groups)
-  const [activeTabMode, setActiveTabMode] = useState<'composer' | 'ss_auto' | 'service_auto' | 'groups'>('composer');
+  // Active Main Tab Mode: 'composer' | 'ss_auto' | 'service_auto' | 'groups' | 'operations'
+  const [activeTabMode, setActiveTabMode] = useState<'composer' | 'ss_auto' | 'service_auto' | 'groups' | 'operations'>('composer');
 
   // Direct send vs group target selector
   const [targetType, setTargetType] = useState<'direct' | 'group'>('group');
@@ -746,9 +747,29 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
           <Layers className="w-4 h-4 shrink-0" />
           <span>WhatsApp Groups ({safeGroups.length})</span>
         </button>
+
+        <button
+          onClick={() => setActiveTabMode('operations')}
+          className={`flex-1 min-w-[210px] py-2.5 px-4 rounded-xl text-xs font-extrabold transition flex items-center justify-center gap-2 ${
+            activeTabMode === 'operations'
+              ? 'bg-emerald-800 dark:bg-emerald-700 text-white shadow-sm'
+              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-200'
+          }`}
+        >
+          <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-400" />
+          <span>Church Operations & Meta API</span>
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      {activeTabMode === 'operations' && (
+        <ChurchOperationsHub
+          currentChurch={currentChurch}
+          members={safeMembers}
+        />
+      )}
+
+      {activeTabMode !== 'operations' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Main Controls & Generator Column */}
         <div className="lg:col-span-2 space-y-5">
 
@@ -1569,6 +1590,7 @@ export const WhatsAppHub: React.FC<WhatsAppHubProps> = ({
           )}
         </div>
       </div>
+      )}
 
       {/* ============================================================= */}
       {/* MODAL 1: CREATE / EDIT WHATSAPP TEMPLATE */}
